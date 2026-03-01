@@ -1,0 +1,22 @@
+START PROMPT
+
+Create a website for users to track their monthly budget. The user should be able to enter transactions that are tied to a minor category. Each minor category should be tied to a major category. The major categories are income, fixed expenses, variable expenses, bills, sinking (savings) fund, fun money and investments. The user should be able to create their own minor categories that can be reused when entering transactions. 
+
+The user is able to enter expected monthly values for each minor category. All actual values of the monthly expenses is calculated from the entered transactions.
+
+The user should also be able to create savings goals with a total amount and deadline as a date or duration. Each savings goal must be linked to an existing sinking fund minor category. The monthly budget expected savings, will be populated with the monthly amount of each savings goal. The website should also be able to track how far the user has reached in their savings goal.
+
+The user should also be able to enter recurring expenses (bills) by entering total expense, the frequency of payment and the next due date. Each bill must be linked to an existing minor category under the "Bills" major category. These values should also be automatically populated in the monthly budget.
+
+I need this budget data to be persistent, suggest storage methods. Use bootstrap where suitable. 
+
+
+Technical Requirements:
+Use html, css and vanilla js
+
+
+Errors:
+
+Sinking Fund and Bills minor category expected amounts cannot be updated from the add category section.
+When adding transactions, set today as the default date.
+When adding a transaction have a separate drop down for major category and minor category selection  

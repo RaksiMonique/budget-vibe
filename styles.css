@@ -1,0 +1,48 @@
+:root{
+  --bg: #f5f6f8;
+}
+
+body{
+  background: var(--bg);
+}
+
+.metric{
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.metric-label{
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.metric-value{
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.badge-soft{
+  background: rgba(13,110,253,.12);
+  color: #0d6efd;
+  border: 1px solid rgba(13,110,253,.18);
+}
+
+.progress{
+  height: 10px;
+}
+
+.card-goal{
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+}
+
+.small-muted{
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.table td, .table th{
+  vertical-align: middle;
+}
