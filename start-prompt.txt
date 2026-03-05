@@ -17,6 +17,48 @@ Use html, css and vanilla js
 
 Errors:
 
-Sinking Fund and Bills minor category expected amounts cannot be updated from the add category section.
-When adding transactions, set today as the default date.
-When adding a transaction have a separate drop down for major category and minor category selection  
+The code you gave me allows the users to update all minor categories. Please change the sinking funds and bills minor categories so that the expected amounts cannot be updated by the user from the add category section. The website should limit addition and editing of bills within the bill interface. The website should also only allow addition and editing of sinking funds within the sinking fund interface. 
+I also realized that you left the date blank when initially entering new transactions. Please update the script so that when the user is adding new transactions the date is set to today's date and the user can update it to another date if necessary.
+Additionally, when adding a transaction you created a single drop down with the major and minor category as one item. Please update the script to have a separate drop down for major category and minor category selection.  
+
+
+Errors 2:
+
+Currently on the Website after creating the bill minor category I have to create the recurring bill. While adding/updating the recurring bill a bill name is needed separate from the bill minor category name. Please update the website so that the bill name and bill minor category name are considered to be the same thing. 
+Please add a tracker showing how many bills are paid vs unpaid for the month in the top section of the website. 
+Currently Sinking Fund tab is for adding minor categories but the Savings goal tab is for making the actual goal outline. The word sinking and savings should be interchangeable so please group the two tabs so adding sinking fund minor categories happen on the same page as the creating savings goals tab. Also name the heading sinking(savings).
+
+
+Updates 3: 
+
+Add a tab to track average actual values on all minor category to give an overview of the average spending for a month. The user should be able to select a specific date range to track and the monthly average for that period should be displayed for each minor category.
+
+Add a tab to track stocks. Have a main table to where the user can input the stock ticker, the current price and the relevant stock market. Have a secondary table on the same tab where the user can add their current holdings. For the second table they should be able to enter/select and edit the ticker (as an option from the first table), the average price the stock was bought at and the number of stocks they bought. The Website should then calculate and display the amount of money spent (average cost times number of stocks), the stocks total current value (current price times the number of stocks) and the gain/loss (current value minus money spent).
+
+Add a tab to track dividend income. For each stock owned in the stock tab create a table headed as the stock owned, the number of stocks and the months from january to december for the year selected and the total dividend earned for that stock for the year. Fill in the stocks owned and number of stocks from the stocks tab. Allow the user to manually enter the dividend for each stock for each month. Calculate the total income for the stock by multiplying the total dividends for the stock by the number of stocks owned. Also calculate and display the monthly dividend income based on the values in the table.
+
+
+
+Updates 4:
+
+On the bill tab, new bills are not showing up when I add them to the recurring bill section. Only two bills are listed but I've added more than two recurring bills. Please fix the website so I can see all the recurring bills added by the user.
+
+Currently the bills have to manually be marked as paid. The bill should be considered to be paid when there is a transaction linked to the minor category of the bill for that month. 
+
+On the averages tab the average expenses are calculated as a percentage of the average income. Please change this to calculate the column as a percentage of the average total expenses.
+
+Add a segment in the top main section showing the trailing 12 months dividend income. Also add the total current value of the users stocks in the top main segment.
+
+
+
+leave stock ticker column fixed and move month columns behind it?
+
+
+
+
+
+
+
+--Maybe change back transaction date to not be filled before.
+--The add minor category button seems to overwrite each time I add a new category using it.
+--(I could do this) Change the button title from add sinking fund to add sinking fund category
