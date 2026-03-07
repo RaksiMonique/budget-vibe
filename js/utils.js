@@ -72,7 +72,7 @@ function toISODate(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
-  return `${y}--`;
+  return `${y}-${m}-${day}`;
 }
 
 function parseISODate(iso) {
@@ -96,35 +96,4 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-}
-
-function showToast(msg) {
-  if (!toast) return;
-  toastBody.textContent = msg;
-  toast.show();
-}
-
-function openModal(id) {
-  const el = document.getElementById(id);
-  const m = bootstrap.Modal.getOrCreateInstance(el);
-  m.show();
-}
-
-function closeModal(id) {
-  const el = document.getElementById(id);
-  const m = bootstrap.Modal.getInstance(el);
-  if (m) m.hide();
-}
-
-function showConfirmationModal(message, onConfirm) {
-  if (!modalConfirmEl) return;
-
-  confirmModalBody.textContent = message;
-
-  // Use .cloneNode to remove any previous event listeners
-  const newBtn = confirmModalBtn.cloneNode(true);
-  confirmModalBtn.parentNode.replaceChild(newBtn, confirmModalBtn);
-  newBtn.addEventListener("click", () => { onConfirm(); closeModal("modalConfirm"); }, { once: true });
-
-  openModal("modalConfirm");
 }
