@@ -1,13 +1,28 @@
 const STORAGE_KEY = "budgetTracker.v1";
 
+// Apply theme on initial load to prevent flash
+(function() {
+  try {
+    const storedState = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    let theme = storedState?.ui?.theme;
+    if (!theme || theme === "system") {
+      theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (e) {
+    document.documentElement.setAttribute("data-theme", "light");
+  }
+})();
+
 const MAJOR_CATEGORIES = [
-  { key: "income", label: "Income" },
-  { key: "fixed", label: "Fixed Expenses" },
-  { key: "variable", label: "Variable Expenses" },
-  { key: "bills", label: "Bills" },
-  { key: "sinking", label: "Sinking (Savings) Fund" },
-  { key: "fun", label: "Fun Money" },
-  { key: "invest", label: "Investments" },
+  { key: "income", label: "Income", color: "#A4747D" },
+  { key: "fixed", label: "Fixed Expenses", color: "#C27250" },
+  { key: "variable", label: "Variable Expenses", color: "#D29F80" },
+  { key: "bills", label: "Bills", color: "#735557" },
+  { key: "sinking", label: "Sinking (Savings) Fund", color: "#69856D" },
+  { key: "fun", label: "Fun Money", color: "#97866A" },
+  { key: "invest", label: "Investments", color: "#B6C1B1" },
+  { key: "transfer", label: "Transfer", color: "#9E9E9E" },
 ];
 
 const MAJOR_TYPES = {
@@ -15,9 +30,10 @@ const MAJOR_TYPES = {
   fixed: "outflow",
   variable: "outflow",
   bills: "outflow",
-  sinking: "savings",
+  sinking: "outflow",
   fun: "outflow",
-  invest: "savings",
+  invest: "outflow",
+  transfer: "transfer",
 };
 
 const FREQUENCY_TO_MONTHLY_MULTIPLIER = {
@@ -31,17 +47,27 @@ const FREQUENCY_TO_MONTHLY_MULTIPLIER = {
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 let state = loadState();
+let budgetDonutChart = null;
+let averagesBarChart = null;
+let stocksChart = null;
+let dividendsChart = null;
+let fireChart = null;
+let netWorthChart = null;
 
 /* ---------- DOM ---------- */
 const yearInput = document.getElementById("yearInput");
 const monthSelect = document.getElementById("monthSelect");
 const btnThisMonth = document.getElementById("btnThisMonth");
+const displayMonthYear = document.getElementById("displayMonthYear");
+const pensionInput = document.getElementById("pensionInput");
+const themeToggle = document.getElementById("theme-toggle");
 const btnRecalc = document.getElementById("btnRecalc");
 
 const sumIncome = document.getElementById("sumIncome");
 const sumExpenses = document.getElementById("sumExpenses");
 const sumNet = document.getElementById("sumNet");
-const sumSaveInvest = document.getElementById("sumSaveInvest");
+const metricSavingsRate = document.getElementById("metricSavingsRate");
+const metricInvestRate = document.getElementById("metricInvestRate");
 
 const sumStocksValue = document.getElementById("sumStocksValue");
 const sumDivTTM = document.getElementById("sumDivTTM");
@@ -51,6 +77,7 @@ const billsPaidBar = document.getElementById("billsPaidBar");
 
 const budgetTbody = document.getElementById("budgetTbody");
 const txTbody = document.getElementById("txTbody");
+const accountsTbody = document.getElementById("accountsTbody");
 const goalsWrap = document.getElementById("goalsWrap");
 const billsTbody = document.getElementById("billsTbody");
 const catTbody = document.getElementById("catTbody");
@@ -60,6 +87,68 @@ const billsCatTbody = document.getElementById("billsCatTbody");
 const btnExport = document.getElementById("btnExport");
 const fileImport = document.getElementById("fileImport");
 const btnReset = document.getElementById("btnReset");
+
+/* Debt Snowball */
+const debtForm = document.getElementById("debtForm");
+const debtModalTitle = document.getElementById("debtModalTitle");
+const debtId = document.getElementById("debtId");
+const debtName = document.getElementById("debtName");
+const debtBalance = document.getElementById("debtBalance");
+const debtMinPayment = document.getElementById("debtMinPayment");
+const debtInterestRate = document.getElementById("debtInterestRate");
+const debtTbody = document.getElementById("debtTbody");
+const totalDebtPayment = document.getElementById("totalDebtPayment");
+const btnGenerateDebtPlan = document.getElementById("btnGenerateDebtPlan");
+const debtPlanSummary = document.getElementById("debtPlanSummary");
+const debtPlanTbody = document.getElementById("debtPlanTbody");
+
+/* Rentals tab */
+const rentalForm = document.getElementById("rentalForm");
+const modalRentalEl = document.getElementById("modalRental");
+const rentalModalTitle = document.getElementById("rentalModalTitle");
+const rentalId = document.getElementById("rentalId");
+const rentalName = document.getElementById("rentalName");
+const rentalAddress = document.getElementById("rentalAddress");
+const rentalTenant = document.getElementById("rentalTenant");
+const rentalAmount = document.getElementById("rentalAmount");
+const rentalsTbody = document.getElementById("rentalsTbody");
+const rentalIncomeTbody = document.getElementById("rentalIncomeTbody");
+const rentalYear = document.getElementById("rentalYear");
+const btnRentalRefresh = document.getElementById("btnRentalRefresh");
+
+/* Assets tab */
+const assetForm = document.getElementById("assetForm");
+const modalAssetEl = document.getElementById("modalAsset");
+const assetModalTitle = document.getElementById("assetModalTitle");
+const assetId = document.getElementById("assetId");
+const assetName = document.getElementById("assetName");
+const assetCategory = document.getElementById("assetCategory");
+const assetValue = document.getElementById("assetValue");
+const assetNotes = document.getElementById("assetNotes");
+const assetsTbody = document.getElementById("assetsTbody");
+const assetsDebtsTbody = document.getElementById("assetsDebtsTbody");
+
+/* Net Worth tab */
+const nwAssets = document.getElementById("nwAssets");
+const nwLiabilities = document.getElementById("nwLiabilities");
+const nwTotal = document.getElementById("nwTotal");
+const nwTbody = document.getElementById("nwTbody");
+
+/* FIRE tab */
+const fireForm = document.getElementById("fireForm");
+const fireCurrentAge = document.getElementById("fireCurrentAge");
+const fireCurrentPortfolio = document.getElementById("fireCurrentPortfolio");
+const fireAnnualInvestment = document.getElementById("fireAnnualInvestment");
+const fireAnnualSpending = document.getElementById("fireAnnualSpending");
+const fireAnnualReturn = document.getElementById("fireAnnualReturn");
+const fireWithdrawalRate = document.getElementById("fireWithdrawalRate");
+const fireResultSummary = document.getElementById("fireResultSummary");
+const fireChartCanvas = document.getElementById("fireChartCanvas");
+
+/* Transaction Filters */
+const txFilterDesc = document.getElementById("txFilterDesc");
+const txFilterCategory = document.getElementById("txFilterCategory");
+const txFilterClear = document.getElementById("txFilterClear");
 
 /* Averages tab */
 const avgStart = document.getElementById("avgStart");
@@ -93,8 +182,27 @@ const btnDivRefresh = document.getElementById("btnDivRefresh");
 const divTbody = document.getElementById("divTbody");
 const divMonthlyTotalsRow = document.getElementById("divMonthlyTotalsRow");
 
+/* Accounts tab */
+const accountForm = document.getElementById("accountForm");
+const modalAccountEl = document.getElementById("modalAccount");
+const accountModalTitle = document.getElementById("accountModalTitle");
+const accountId = document.getElementById("accountId");
+const accountName = document.getElementById("accountName");
+const accountType = document.getElementById("accountType");
+const accountInitBalance = document.getElementById("accountInitBalance");
+
+/* Transfer modal */
+const transferForm = document.getElementById("transferForm");
+const modalTransferEl = document.getElementById("modalTransfer");
+const transferDate = document.getElementById("transferDate");
+const transferFromAccount = document.getElementById("transferFromAccount");
+const transferToAccount = document.getElementById("transferToAccount");
+const transferAmount = document.getElementById("transferAmount");
+const transferDescription = document.getElementById("transferDescription");
+
 /* General category modal */
 const categoryForm = document.getElementById("categoryForm");
+const modalCategoryEl = document.getElementById("modalCategory");
 const categoryModalTitle = document.getElementById("categoryModalTitle");
 const categoryId = document.getElementById("categoryId");
 const categoryMajor = document.getElementById("categoryMajor");
@@ -118,8 +226,10 @@ const txForm = document.getElementById("txForm");
 const modalTransactionEl = document.getElementById("modalTransaction");
 const txModalTitle = document.getElementById("txModalTitle");
 const txSubmitBtn = document.getElementById("txSubmitBtn");
+const txSubmitAddAnotherBtn = document.getElementById("txSubmitAddAnotherBtn");
 const txId = document.getElementById("txId");
 const txDate = document.getElementById("txDate");
+const txAccount = document.getElementById("txAccount");
 const txMajor = document.getElementById("txMajor");
 const txMinor = document.getElementById("txMinor");
 const txDesc = document.getElementById("txDesc");
@@ -149,6 +259,11 @@ const billNextDue = document.getElementById("billNextDue");
 const toastEl = document.getElementById("appToast");
 const toastBody = document.getElementById("toastBody");
 const toast = toastEl ? new bootstrap.Toast(toastEl, { delay: 2000 }) : null;
+/* Confirmation Modal */
+const modalConfirmEl = document.getElementById("modalConfirm");
+const confirmModalBody = document.getElementById("confirmModalBody");
+const confirmModalBtn = document.getElementById("confirmModalBtn");
+
 
 init();
 
@@ -173,19 +288,30 @@ function init() {
   divYear.value = String(state.ui.divYear);
 
   categoryMajor.innerHTML = MAJOR_CATEGORIES
-    .filter(m => m.key !== "bills" && m.key !== "sinking")
+    .filter(m => m.key !== "bills" && m.key !== "sinking" && m.key !== "transfer")
     .map(m => `<option value="${m.key}">${m.label}</option>`)
     .join("");
 
   if (state.minorCategories.length === 0) {
     seedStarterCategories();
+    ensureTransferCategory();
     saveState();
   }
+
+  if (!Array.isArray(state.accounts)) state.accounts = [];
+  if (state.accounts.length === 0) seedStarterAccounts();
+  if (!Array.isArray(state.debts)) state.debts = [];
+  if (!Array.isArray(state.otherAssets)) state.otherAssets = [];
+  if (!Array.isArray(state.rentals)) state.rentals = [];
 
   if (!Array.isArray(state.billPayments)) state.billPayments = [];
   if (!Array.isArray(state.stocksMaster)) state.stocksMaster = [];
   if (!Array.isArray(state.holdings)) state.holdings = [];
   if (!state.dividends || typeof state.dividends !== "object") state.dividends = {};
+
+  if (!state.ui.rentalYear) state.ui.rentalYear = now.getFullYear();
+  rentalYear.value = String(state.ui.rentalYear);
+  if (!state.rentalIncome || typeof state.rentalIncome !== "object") state.rentalIncome = {};
 
   wireEvents();
   refreshAll();
@@ -195,11 +321,28 @@ function init() {
    Events
    ========================= */
 function wireEvents() {
+  themeToggle.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    state.ui.theme = newTheme; // Explicitly set user choice
+    saveState();
+  });
+
   btnThisMonth.addEventListener("click", () => {
     const now = new Date();
     yearInput.value = now.getFullYear();
     monthSelect.value = String(now.getMonth());
     persistSelectedMonth();
+    refreshAll();
+  });
+
+  pensionInput.addEventListener("change", () => {
+    const sel = getSelectedMonth();
+    const key = `${sel.year}-${sel.month}`;
+    if (!state.pensionRates) state.pensionRates = {};
+    state.pensionRates[key] = safeNumber(pensionInput.value);
+    saveState();
     refreshAll();
   });
 
@@ -217,6 +360,12 @@ function wireEvents() {
       if (!txMajor.value) txMajor.value = "variable";
       repopulateTxMinorOptions(txMajor.value, true);
     }
+    // Populate accounts dropdown
+    const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
+    txAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+    // If adding new, default to first or previously selected? Default to first for now.
+    // If editing, it will be set by editTransaction
+    if (!txId.value && accs.length) txAccount.value = accs[0].id;
   });
 
   txMajor.addEventListener("change", () => {
@@ -236,22 +385,140 @@ function wireEvents() {
     if (!billId.value) billModalTitle.textContent = "Add Recurring Bill";
   });
 
+  transferForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransfer(); });
+  modalTransferEl.addEventListener("show.bs.modal", () => {
+    transferForm.reset();
+    transferDate.value = toISODate(new Date());
+    const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
+    const options = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+    transferFromAccount.innerHTML = options;
+    transferToAccount.innerHTML = options;
+    if (accs.length > 1) {
+      transferFromAccount.value = accs[0].id;
+      transferToAccount.value = accs[1].id;
+    }
+  });
+
+  accountsTbody.addEventListener("click", (e) => {
+    const button = e.target.closest("button[data-id]");
+    if (!button) return;
+
+    const id = button.dataset.id;
+    if (button.dataset.action === "edit-account") {
+      editAccount(id);
+    } else if (button.dataset.action === "delete-account") {
+      deleteAccount(id);
+    }
+  });
+
+  /* Rentals */
+  rentalsTbody.addEventListener("click", (e) => {
+    const button = e.target.closest("button[data-id]");
+    if (!button) return;
+    const id = button.dataset.id;
+    if (button.dataset.action === "edit-rental") editRental(id);
+    else if (button.dataset.action === "delete-rental") deleteRental(id);
+  });
+  rentalForm.addEventListener("submit", (e) => { e.preventDefault(); upsertRental(); });
+  modalRentalEl.addEventListener("hidden.bs.modal", () => {
+    rentalForm.reset();
+    rentalId.value = "";
+    rentalModalTitle.textContent = "Add Rental Property";
+  });
+  rentalYear.addEventListener("change", () => {
+    state.ui.rentalYear = clampInt(rentalYear.value, 2000, 2100, new Date().getFullYear());
+    rentalYear.value = String(state.ui.rentalYear);
+    saveState();
+    renderRentals();
+  });
+  btnRentalRefresh.addEventListener("click", () => renderRentals());
+
+  /* Assets */
+  assetsTbody.addEventListener("click", (e) => {
+    const button = e.target.closest("button[data-id]");
+    if (!button) return;
+    const id = button.dataset.id;
+    if (button.dataset.action === "edit-asset") editAsset(id);
+    else if (button.dataset.action === "delete-asset") deleteAsset(id);
+  });
+  if (assetsDebtsTbody) {
+    assetsDebtsTbody.addEventListener("click", (e) => {
+      const button = e.target.closest("button[data-id]");
+      if (!button) return;
+      const id = button.dataset.id;
+      if (button.dataset.action === "edit-debt") editDebt(id);
+      else if (button.dataset.action === "delete-debt") deleteDebt(id);
+    });
+  }
+  assetForm.addEventListener("submit", (e) => { e.preventDefault(); upsertAsset(); });
+  modalAssetEl.addEventListener("hidden.bs.modal", () => {
+    assetForm.reset();
+    assetId.value = "";
+    assetModalTitle.textContent = "Add Asset";
+  });
+
+  accountForm.addEventListener("submit", (e) => { e.preventDefault(); upsertAccount(); });
+  modalAccountEl.addEventListener("hidden.bs.modal", () => {
+    accountForm.reset();
+    accountId.value = "";
+    accountModalTitle.textContent = "Add Account";
+  });
+
   categoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertGeneralMinorCategory(); });
+  modalCategoryEl.addEventListener("hidden.bs.modal", () => {
+    categoryForm.reset();
+    categoryId.value = "";
+    categoryModalTitle.textContent = "Add Minor Category";
+  });
   sinkingCategoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertSinkingCategory(); });
   billsCategoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertBillsCategory(); });
 
-  txForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransaction(); });
+  txForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransaction(false); });
+  txSubmitAddAnotherBtn.addEventListener("click", () => upsertTransaction(true));
   goalForm.addEventListener("submit", (e) => { e.preventDefault(); upsertGoal(); });
   billForm.addEventListener("submit", (e) => { e.preventDefault(); upsertBill(); });
+  debtForm.addEventListener("submit", (e) => { e.preventDefault(); upsertDebt(); });
 
   btnExport.addEventListener("click", exportJSON);
   fileImport.addEventListener("change", importJSON);
 
   btnReset.addEventListener("click", () => {
-    if (!confirm("Reset all budget data? This cannot be undone.")) return;
-    state = defaultState();
-    saveState();
-    init();
+    showConfirmationModal("Reset all budget data? This cannot be undone.", () => {
+      state = defaultState();
+      saveState();
+      init();
+    });
+  });
+
+  /* Debt Snowball Table Actions */
+  debtTbody.addEventListener("click", (e) => {
+    const button = e.target.closest("button[data-id]");
+    if (!button) return;
+
+    const id = button.dataset.id;
+    if (button.dataset.action === "edit-debt") {
+      editDebt(id);
+    } else if (button.dataset.action === "delete-debt") {
+      deleteDebt(id);
+    }
+  });
+
+  /* Debt Snowball */
+  btnGenerateDebtPlan.addEventListener("click", generateDebtSnowballPlan);
+
+  /* FIRE */
+  fireForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    calculateFIREProjection();
+  });
+
+  /* Transaction Filters */
+  txFilterDesc.addEventListener("input", () => renderTransactionsTable(state.ui.selectedYear, state.ui.selectedMonth));
+  txFilterCategory.addEventListener("change", () => renderTransactionsTable(state.ui.selectedYear, state.ui.selectedMonth));
+  txFilterClear.addEventListener("click", () => {
+    txFilterDesc.value = "";
+    txFilterCategory.value = "";
+    renderTransactionsTable(state.ui.selectedYear, state.ui.selectedMonth);
   });
 
   /* Averages */
@@ -280,6 +547,38 @@ function wireEvents() {
     refreshTopInvestmentMetrics(); // keep top in sync
   });
   btnDivRefresh.addEventListener("click", () => { renderDividends(); refreshTopInvestmentMetrics(); });
+
+  // Auto-focus logic for modals
+  // ✅ Event Delegation for dynamic table content (Transactions)
+  txTbody.addEventListener("click", (e) => {
+    const button = e.target.closest("button[data-id]");
+    if (!button) return;
+
+    const id = button.dataset.id;
+    if (button.dataset.action === "edit-tx") {
+      editTransaction(id);
+    } else if (button.dataset.action === "delete-tx") {
+      deleteTransaction(id);
+    }
+  });
+
+  // Auto-focus logic for modals
+  const autoFocusMap = [
+    { modal: "modalCategory", input: "categoryMajor" },
+    { modal: "modalSinkingCategory", input: "sinkingCategoryName" },
+    { modal: "modalBillsCategory", input: "billsCategoryName" },
+    { modal: "modalTransaction", input: "txDate" },
+    { modal: "modalGoal", input: "goalName" },
+    { modal: "modalBill", input: "billMinor" },
+    { modal: "modalAccount", input: "accountName" },
+  ];
+  autoFocusMap.forEach(m => {
+    const el = document.getElementById(m.modal);
+    if(el) el.addEventListener("shown.bs.modal", () => {
+      const inp = document.getElementById(m.input);
+      if(inp) inp.focus();
+    });
+  });
 }
 
 /* =========================
@@ -292,17 +591,34 @@ function refreshAll() {
   const sel = getSelectedMonth();
   const actualByMinor = computeActualByMinor(sel.year, sel.month);
 
+  if (displayMonthYear) {
+    const mName = monthSelect.options[sel.month]?.text || MONTHS[sel.month];
+    displayMonthYear.textContent = `${mName} ${sel.year}`;
+  }
+  
+  // Update pension input for selected month
+  if (!state.pensionRates) state.pensionRates = {};
+  const pKey = `${sel.year}-${sel.month}`;
+  pensionInput.value = state.pensionRates[pKey] || 0;
+
   renderBudgetTable(expectedByMinor, actualByMinor);
+  renderAccounts();
   renderTransactionsTable(sel.year, sel.month);
   renderGoals(expectedByMinor);
   renderSinkingCategories(expectedByMinor, actualByMinor);
   renderBillsCategories(expectedByMinor);
   renderBills(sel.year, sel.month); // FIXED: show ALL bills
+  renderDebts();
+  renderFIRE();
+  renderRentals();
+  renderAssets();
+  renderNetWorth();
   renderGeneralCategories();
 
-  renderSummary(actualByMinor);
+  renderSummary(actualByMinor, sel.year, sel.month);
   renderBillsPaidTracker(sel.year, sel.month);
 
+  renderBudgetDonutChart(actualByMinor);
   renderAverages();
   renderStocks();
   renderDividends();
@@ -322,7 +638,9 @@ function persistSelectedMonth() {
    Dropdowns
    ========================= */
 function renderCategoryDropdowns() {
-  txMajor.innerHTML = MAJOR_CATEGORIES.map(m => `<option value="${m.key}">${m.label}</option>`).join("");
+  txMajor.innerHTML = MAJOR_CATEGORIES
+    .filter(m => m.key !== "transfer")
+    .map(m => `<option value="${m.key}">${m.label}</option>`).join("");
   if (!txMajor.value) txMajor.value = "variable";
   repopulateTxMinorOptions(txMajor.value, false);
 
@@ -339,6 +657,14 @@ function renderCategoryDropdowns() {
   billMinor.innerHTML = bills.length
     ? bills.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
     : `<option value="" disabled selected>Create a Bills category first</option>`;
+
+  // Populate transaction filter dropdown
+  const allCats = state.minorCategories
+    .slice()
+    .sort((a,b) => a.name.localeCompare(b.name));
+  txFilterCategory.innerHTML = `<option value="">All Categories</option>` + allCats
+    .map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(getMajorLabel(c.majorKey))})</option>`)
+    .join("");
 }
 
 function repopulateTxMinorOptions(majorKey, forceSelectFirst) {
@@ -356,26 +682,92 @@ function repopulateTxMinorOptions(majorKey, forceSelectFirst) {
 /* =========================
    Summary
    ========================= */
-function renderSummary(actualByMinor) {
-  let income = 0, expenses = 0, saveInvest = 0;
+function renderSummary(actualByMinor, year, month) {
+  let income = 0, expenses = 0;
+  let sinking = 0, invest = 0;
 
   for (const cat of state.minorCategories) {
     const actual = actualByMinor[cat.id] || 0;
     const type = MAJOR_TYPES[cat.majorKey];
+    if (type === "transfer") continue;
     if (type === "inflow") income += actual;
     else if (type === "outflow") expenses += actual;
-    else if (type === "savings") saveInvest += actual;
+
+    if (cat.majorKey === "sinking") sinking += actual;
+    if (cat.majorKey === "invest") invest += actual;
   }
 
-  const net = income - expenses - saveInvest;
+  const net = income - expenses;
 
   sumIncome.textContent = formatMoney(income);
   sumExpenses.textContent = formatMoney(expenses);
-  sumSaveInvest.textContent = formatMoney(saveInvest);
   sumNet.textContent = formatMoney(net);
 
   sumNet.classList.toggle("text-danger", net < 0);
   sumNet.classList.toggle("text-success", net >= 0);
+
+  // Rates Calculation
+  // Pension Amount = Income * (Rate / 100)
+  // Total Income (Adjusted) = Income + Pension Amount
+  const pKey = `${year}-${month}`;
+  const pensionRate = safeNumber(state.pensionRates?.[pKey] || 0);
+  const pensionAmount = income * (pensionRate / 100);
+  const totalIncome = income + pensionAmount;
+  const totalSavings = sinking;
+  const totalInvest = invest + pensionAmount;
+
+  metricSavingsRate.textContent = income > 0 ? ((totalSavings / income) * 100).toFixed(1) + "%" : "0.0%";
+  metricInvestRate.textContent = totalIncome > 0 ? ((totalInvest / totalIncome) * 100).toFixed(1) + "%" : "0.0%";
+}
+
+/* =========================
+   Charts
+   ========================= */
+function renderBudgetDonutChart(actualByMinor) {
+  const ctx = document.getElementById("budgetDonutChart")?.getContext("2d");
+  if (!ctx) return;
+
+  const sumsByMajor = {};
+  for (const cat of state.minorCategories) {
+    const type = MAJOR_TYPES[cat.majorKey];
+    if (type !== "outflow") continue;
+
+    const actual = actualByMinor[cat.id] || 0;
+    sumsByMajor[cat.majorKey] = (sumsByMajor[cat.majorKey] || 0) + actual;
+  }
+
+  const labels = [], data = [], colors = [];
+  for (const major of MAJOR_CATEGORIES) {
+    if (sumsByMajor[major.key] > 0) {
+      labels.push(major.label);
+      data.push(sumsByMajor[major.key]);
+      colors.push(major.color);
+    }
+  }
+
+  if (budgetDonutChart) {
+    budgetDonutChart.data.labels = labels;
+    budgetDonutChart.data.datasets[0].data = data;
+    budgetDonutChart.data.datasets[0].backgroundColor = colors;
+    budgetDonutChart.update();
+  } else {
+    budgetDonutChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+  }
 }
 
 /* =========================
@@ -472,6 +864,7 @@ function renderBudgetTable(expectedByMinor, actualByMinor) {
 
   let rows = "";
   for (const major of majors) {
+    if (major === "transfer") continue;
     const list = catsByMajor[major];
     if (!list.length) continue;
 
@@ -515,31 +908,44 @@ function renderBudgetTable(expectedByMinor, actualByMinor) {
    Transactions (edit supported)
    ========================= */
 function renderTransactionsTable(year, month) {
-  const list = state.transactions
-    .filter(t => isInMonth(t.date, year, month))
-    .sort((a, b) => a.date.localeCompare(b.date));
+  const filterDescVal = txFilterDesc.value.toLowerCase();
+  const filterCatVal = txFilterCategory.value;
+
+  let list = state.transactions
+    .filter(t => isInMonth(t.date, year, month));
+
+  if (filterDescVal) {
+    list = list.filter(t => t.description?.toLowerCase().includes(filterDescVal));
+  }
+  if (filterCatVal) {
+    list = list.filter(t => t.minorCategoryId === filterCatVal);
+  }
+
+  list.sort((a, b) => b.date.localeCompare(a.date)); // Show most recent first
 
   if (!list.length) {
-    txTbody.innerHTML = `<tr><td colspan="6" class="text-muted">No transactions for this month.</td></tr>`;
+    txTbody.innerHTML = `<tr><td colspan="7" class="text-muted">No transactions found for this month matching filters.</td></tr>`;
     return;
   }
 
   txTbody.innerHTML = list.map(t => {
     const cat = getCategory(t.minorCategoryId);
     const majorLabel = cat ? getMajorLabel(cat.majorKey) : "—";
-    const minorLabel = cat ? cat.name : "—";
+    const minorLabel = cat ? cat.name : "—";    
+    const isTransfer = cat && cat.majorKey === 'transfer';
 
     return `
       <tr>
         <td>${escapeHtml(t.date)}</td>
-        <td>${escapeHtml(t.description || "")}</td>
+        <td>${escapeHtml(t.description || "")} ${isTransfer ? '<span class="badge bg-secondary">Transfer</span>' : ''}</td>
+        <td>${escapeHtml(state.accounts.find(a => a.id === t.accountId)?.name || "—")}</td>
         <td>${escapeHtml(majorLabel)}</td>
         <td>${escapeHtml(minorLabel)}</td>
         <td class="text-end">${formatMoney(t.amount)}</td>
         <td>
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" onclick="editTransaction('${t.id}')">Edit</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${t.id}')">Delete</button>
+            <button class="btn btn-sm btn-outline-secondary" data-action="edit-tx" data-id="${t.id}">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete-tx" data-id="${t.id}">Delete</button>
           </div>
         </td>
       </tr>
@@ -549,11 +955,13 @@ function renderTransactionsTable(year, month) {
 
 function setTxModalMode(mode) {
   if (mode === "edit") {
+    txSubmitAddAnotherBtn.style.display = "none";
     txModalTitle.textContent = "Edit Transaction";
     txSubmitBtn.textContent = "Save";
     txSubmitBtn.classList.remove("btn-success");
     txSubmitBtn.classList.add("btn-primary");
   } else {
+    txSubmitAddAnotherBtn.style.display = "inline-block";
     txModalTitle.textContent = "Add Transaction";
     txSubmitBtn.textContent = "Add";
     txSubmitBtn.classList.remove("btn-primary");
@@ -561,15 +969,16 @@ function setTxModalMode(mode) {
   }
 }
 
-function upsertTransaction() {
+function upsertTransaction(keepOpen = false) {
   const id = txId.value?.trim();
   const date = txDate.value;
+  const accId = txAccount.value;
   const majorKey = txMajor.value;
   const minorId = txMinor.value;
   const amount = safeNumber(txAmount.value);
   const desc = txDesc.value.trim();
 
-  if (!date || !majorKey || !minorId || !isFinite(amount)) return;
+  if (!date || !accId || !majorKey || !minorId || !isFinite(amount)) return;
 
   const cat = getCategory(minorId);
   if (!cat || cat.majorKey !== majorKey) {
@@ -582,6 +991,7 @@ function upsertTransaction() {
     if (!t) return;
 
     t.date = date;
+    t.accountId = accId;
     t.minorCategoryId = minorId;
     t.amount = amount;
     t.description = desc;
@@ -591,6 +1001,7 @@ function upsertTransaction() {
     state.transactions.push({
       id: uid(),
       date,
+      accountId: accId,
       minorCategoryId: minorId,
       amount,
       description: desc,
@@ -600,22 +1011,41 @@ function upsertTransaction() {
   }
 
   saveState();
-  closeModal("modalTransaction");
-  txForm.reset();
-  txId.value = "";
-  setTxModalMode("add");
   refreshAll();
+
+  if (keepOpen) {
+    // Reset specific fields but keep Date and Category context for rapid entry
+    txId.value = "";
+    txDesc.value = "";
+    txAmount.value = "";
+    txDesc.focus(); // Focus description for next entry
+    showToast("Transaction added. Ready for next.");
+  } else {
+    closeModal("modalTransaction");
+    txForm.reset();
+    txId.value = "";
+    setTxModalMode("add");
+  }
 }
 
-window.editTransaction = function (id) {
+function editTransaction(id) {
   const t = state.transactions.find(x => x.id === id);
   if (!t) return;
 
   const cat = getCategory(t.minorCategoryId);
+  if (cat && cat.majorKey === "transfer") {
+    alert("Transfers cannot be edited. Please delete the transfer and create a new one.");
+    return;
+  }
   const majorKey = cat ? cat.majorKey : "variable";
 
   txId.value = t.id;
   txDate.value = t.date;
+
+  // Populate accounts
+  const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
+  txAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  txAccount.value = t.accountId || "";
   txMajor.value = majorKey;
 
   repopulateTxMinorOptions(majorKey, false);
@@ -624,20 +1054,31 @@ window.editTransaction = function (id) {
   txDesc.value = t.description || "";
   txAmount.value = String(t.amount);
 
+  // Hide "Add Another" button when editing
+  txSubmitAddAnotherBtn.style.display = "none";
   setTxModalMode("edit");
   openModal("modalTransaction");
-};
+}
 
-window.deleteTransaction = function (id) {
+function deleteTransaction(id) {
   const t = state.transactions.find(x => x.id === id);
   if (!t) return;
-  if (!confirm("Delete this transaction?")) return;
 
-  state.transactions = state.transactions.filter(x => x.id !== id);
-  saveState();
-  showToast("Transaction deleted.");
-  refreshAll();
-};
+  const onConfirm = () => {
+    if (t.transferId) {
+      state.transactions = state.transactions.filter(x => x.transferId !== t.transferId);
+      showToast("Transfer deleted.");
+    } else {
+      state.transactions = state.transactions.filter(x => x.id !== id);
+      showToast("Transaction deleted.");
+    }
+    saveState();
+    refreshAll();
+  };
+
+  const message = t.transferId ? "This will delete both sides of the transfer. Continue?" : "Delete this transaction?";
+  showConfirmationModal(message, onConfirm);
+}
 
 /* =========================
    Averages Tab (UPDATED % denominator)
@@ -724,6 +1165,60 @@ function renderAverages() {
   }).join("");
 
   avgTbody.innerHTML = rows || `<tr><td colspan="4" class="text-muted">No categories yet.</td></tr>`;
+
+  renderAveragesBarChart(sortedCats, sumsByMinor, monthsCount);
+}
+
+function renderAveragesBarChart(sortedCats, sumsByMinor, monthsCount) {
+  const ctx = document.getElementById("averagesBarChart")?.getContext("2d");
+  if (!ctx) return;
+
+  const chartData = sortedCats
+    .map(c => {
+      const total = sumsByMinor[c.id] || 0;
+      const avg = monthsCount > 0 ? (total / monthsCount) : 0;
+      return {
+        label: c.name,
+        avg: avg,
+        majorKey: c.majorKey,
+        type: MAJOR_TYPES[c.majorKey]
+      };
+    })
+    .filter(d => d.type === "outflow" && d.avg > 0)
+    .sort((a, b) => b.avg - a.avg)
+    .slice(0, 15); // Top 15
+
+  const labels = chartData.map(d => d.label);
+  const data = chartData.map(d => d.avg);
+  const colors = chartData.map(d => MAJOR_CATEGORIES.find(m => m.key === d.majorKey)?.color || "#cccccc");
+
+  if (averagesBarChart) {
+    averagesBarChart.data.labels = labels;
+    averagesBarChart.data.datasets[0].data = data;
+    averagesBarChart.data.datasets[0].backgroundColor = colors;
+    averagesBarChart.update();
+  } else {
+    averagesBarChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Average Monthly Spend",
+          data: data,
+          backgroundColor: colors,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { x: { beginAtZero: true } },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  }
 }
 
 /* =========================
@@ -874,12 +1369,12 @@ window.editGoal = function (id) {
 window.deleteGoal = function (id) {
   const g = state.goals.find(x => x.id === id);
   if (!g) return;
-  if (!confirm(`Delete goal "${g.name}"?`)) return;
-
-  state.goals = state.goals.filter(x => x.id !== id);
-  saveState();
-  showToast("Goal deleted.");
-  refreshAll();
+  showConfirmationModal(`Delete goal "${g.name}"?`, () => {
+    state.goals = state.goals.filter(x => x.id !== id);
+    saveState();
+    showToast("Goal deleted.");
+    refreshAll();
+  });
 };
 
 /* =========================
@@ -1202,18 +1697,16 @@ window.editBill = function (id) {
   openModal("modalBill");
 };
 
-window.deleteBill = function (id) {
+function deleteBill(id) {
   const b = state.bills.find(x => x.id === id);
   if (!b) return;
-  if (!confirm("Delete this recurring bill?")) return;
-
-  state.bills = state.bills.filter(x => x.id !== id);
-  // Keep billPayments for backward compatibility; no longer used for paid logic
-
-  saveState();
-  showToast("Bill deleted.");
-  refreshAll();
-};
+  showConfirmationModal("Delete this recurring bill?", () => {
+    state.bills = state.bills.filter(x => x.id !== id);
+    saveState();
+    showToast("Bill deleted.");
+    refreshAll();
+  });
+}
 
 function addByFrequency(dateObj, freq) {
   const d = new Date(dateObj.getTime());
@@ -1305,6 +1798,8 @@ function renderStocks() {
       </tr>
     `;
   }).join("") || `<tr><td colspan="7" class="text-muted">No holdings yet.</td></tr>`;
+
+  renderStocksChart();
 }
 
 function upsertStockMaster() {
@@ -1361,30 +1856,29 @@ window.editStockMaster = function(id) {
   stockPrice.value = String(s.currentPrice);
 };
 
-window.deleteStockMaster = function(id) {
+function deleteStockMaster(id) {
   const s = state.stocksMaster.find(x => x.id === id);
   if (!s) return;
 
-  const usedInHoldings = state.holdings.some(h => h.stockId === id);
-  if (usedInHoldings) {
-    alert("Cannot delete: this stock is linked to holdings. Delete holdings first.");
-    return;
-  }
+  showConfirmationModal(`Delete stock ${s.ticker} (${s.market})?`, () => {
+    const usedInHoldings = state.holdings.some(h => h.stockId === id);
+    if (usedInHoldings) {
+      alert("Cannot delete: this stock is linked to holdings. Delete holdings first.");
+      return;
+    }
 
-  if (!confirm(`Delete stock ${s.ticker} (${s.market})?`)) return;
-  state.stocksMaster = state.stocksMaster.filter(x => x.id !== id);
-
-  for (const y of Object.keys(state.dividends || {})) {
-    if (state.dividends[y] && state.dividends[y][id]) delete state.dividends[y][id];
-  }
-
-  saveState();
-  showToast("Stock deleted.");
-  resetStockMasterForm();
-  renderStocks();
-  renderDividends();
-  refreshTopInvestmentMetrics();
-};
+    state.stocksMaster = state.stocksMaster.filter(x => x.id !== id);
+    for (const y of Object.keys(state.dividends || {})) {
+      if (state.dividends[y] && state.dividends[y][id]) delete state.dividends[y][id];
+    }
+    saveState();
+    showToast("Stock deleted.");
+    resetStockMasterForm();
+    renderStocks();
+    renderDividends();
+    refreshTopInvestmentMetrics();
+  });
+}
 
 function upsertHolding() {
   const id = holdingId.value?.trim();
@@ -1436,21 +1930,65 @@ window.editHolding = function(id) {
   holdingShares.value = String(h.shares);
 };
 
-window.deleteHolding = function(id) {
+function deleteHolding(id) {
   const h = state.holdings.find(x => x.id === id);
   if (!h) return;
-  if (!confirm("Delete this holding?")) return;
-  state.holdings = state.holdings.filter(x => x.id !== id);
-  saveState();
-  showToast("Holding deleted.");
-  resetHoldingForm();
-  renderStocks();
-  renderDividends();
-  refreshTopInvestmentMetrics();
-};
+  showConfirmationModal("Delete this holding?", () => {
+    state.holdings = state.holdings.filter(x => x.id !== id);
+    saveState();
+    showToast("Holding deleted.");
+    resetHoldingForm();
+    renderStocks();
+    renderDividends();
+    refreshTopInvestmentMetrics();
+  });
+}
 
 function getStockMaster(id) {
   return state.stocksMaster.find(s => s.id === id) || null;
+}
+
+function renderStocksChart() {
+  const ctx = document.getElementById("stocksChart")?.getContext("2d");
+  if (!ctx) return;
+
+  // Aggregate value by stock
+  const valueByStock = {};
+  for (const h of state.holdings) {
+    const s = getStockMaster(h.stockId);
+    if (!s) continue;
+    const val = safeNumber(h.shares) * safeNumber(s.currentPrice);
+    valueByStock[s.ticker] = (valueByStock[s.ticker] || 0) + val;
+  }
+
+  const labels = Object.keys(valueByStock);
+  const data = Object.values(valueByStock);
+  // Simple palette generator
+  const colors = labels.map((_, i) => `hsl(${ (i * 360) / labels.length }, 40%, 60%)`);
+
+  if (stocksChart) {
+    stocksChart.data.labels = labels;
+    stocksChart.data.datasets[0].data = data;
+    stocksChart.data.datasets[0].backgroundColor = colors;
+    stocksChart.update();
+  } else {
+    stocksChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "right" } }
+      }
+    });
+  }
 }
 
 /* =========================
@@ -1536,6 +2074,7 @@ function renderDividends() {
 
   renderDividendsTotalsOnly();
   refreshTopInvestmentMetrics();
+  renderDividendsChart();
 }
 
 function ensureDivYear(year) {
@@ -1586,12 +2125,200 @@ function renderDividendsTotalsOnly() {
     `<td class="text-end fw-semibold">${formatMoney(yearTotal)}</td>`;
 }
 
+function renderDividendsChart() {
+  const ctx = document.getElementById("dividendsChart")?.getContext("2d");
+  if (!ctx) return;
+
+  const year = clampInt(divYear.value, 2000, 2100, new Date().getFullYear());
+  ensureDivYear(year);
+
+  // Calculate monthly totals
+  const monthlyIncome = Array(12).fill(0);
+  for (const h of state.holdings) {
+    const arr = getDivArray(year, h.stockId);
+    const shares = safeNumber(h.shares);
+    for (let i = 0; i < 12; i++) {
+      monthlyIncome[i] += safeNumber(arr[i]) * shares;
+    }
+  }
+
+  if (dividendsChart) {
+    dividendsChart.data.datasets[0].data = monthlyIncome;
+    dividendsChart.update();
+  } else {
+    dividendsChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: MONTHS,
+        datasets: [{
+          label: "Dividend Income",
+          data: monthlyIncome,
+          backgroundColor: "#7EAD86", // Sage color
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+}
+
+/* =========================
+   Accounts
+   ========================= */
+function renderAccounts() {
+  if (!accountsTbody) return;
+
+  // Calculate current balances
+  // Balance = Initial + Inflow - Outflow
+  const balances = {};
+  state.accounts.forEach(a => {
+    balances[a.id] = safeNumber(a.initialBalance);
+  });
+
+  state.transactions.forEach(t => {
+    if (!t.accountId) return;
+    if (balances[t.accountId] === undefined) return;
+
+    const cat = getCategory(t.minorCategoryId);
+    if (!cat) return; // Should not happen often
+    const type = MAJOR_TYPES[cat.majorKey];
+
+    if (type === 'transfer') {
+      // For transfers, 'in' adds to balance, 'out' subtracts.
+      // This correctly handles moving money between any two accounts.
+      if (t.transferType === 'in') {
+        balances[t.accountId] += safeNumber(t.amount);
+      } else { // 'out' or undefined for legacy transfers
+        balances[t.accountId] -= safeNumber(t.amount);
+      }
+    } else if (type === "inflow") {
+      balances[t.accountId] += safeNumber(t.amount);
+    } else {
+      // Outflow or Savings (treated as money leaving the account)
+      balances[t.accountId] -= safeNumber(t.amount);
+    }
+  });
+
+  // Group accounts by type
+  const groupedAccounts = {};
+  state.accounts.forEach(acc => {
+    const type = acc.type || 'Other';
+    if (!groupedAccounts[type]) {
+      groupedAccounts[type] = [];
+    }
+    groupedAccounts[type].push(acc);
+  });
+
+  let html = "";
+  const groupOrder = ['Checking', 'Savings', 'Investment', 'Credit Card', 'Cash', 'Other'];
+
+  groupOrder.forEach(groupName => {
+    const accountsInGroup = groupedAccounts[groupName];
+    if (accountsInGroup && accountsInGroup.length > 0) {
+      // Add a header for the group
+      html += `
+        <tr class="table-group-header">
+          <td colspan="4">${escapeHtml(groupName)}</td>
+        </tr>
+      `;
+      
+      // Sort accounts within the group by name
+      accountsInGroup.sort((a, b) => a.name.localeCompare(b.name));
+
+      accountsInGroup.forEach(a => {
+        const current = balances[a.id];
+        html += `
+          <tr>
+            <td class="ps-4">${escapeHtml(a.name)}</td>
+            <td class="text-end text-muted">${formatMoney(a.initialBalance)}</td>
+            <td class="text-end fw-bold ${current < 0 ? 'text-danger' : ''}">${formatMoney(current)}</td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" data-action="edit-account" data-id="${a.id}">Edit</button>
+                <button class="btn btn-sm btn-outline-danger" data-action="delete-account" data-id="${a.id}">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+    }
+  });
+
+  accountsTbody.innerHTML = html || `<tr><td colspan="4" class="text-muted">No accounts found.</td></tr>`;
+}
+
+function upsertAccount() {
+  const id = accountId.value?.trim();
+  const name = accountName.value.trim();
+  const type = accountType.value;
+  const initBal = safeNumber(accountInitBalance.value);
+
+  if (!name) return;
+
+  if (id) {
+    const a = state.accounts.find(x => x.id === id);
+    if (!a) return;
+    a.name = name;
+    a.type = type;
+    a.initialBalance = initBal;
+    showToast("Account updated.");
+  } else {
+    state.accounts.push({
+      id: uid(),
+      name,
+      type,
+      initialBalance: initBal,
+      createdAt: new Date().toISOString()
+    });
+    showToast("Account added.");
+  }
+  saveState();
+  closeModal("modalAccount");
+  refreshAll();
+}
+
+function editAccount(id) {
+  const a = state.accounts.find(x => x.id === id);
+  if (!a) return;
+  accountId.value = a.id;
+  accountName.value = a.name;
+  accountType.value = a.type;
+  accountInitBalance.value = String(a.initialBalance);
+  accountModalTitle.textContent = "Edit Account";
+  openModal("modalAccount");
+}
+
+function deleteAccount(id) {
+  const a = state.accounts.find(x => x.id === id);
+  if (!a) return;
+
+  // Check if used in transactions
+  const used = state.transactions.some(t => t.accountId === id);
+  if (used) {
+    alert("Cannot delete account: It has associated transactions. Delete them first.");
+    return;
+  }
+
+  showConfirmationModal(`Delete account "${a.name}"?`, () => {
+    state.accounts = state.accounts.filter(x => x.id !== id);
+    saveState();
+    showToast("Account deleted.");
+    refreshAll();
+  });
+}
+
 /* =========================
    General categories list
    ========================= */
 function renderGeneralCategories() {
   const rows = state.minorCategories
-    .filter(c => c.majorKey !== "bills" && c.majorKey !== "sinking")
+    .filter(c => c.majorKey !== "bills" &&
+                 c.majorKey !== "sinking" &&
+                 c.majorKey !== "transfer")
     .slice()
     .sort((a, b) => (a.majorKey + a.name).localeCompare(b.majorKey + b.name))
     .map(c => `
@@ -1692,12 +2419,699 @@ window.deleteCategory = function (id) {
     return;
   }
 
-  if (!confirm(`Delete category "${c.name}"?`)) return;
-  state.minorCategories = state.minorCategories.filter(x => x.id !== id);
-  saveState();
-  showToast("Category deleted.");
-  refreshAll();
+  showConfirmationModal(`Delete category "${c.name}"?`, () => {
+    state.minorCategories = state.minorCategories.filter(x => x.id !== id);
+    saveState();
+    showToast("Category deleted.");
+    refreshAll();
+  });
 };
+
+/* =========================
+   Transfers
+   ========================= */
+function upsertTransfer() {
+  const date = transferDate.value;
+  const fromId = transferFromAccount.value;
+  const toId = transferToAccount.value;
+  const amount = safeNumber(transferAmount.value);
+  const desc = transferDescription.value.trim();
+
+  if (!date || !fromId || !toId || !isFinite(amount) || amount <= 0) {
+    showToast("Please fill all required transfer fields.");
+    return;
+  }
+
+  if (fromId === toId) {
+    showToast("From and To accounts cannot be the same.");
+    return;
+  }
+
+  const transferCat = getTransferCategory();
+  if (!transferCat) {
+    alert("Error: Internal Transfer category not found. Please reload.");
+    return;
+  }
+
+  const fromAcc = state.accounts.find(a => a.id === fromId);
+  const toAcc = state.accounts.find(a => a.id === toId);
+  if (!fromAcc || !toAcc) {
+    alert("Error: Account not found.");
+    return;
+  }
+
+  const transferId = uid();
+
+  // Outflow from source
+  state.transactions.push({
+    id: uid(), transferId, accountId: fromId, minorCategoryId: transferCat.id,
+    date, amount, transferType: 'out',
+    description: desc ? `${desc} (to ${toAcc.name})` : `Transfer to ${toAcc.name}`,
+    createdAt: new Date().toISOString(),
+  });
+
+  // Inflow to destination
+  state.transactions.push({
+    id: uid(), transferId, accountId: toId, minorCategoryId: transferCat.id,
+    date, amount, transferType: 'in',
+    description: desc ? `${desc} (from ${fromAcc.name})` : `Transfer from ${fromAcc.name}`,
+    createdAt: new Date().toISOString(),
+  });
+
+  saveState();
+  showToast("Transfer recorded.");
+  closeModal("modalTransfer");
+  refreshAll();
+}
+
+/* =========================
+   Debt Snowball
+   ========================= */
+function renderDebts() {
+  if (!debtTbody) return;
+  const debts = state.debts.slice().sort((a,b) => a.balance - b.balance);
+
+  debtTbody.innerHTML = debts.map(d => `
+    <tr>
+      <td>${escapeHtml(d.name)}</td>
+      <td class="text-end">${formatMoney(d.balance)}</td>
+      <td class="text-end">${formatMoney(d.minPayment)}</td>
+      <td class="text-end">${d.interestRate.toFixed(2)}%</td>
+      <td>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" data-action="edit-debt" data-id="${d.id}">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" data-action="delete-debt" data-id="${d.id}">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="5" class="text-muted">No debts added yet.</td></tr>`;
+}
+
+function upsertDebt() {
+  const id = debtId.value?.trim();
+  const name = debtName.value.trim();
+  const balance = safeNumber(debtBalance.value);
+  const minPayment = safeNumber(debtMinPayment.value);
+  const interestRate = safeNumber(debtInterestRate.value);
+
+  if (!name || !isFinite(balance) || !isFinite(minPayment) || !isFinite(interestRate)) return;
+
+  if (id) {
+    const d = state.debts.find(x => x.id === id);
+    if (!d) return;
+    d.name = name;
+    d.balance = balance;
+    d.minPayment = minPayment;
+    d.interestRate = interestRate;
+    showToast("Debt updated.");
+  } else {
+    state.debts.push({
+      id: uid(), name, balance, minPayment, interestRate,
+      createdAt: new Date().toISOString()
+    });
+    showToast("Debt added.");
+  }
+  saveState();
+  closeModal("modalDebt");
+  debtForm.reset();
+  refreshAll();
+}
+
+function editDebt(id) {
+  const d = state.debts.find(x => x.id === id);
+  if (!d) return;
+  debtId.value = d.id;
+  debtName.value = d.name;
+  debtBalance.value = d.balance;
+  debtMinPayment.value = d.minPayment;
+  debtInterestRate.value = d.interestRate;
+  debtModalTitle.textContent = "Edit Debt";
+  openModal("modalDebt");
+}
+
+function deleteDebt(id) {
+  const d = state.debts.find(x => x.id === id);
+  if (!d) return;
+  showConfirmationModal(`Delete debt "${d.name}"?`, () => {
+    state.debts = state.debts.filter(x => x.id !== id);
+    saveState();
+    showToast("Debt deleted.");
+    refreshAll();
+  });
+}
+
+function generateDebtSnowballPlan() {
+  const totalPayment = safeNumber(totalDebtPayment.value);
+  const totalMinimums = state.debts.reduce((sum, d) => sum + d.minPayment, 0);
+
+  if (totalPayment < totalMinimums) {
+    alert(`Total monthly payment must be at least the sum of minimum payments ($${totalMinimums.toFixed(2)}).`);
+    return;
+  }
+
+  // Create a deep copy for simulation
+  let simDebts = JSON.parse(JSON.stringify(state.debts));
+  let plan = [];
+  let month = 0;
+  const safetyBreak = 600; // 50 years
+
+  while (simDebts.some(d => d.balance > 0) && month < safetyBreak) {
+    month++;
+    let paymentPool = totalPayment;
+    const currentDate = addMonths(new Date(), month -1);
+    const monthStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+
+    // 1. Add interest
+    for (const debt of simDebts) {
+      if (debt.balance > 0) {
+        const monthlyInterest = (debt.balance * (debt.interestRate / 100)) / 12;
+        debt.balance += monthlyInterest;
+      }
+    }
+
+    // Sort by balance for snowball
+    simDebts.sort((a, b) => a.balance - b.balance);
+
+    // 2. Pay minimums on non-target debts
+    const targetDebt = simDebts.find(d => d.balance > 0);
+    for (const debt of simDebts) {
+      if (debt.id === targetDebt?.id || debt.balance <= 0) continue;
+
+      const payment = Math.min(debt.balance, debt.minPayment);
+      debt.balance -= payment;
+      paymentPool -= payment;
+      plan.push({ month: monthStr, name: debt.name, payment: payment, balance: debt.balance });
+    }
+
+    // 3. Pay snowball on target debt
+    if (targetDebt) {
+      const payment = Math.min(targetDebt.balance, paymentPool);
+      targetDebt.balance -= payment;
+      plan.push({ month: monthStr, name: targetDebt.name, payment: payment, balance: targetDebt.balance });
+    }
+  }
+
+  renderDebtSnowballPlan(plan, month);
+}
+
+function renderDebtSnowballPlan(plan, totalMonths) {
+  if (!plan || plan.length === 0) {
+    debtPlanSummary.textContent = "No plan generated.";
+    debtPlanTbody.innerHTML = "";
+    return;
+  }
+
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  debtPlanSummary.textContent = `Payoff will take ${years} years and ${months} months.`;
+
+  debtPlanTbody.innerHTML = plan.map(p => `
+    <tr>
+      <td>${p.month}</td>
+      <td>${escapeHtml(p.name)}</td>
+      <td class="text-end">${formatMoney(p.payment)}</td>
+      <td class="text-end">${formatMoney(p.balance)}</td>
+    </tr>
+  `).join("");
+}
+
+/* =========================
+   Rentals
+   ========================= */
+function renderRentals() {
+  if (!rentalsTbody || !rentalIncomeTbody) return;
+
+  // 1. Render Properties List
+  const list = state.rentals.slice().sort((a, b) => a.name.localeCompare(b.name));
+  rentalsTbody.innerHTML = list.map(r => `
+    <tr>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.address || "—")}</td>
+      <td>${escapeHtml(r.tenant || "—")}</td>
+      <td class="text-end">${formatMoney(r.amount)}</td>
+      <td>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" data-action="edit-rental" data-id="${r.id}">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" data-action="delete-rental" data-id="${r.id}">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="5" class="text-muted">No rental properties added yet.</td></tr>`;
+
+  // 2. Render Income Matrix
+  const year = state.ui.rentalYear;
+  ensureRentalYear(year);
+
+  if (list.length === 0) {
+    rentalIncomeTbody.innerHTML = `<tr><td colspan="14" class="text-muted">Add a property to track income.</td></tr>`;
+    return;
+  }
+
+  rentalIncomeTbody.innerHTML = list.map(r => {
+    const arr = getRentalIncomeArray(year, r.id);
+    const total = arr.reduce((a, b) => a + safeNumber(b), 0);
+    
+    const inputs = arr.map((val, idx) => {
+      const v = safeNumber(val);
+      return `
+        <td class="text-end p-1">
+          <input 
+            class="form-control form-control-sm text-end px-1" 
+            style="min-width: 60px;"
+            data-rental-year="${year}"
+            data-rental-id="${r.id}"
+            data-rental-month="${idx}"
+            value="${v ? v : ""}"
+            placeholder="${formatNumber(r.amount)}"
+          >
+        </td>
+      `;
+    }).join("");
+
+    return `
+      <tr>
+        <td>${escapeHtml(r.name)}</td>
+        ${inputs}
+        <td class="text-end fw-bold">${formatMoney(total)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  // Add listeners to new inputs
+  rentalIncomeTbody.querySelectorAll("input[data-rental-year]").forEach(inp => {
+    inp.addEventListener("input", (e) => {
+      const el = e.target;
+      const y = parseInt(el.dataset.rentalYear, 10);
+      const rId = el.dataset.rentalId;
+      const m = parseInt(el.dataset.rentalMonth, 10);
+      const v = safeNumber(el.value);
+      setRentalIncomeValue(y, rId, m, v);
+      saveState();
+      // Optional: update row total dynamically without full re-render for performance
+      // For now, full re-render on blur or just let it be until refresh
+    });
+    inp.addEventListener("blur", () => renderRentals()); // Update totals on blur
+  });
+}
+
+function upsertRental() {
+  const id = rentalId.value?.trim();
+  const name = rentalName.value.trim();
+  const address = rentalAddress.value.trim();
+  const tenant = rentalTenant.value.trim();
+  const amount = safeNumber(rentalAmount.value);
+
+  if (!name) return;
+
+  if (id) {
+    const r = state.rentals.find(x => x.id === id);
+    if (!r) return;
+    r.name = name;
+    r.address = address;
+    r.tenant = tenant;
+    r.amount = amount;
+    showToast("Property updated.");
+  } else {
+    state.rentals.push({
+      id: uid(), name, address, tenant, amount,
+      createdAt: new Date().toISOString()
+    });
+    showToast("Property added.");
+  }
+  saveState();
+  closeModal("modalRental");
+  refreshAll();
+}
+
+function editRental(id) {
+  const r = state.rentals.find(x => x.id === id);
+  if (!r) return;
+  rentalId.value = r.id;
+  rentalName.value = r.name;
+  rentalAddress.value = r.address || "";
+  rentalTenant.value = r.tenant || "";
+  rentalAmount.value = String(r.amount);
+  rentalModalTitle.textContent = "Edit Rental Property";
+  openModal("modalRental");
+}
+
+function deleteRental(id) {
+  const r = state.rentals.find(x => x.id === id);
+  if (!r) return;
+  showConfirmationModal(`Delete property "${r.name}"?`, () => {
+    state.rentals = state.rentals.filter(x => x.id !== id);
+    // Clean up income data
+    for (const y of Object.keys(state.rentalIncome || {})) {
+      if (state.rentalIncome[y] && state.rentalIncome[y][id]) delete state.rentalIncome[y][id];
+    }
+    saveState();
+    showToast("Property deleted.");
+    refreshAll();
+  });
+}
+
+function ensureRentalYear(year) {
+  if (!state.rentalIncome[year]) state.rentalIncome[year] = {};
+}
+
+function getRentalIncomeArray(year, rentalId) {
+  ensureRentalYear(year);
+  if (!state.rentalIncome[year][rentalId]) state.rentalIncome[year][rentalId] = Array(12).fill(0);
+  return state.rentalIncome[year][rentalId];
+}
+
+function setRentalIncomeValue(year, rentalId, monthIdx, value) {
+  const arr = getRentalIncomeArray(year, rentalId);
+  arr[monthIdx] = safeNumber(value);
+  state.rentalIncome[year][rentalId] = arr;
+}
+
+/* =========================
+   Assets (Other)
+   ========================= */
+function renderAssets() {
+  if (assetsTbody) {
+    const list = state.otherAssets.slice().sort((a, b) => a.name.localeCompare(b.name));
+    assetsTbody.innerHTML = list.map(a => `
+      <tr>
+        <td>
+          <div class="fw-semibold">${escapeHtml(a.name)}</div>
+          ${a.notes ? `<div class="small text-muted">${escapeHtml(a.notes)}</div>` : ""}
+        </td>
+        <td>${escapeHtml(a.category)}</td>
+        <td class="text-end">${formatMoney(a.value)}</td>
+        <td>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" data-action="edit-asset" data-id="${a.id}">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete-asset" data-id="${a.id}">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join("") || `<tr><td colspan="4" class="text-muted">No other assets added yet.</td></tr>`;
+  }
+
+  if (assetsDebtsTbody) {
+    const debts = state.debts.slice().sort((a,b) => a.balance - b.balance);
+    assetsDebtsTbody.innerHTML = debts.map(d => `
+      <tr>
+        <td>${escapeHtml(d.name)}</td>
+        <td class="text-end">${formatMoney(d.balance)}</td>
+        <td class="text-end">${formatMoney(d.minPayment)}</td>
+        <td class="text-end">${d.interestRate.toFixed(2)}%</td>
+        <td>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" data-action="edit-debt" data-id="${d.id}">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete-debt" data-id="${d.id}">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join("") || `<tr><td colspan="5" class="text-muted">No debts added yet.</td></tr>`;
+  }
+}
+
+function upsertAsset() {
+  const id = assetId.value?.trim();
+  const name = assetName.value.trim();
+  const category = assetCategory.value;
+  const value = safeNumber(assetValue.value);
+  const notes = assetNotes.value.trim();
+
+  if (!name) return;
+
+  if (id) {
+    const a = state.otherAssets.find(x => x.id === id);
+    if (!a) return;
+    a.name = name;
+    a.category = category;
+    a.value = value;
+    a.notes = notes;
+    showToast("Asset updated.");
+  } else {
+    state.otherAssets.push({
+      id: uid(),
+      name,
+      category,
+      value,
+      notes,
+      createdAt: new Date().toISOString()
+    });
+    showToast("Asset added.");
+  }
+  saveState();
+  closeModal("modalAsset");
+  refreshAll();
+}
+
+function editAsset(id) {
+  const a = state.otherAssets.find(x => x.id === id);
+  if (!a) return;
+  assetId.value = a.id;
+  assetName.value = a.name;
+  assetCategory.value = a.category;
+  assetValue.value = String(a.value);
+  assetNotes.value = a.notes || "";
+  assetModalTitle.textContent = "Edit Asset";
+  openModal("modalAsset");
+}
+
+function deleteAsset(id) {
+  const a = state.otherAssets.find(x => x.id === id);
+  if (!a) return;
+  showConfirmationModal(`Delete asset "${a.name}"?`, () => {
+    state.otherAssets = state.otherAssets.filter(x => x.id !== id);
+    saveState();
+    showToast("Asset deleted.");
+    refreshAll();
+  });
+}
+
+/* =========================
+   Net Worth
+   ========================= */
+function renderNetWorth() {
+  if (!nwTbody) return;
+
+  // 1. Calculate Assets
+  // Accounts > 0
+  let cashAssets = 0;
+  let investmentAssets = 0;
+  
+  // Calculate current balances first (reusing logic from renderAccounts)
+  const balances = {};
+  state.accounts.forEach(a => balances[a.id] = safeNumber(a.initialBalance));
+  state.transactions.forEach(t => {
+    if (!t.accountId || balances[t.accountId] === undefined) return;
+    const cat = getCategory(t.minorCategoryId);
+    const type = cat ? MAJOR_TYPES[cat.majorKey] : null;
+    if (type === 'transfer') {
+      if (t.transferType === 'in') balances[t.accountId] += safeNumber(t.amount);
+      else balances[t.accountId] -= safeNumber(t.amount);
+    } else if (type === "inflow") {
+      balances[t.accountId] += safeNumber(t.amount);
+    } else {
+      balances[t.accountId] -= safeNumber(t.amount);
+    }
+  });
+
+  state.accounts.forEach(a => {
+    const bal = balances[a.id];
+    if (bal > 0) {
+      if (a.type === 'Investment') investmentAssets += bal;
+      else cashAssets += bal;
+    }
+  });
+
+  // Stocks
+  const stockAssets = computeTotalStockValue();
+  // Other Assets
+  const otherAssets = state.otherAssets.reduce((sum, a) => sum + safeNumber(a.value), 0);
+
+  const totalAssets = cashAssets + investmentAssets + stockAssets + otherAssets;
+
+  // 2. Calculate Liabilities
+  // Accounts < 0
+  let accountLiabilities = 0;
+  state.accounts.forEach(a => {
+    const bal = balances[a.id];
+    if (bal < 0) accountLiabilities += Math.abs(bal);
+  });
+
+  // Debts from Debt Snowball
+  let otherDebts = state.debts.reduce((sum, d) => sum + safeNumber(d.balance), 0);
+  const totalLiabilities = accountLiabilities + otherDebts;
+
+  // 3. Render
+  nwAssets.textContent = formatMoney(totalAssets);
+  nwLiabilities.textContent = formatMoney(totalLiabilities);
+  const netWorth = totalAssets - totalLiabilities;
+  nwTotal.textContent = formatMoney(netWorth);
+  nwTotal.classList.toggle("text-danger", netWorth < 0);
+  nwTotal.classList.toggle("text-success", netWorth >= 0);
+
+  nwTbody.innerHTML = `
+    <tr><td>Cash & Bank Accounts</td><td class="text-end">${formatMoney(cashAssets)}</td></tr>
+    <tr><td>Investment Accounts</td><td class="text-end">${formatMoney(investmentAssets)}</td></tr>
+    <tr><td>Stock Holdings</td><td class="text-end">${formatMoney(stockAssets)}</td></tr>
+    <tr><td>Property & Other Assets</td><td class="text-end">${formatMoney(otherAssets)}</td></tr>
+    <tr class="table-light fw-bold"><td>Total Assets</td><td class="text-end">${formatMoney(totalAssets)}</td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+    <tr><td>Credit Cards / Overdrafts</td><td class="text-end text-danger">-${formatMoney(accountLiabilities)}</td></tr>
+    <tr><td>Other Debts (Loans, etc.)</td><td class="text-end text-danger">-${formatMoney(otherDebts)}</td></tr>
+    <tr class="table-light fw-bold"><td>Total Liabilities</td><td class="text-end text-danger">-${formatMoney(totalLiabilities)}</td></tr>
+  `;
+
+  // 4. Chart
+  const ctx = document.getElementById("netWorthChart")?.getContext("2d");
+  if (ctx) {
+    if (netWorthChart) netWorthChart.destroy();
+    netWorthChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Assets', 'Liabilities'],
+        datasets: [{
+          data: [totalAssets, totalLiabilities],
+          backgroundColor: ['#69856D', '#C27250'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+}
+
+/* =========================
+   FIRE Calculator
+   ========================= */
+function renderFIRE() {
+  if (!fireForm) return;
+  
+  // Default to state or reasonable defaults
+  const s = state.fire || {};
+  fireCurrentAge.value = s.currentAge ?? 30;
+  // Default portfolio to current stock value if not set in state
+  fireCurrentPortfolio.value = s.currentPortfolio ?? computeTotalStockValue();
+  fireAnnualInvestment.value = s.annualInvestment ?? 12000;
+  fireAnnualSpending.value = s.annualSpending ?? 50000;
+  fireAnnualReturn.value = s.annualReturn ?? 7;
+  fireWithdrawalRate.value = s.withdrawalRate ?? 4;
+}
+
+function calculateFIREProjection() {
+  const currentAge = safeNumber(fireCurrentAge.value);
+  const currentPortfolio = safeNumber(fireCurrentPortfolio.value);
+  const annualInvestment = safeNumber(fireAnnualInvestment.value);
+  const annualSpending = safeNumber(fireAnnualSpending.value);
+  const annualReturn = safeNumber(fireAnnualReturn.value);
+  const withdrawalRate = safeNumber(fireWithdrawalRate.value);
+
+  state.fire = {
+    currentAge,
+    currentPortfolio,
+    annualInvestment,
+    annualSpending,
+    annualReturn,
+    withdrawalRate
+  };
+  saveState();
+
+  if (withdrawalRate <= 0 || annualSpending <= 0) {
+    alert("Please check your spending and withdrawal rate inputs.");
+    return;
+  }
+
+  const fireNumber = annualSpending / (withdrawalRate / 100);
+  
+  let portfolio = currentPortfolio;
+  let years = 0;
+  const maxYears = 80;
+  const dataPoints = [{ x: currentAge, y: portfolio }];
+
+  // Simulation
+  while (portfolio < fireNumber && years < maxYears) {
+    years++;
+    // Add returns
+    portfolio += portfolio * (annualReturn / 100);
+    // Add investment
+    portfolio += annualInvestment;
+    
+    dataPoints.push({ x: currentAge + years, y: portfolio });
+  }
+
+  const ageAtFire = currentAge + years;
+  const reached = portfolio >= fireNumber;
+
+  fireResultSummary.innerHTML = `
+    <div class="col-md-4">
+      <div class="metric-label">FIRE Number</div>
+      <div class="fs-4 fw-bold">${formatMoney(fireNumber)}</div>
+    </div>
+    <div class="col-md-4">
+      <div class="metric-label">Years to FIRE</div>
+      <div class="fs-4 fw-bold">${reached ? years : "> " + maxYears}</div>
+    </div>
+    <div class="col-md-4">
+      <div class="metric-label">Age at FIRE</div>
+      <div class="fs-4 fw-bold">${reached ? ageAtFire : "—"}</div>
+    </div>
+  `;
+
+  renderFIREChart(dataPoints, fireNumber);
+}
+
+function renderFIREChart(dataPoints, fireNumber) {
+  const ctx = fireChartCanvas?.getContext("2d");
+  if (!ctx) return;
+
+  const labels = dataPoints.map(p => `Age ${p.x}`);
+  const values = dataPoints.map(p => p.y);
+
+  if (fireChart) {
+    fireChart.destroy();
+  }
+
+  fireChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Portfolio Value",
+          data: values,
+          borderColor: "#69856D", // sage
+          backgroundColor: "rgba(105, 133, 109, 0.2)",
+          fill: true,
+          tension: 0.1
+        },
+        {
+          label: "FIRE Goal",
+          data: Array(labels.length).fill(fireNumber),
+          borderColor: "#C27250", // clay
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => formatMoney(v).replace(".00", "") }
+        }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.dataset.label + ": " + formatMoney(ctx.raw)
+          }
+        },
+        legend: { position: "bottom" }
+      }
+    }
+  });
+}
 
 /* =========================
    Expected/Actual calculations
@@ -1769,6 +3183,19 @@ function getMajorLabel(key) {
 
 function getCategory(id) {
   return state.minorCategories.find(c => c.id === id) || null;
+}
+
+function getTransferCategory() {
+  return state.minorCategories.find(c => c.majorKey === "transfer");
+}
+
+function ensureTransferCategory() {
+  if (!getTransferCategory()) {
+    state.minorCategories.push({
+      id: uid(), majorKey: "transfer", name: "Transfer", manualExpectedMonthly: 0,
+      createdAt: new Date().toISOString(),
+    });
+  }
 }
 
 function isInMonth(isoDate, year, month) {
@@ -1860,6 +3287,19 @@ function closeModal(id) {
   if (m) m.hide();
 }
 
+function showConfirmationModal(message, onConfirm) {
+  if (!modalConfirmEl) return;
+
+  confirmModalBody.textContent = message;
+
+  // Use .cloneNode to remove any previous event listeners
+  const newBtn = confirmModalBtn.cloneNode(true);
+  confirmModalBtn.parentNode.replaceChild(newBtn, confirmModalBtn);
+  newBtn.addEventListener("click", () => { onConfirm(); closeModal("modalConfirm"); }, { once: true });
+
+  openModal("modalConfirm");
+}
+
 /* =========================
    Storage
    ========================= */
@@ -1870,10 +3310,27 @@ function defaultState() {
       selectedMonth: null,
       avgStart: "",
       avgEnd: "",
-      divYear: null
+      divYear: null,
+      theme: null,
+      rentalYear: null,
+      pensionRate: 0,
+      pensionRates: {},
     },
     minorCategories: [],
+    accounts: [],
     transactions: [],
+    otherAssets: [],
+    rentals: [],
+    rentalIncome: {},
+    debts: [],
+    fire: {
+      currentAge: 30,
+      currentPortfolio: 0,
+      annualInvestment: 12000,
+      annualSpending: 50000,
+      annualReturn: 7,
+      withdrawalRate: 4
+    },
     goals: [],
     bills: [],
     billPayments: [], // legacy; no longer used for paid logic
@@ -1896,6 +3353,13 @@ function loadState() {
       ...base,
       ui: { ...base.ui, ...(parsed.ui || {}) },
       minorCategories: Array.isArray(parsed.minorCategories) ? parsed.minorCategories : [],
+      accounts: Array.isArray(parsed.accounts) ? parsed.accounts : [],
+      pensionRates: (parsed.pensionRates && typeof parsed.pensionRates === "object") ? parsed.pensionRates : {},
+      otherAssets: Array.isArray(parsed.otherAssets) ? parsed.otherAssets : [],
+      rentals: Array.isArray(parsed.rentals) ? parsed.rentals : [],
+      rentalIncome: (parsed.rentalIncome && typeof parsed.rentalIncome === "object") ? parsed.rentalIncome : {},
+      debts: Array.isArray(parsed.debts) ? parsed.debts : [],
+      fire: parsed.fire || base.fire,
       transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
       goals: Array.isArray(parsed.goals) ? parsed.goals : [],
       bills: Array.isArray(parsed.bills) ? parsed.bills : [],
@@ -1949,6 +3413,12 @@ function importJSON(e) {
       state = {
         ...merged,
         ...parsed,
+        pensionRates: (parsed.pensionRates && typeof parsed.pensionRates === "object") ? parsed.pensionRates : {},
+        otherAssets: Array.isArray(parsed.otherAssets) ? parsed.otherAssets : [],
+        rentals: Array.isArray(parsed.rentals) ? parsed.rentals : [],
+        rentalIncome: (parsed.rentalIncome && typeof parsed.rentalIncome === "object") ? parsed.rentalIncome : {},
+        debts: Array.isArray(parsed.debts) ? parsed.debts : [],
+        fire: parsed.fire || merged.fire,
         ui: { ...merged.ui, ...(parsed.ui || {}) },
         minorCategories: Array.isArray(parsed.minorCategories) ? parsed.minorCategories : [],
         transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
@@ -1991,4 +3461,11 @@ function seedStarterCategories() {
     manualExpectedMonthly: (s.majorKey === "bills" || s.majorKey === "sinking") ? 0 : s.manualExpectedMonthly,
     createdAt: new Date().toISOString(),
   }));
+}
+
+function seedStarterAccounts() {
+  state.accounts = [
+    { id: uid(), name: "Cash", type: "Cash", initialBalance: 0, createdAt: new Date().toISOString() },
+    { id: uid(), name: "Checking", type: "Checking", initialBalance: 0, createdAt: new Date().toISOString() }
+  ];
 }

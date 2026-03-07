@@ -50,8 +50,31 @@ On the averages tab the average expenses are calculated as a percentage of the a
 Add a segment in the top main section showing the trailing 12 months dividend income. Also add the total current value of the users stocks in the top main segment.
 
 
+Update 5?:
 
-leave stock ticker column fixed and move month columns behind it?
+Track Investment rate and savings rate in relation to income(allow the user to add their pension contribution percentage)
+
+Make a debt snowball tab
+
+Make a fire (financial independence retire early) movement/retirement tab 
+
+For the account section add a tag for each account so they can be grouped together asbased on type of account (eg. investments/savings/spending etc). Make a fixed amount of types the user can choose from in a drop down menu
+
+
+Error 6:
+
+The savings rate is the monthly savings (from the major category) as a percentage of the monthly income. The investment rate is the monthly investment (from the investment major category) as a percentage of the monthly income plus the pension percentage which the user should be able to manually input for each month. 
+
+
+Update 7:
+
+Networth tab
+
+Update the website to track assets other than money in accounts
+
+Change the website so that the month you are working in is more visible/obvious to the user
+
+Add house rental income tab
 
 
 
@@ -62,3 +85,5 @@ leave stock ticker column fixed and move month columns behind it?
 --Maybe change back transaction date to not be filled before.
 --The add minor category button seems to overwrite each time I add a new category using it.
 --(I could do this) Change the button title from add sinking fund to add sinking fund category
+--leave stock ticker column fixed and move month columns behind it?
+--ensure that only bills that are due this month are counted in the bills paid for the month 
