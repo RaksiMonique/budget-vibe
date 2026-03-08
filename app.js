@@ -128,8 +128,21 @@ function wireEvents() {
   yearInput.addEventListener("change", () => { persistSelectedMonth(); refreshAll(); });
   monthSelect.addEventListener("change", () => { persistSelectedMonth(); refreshAll(); });
 
-  document.getElementById("modalBill").addEventListener("show.bs.modal", () => {
-    if (!billId.value) billModalTitle.textContent = "Add Recurring Bill";
+  const modalBillEl = document.getElementById("modalBill");
+  if (modalBillEl) {
+    modalBillEl.addEventListener("show.bs.modal", handleBillModalOpen);
+    modalBillEl.addEventListener("hidden.bs.modal", () => {
+      // Reset form on close to prevent stale data on next open
+      billForm.reset();
+      billId.value = "";
+      billModalTitle.textContent = "Add Recurring Bill";
+      toggleBillSinkingFundWrap();
+    });
+  }
+
+  billFreq.addEventListener("change", toggleBillSinkingFundWrap);
+  billSinkingFund.addEventListener("change", () => {
+    billSinkingFundSelectWrap.style.display = billSinkingFund.checked ? "block" : "none";
   });
 
   transferForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransfer(); });
