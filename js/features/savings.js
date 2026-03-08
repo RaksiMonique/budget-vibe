@@ -1,10 +1,36 @@
 function initSavings() {
   modalGoalEl.addEventListener("show.bs.modal", () => {
-    if (!goalId.value) {
+    const isEditing = !!goalId.value;
+    const currentGoalId = goalId.value;
+
+    // Populate the dropdown with only un-linked sinking funds
+    const allSinkingFunds = state.minorCategories.filter(c => c.majorKey === "sinking");
+    const linkedFundIds = new Set(
+      state.goals
+        .filter(g => g.id !== currentGoalId) // Exclude current goal if editing
+        .map(g => g.minorCategoryId)
+    );
+
+    const availableSinkingFunds = allSinkingFunds
+      .filter(fund => !linkedFundIds.has(fund.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    goalMinor.innerHTML = availableSinkingFunds.length
+      ? availableSinkingFunds.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
+      : `<option value="" disabled selected>No available Sinking Funds</option>`;
+
+    // Handle modal state
+    if (!isEditing) {
       goalModalTitle.textContent = "Add Savings Goal";
       goalForm.reset();
       goalDeadlineDate.value = "";
       goalDurationMonths.value = "";
+    } else {
+      // If editing, ensure the correct fund is selected after populating the dropdown
+      const g = state.goals.find(x => x.id === currentGoalId);
+      if (g) {
+        goalMinor.value = g.minorCategoryId;
+      }
     }
   });
 

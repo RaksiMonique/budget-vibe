@@ -236,13 +236,6 @@ function renderCategoryDropdowns() {
   if (!txMajor.value) txMajor.value = "variable";
   repopulateTxMinorOptions(txMajor.value, false);
 
-  const sinking = state.minorCategories
-    .filter(c => c.majorKey === "sinking")
-    .sort((a, b) => a.name.localeCompare(b.name));
-  goalMinor.innerHTML = sinking.length
-    ? sinking.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
-    : `<option value="" disabled selected>Create a Sinking Fund category first</option>`;
-
   const bills = state.minorCategories
     .filter(c => c.majorKey === "bills")
     .sort((a, b) => a.name.localeCompare(b.name));
