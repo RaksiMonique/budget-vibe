@@ -24,6 +24,8 @@ function defaultState() {
       selectedMonth: null,
       avgStart: "",
       avgEnd: "",
+      txFilterStart: "",
+      txFilterEnd: "",
       divYear: null,
       theme: null,
       rentalYear: null,

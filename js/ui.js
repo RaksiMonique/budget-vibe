@@ -92,6 +92,8 @@ const fireChartCanvas = document.getElementById("fireChartCanvas");
 /* Transaction Filters */
 const txFilterDesc = document.getElementById("txFilterDesc");
 const txFilterCategory = document.getElementById("txFilterCategory");
+const txFilterStart = document.getElementById("txFilterStart");
+const txFilterEnd = document.getElementById("txFilterEnd");
 const txFilterClear = document.getElementById("txFilterClear");
 
 /* Averages tab */

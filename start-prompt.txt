@@ -93,6 +93,11 @@ ensure that only bills that are due this month are counted in the bills paid for
 
 move the rentals tab below the networth tab, move the averages tab above stocks, and move the accounts tab below categories
 
+calculate and display the totals of each portfolios table in the stock tab
+
+
+
+
 
 
 
@@ -100,3 +105,5 @@ move the rentals tab below the networth tab, move the averages tab above stocks,
 --Maybe change back transaction date to not be filled before.
 --The add minor category button seems to overwrite each time I add a new category using it.
 --(I could do this) Change the button title from add sinking fund to add sinking fund category
+--fix stocks tab graphs
+--

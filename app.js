@@ -49,6 +49,10 @@ function init() {
   avgStart.value = state.ui.avgStart;
   avgEnd.value = state.ui.avgEnd;
 
+  // Init transaction filters
+  txFilterStart.value = state.ui.txFilterStart || "";
+  txFilterEnd.value = state.ui.txFilterEnd || "";
+
   // Default for annual overview year
   if (!state.ui.annualOverviewYear) {
     state.ui.annualOverviewYear = now.getFullYear();
@@ -231,7 +235,7 @@ function refreshAll() {
 
   renderBudgetTable(expectedByMinor, actualByMinor);
   renderAccounts();
-  renderTransactionsTable(sel.year, sel.month);
+  renderTransactionsTable();
   renderGoals(expectedByMinor);
   renderSinkingCategories(expectedByMinor, actualByMinor);
   renderBillsCategories(expectedByMinor);

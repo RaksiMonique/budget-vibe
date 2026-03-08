@@ -47,12 +47,28 @@ function initTransactions() {
   txSubmitAddAnotherBtn.addEventListener("click", () => upsertTransaction(true));
 
   /* Transaction Filters */
-  txFilterDesc.addEventListener("input", () => renderTransactionsTable(state.ui.selectedYear, state.ui.selectedMonth));
-  txFilterCategory.addEventListener("change", () => renderTransactionsTable(state.ui.selectedYear, state.ui.selectedMonth));
+  txFilterDesc.addEventListener("input", renderTransactionsTable);
+  txFilterCategory.addEventListener("change", renderTransactionsTable);
+  txFilterStart.addEventListener("change", () => {
+    state.ui.txFilterStart = txFilterStart.value;
+    saveState();
+    renderTransactionsTable();
+  });
+  txFilterEnd.addEventListener("change", () => {
+    state.ui.txFilterEnd = txFilterEnd.value;
+    saveState();
+    renderTransactionsTable();
+  });
+
   txFilterClear.addEventListener("click", () => {
     txFilterDesc.value = "";
     txFilterCategory.value = "";
-    renderTransactionsTable(state.ui.selectedYear, state.ui.selectedMonth);
+    txFilterStart.value = "";
+    txFilterEnd.value = "";
+    state.ui.txFilterStart = "";
+    state.ui.txFilterEnd = "";
+    saveState();
+    renderTransactionsTable();
   });
 
   // Event Delegation for dynamic table content (Transactions)
@@ -69,13 +85,21 @@ function initTransactions() {
   });
 }
 
-function renderTransactionsTable(year, month) {
+function renderTransactionsTable() {
   const filterDescVal = txFilterDesc.value.toLowerCase();
   const filterCatVal = txFilterCategory.value;
+  const filterStart = txFilterStart.value;
+  const filterEnd = txFilterEnd.value;
 
-  let list = state.transactions
-    .filter(t => isInMonth(t.date, year, month));
+  let list;
 
+  if (filterStart && filterEnd && filterStart <= filterEnd) {
+    list = state.transactions.filter(t => isInRange(t.date, filterStart, filterEnd));
+  } else {
+    const sel = getSelectedMonth();
+    list = state.transactions.filter(t => isInMonth(t.date, sel.year, sel.month));
+  }
+  
   if (filterDescVal) {
     list = list.filter(t => t.description?.toLowerCase().includes(filterDescVal));
   }
@@ -86,7 +110,7 @@ function renderTransactionsTable(year, month) {
   list.sort((a, b) => b.date.localeCompare(a.date)); // Show most recent first
 
   if (!list.length) {
-    txTbody.innerHTML = `<tr><td colspan="7" class="text-muted">No transactions found for this month matching filters.</td></tr>`;
+    txTbody.innerHTML = `<tr><td colspan="7" class="text-muted">No transactions found matching filters.</td></tr>`;
     return;
   }
 
