@@ -220,6 +220,9 @@
           <button class="nav-link" id="tab-stocks" data-bs-toggle="tab" data-bs-target="#pane-stocks" type="button" role="tab">Stocks</button>
         </li>
         <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-stock-plan" data-bs-toggle="tab" data-bs-target="#pane-stock-plan" type="button" role="tab">Stock Plan</button>
+        </li>
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-dividends" data-bs-toggle="tab" data-bs-target="#pane-dividends" type="button" role="tab">Dividends</button>
         </li>
         <li class="nav-item" role="presentation">
@@ -673,6 +676,17 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Stock Purchase Plan -->
+      <div class="tab-pane fade" id="pane-stock-plan" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+          <div>
+            <h5 class="mb-0">Stock Purchase Plan</h5>
+            <div class="small text-muted">Recommendations based on your holdings and strategy.</div>
+          </div>
+        </div>
+        <div id="stockPlanContainer"></div>
       </div>
 
       <!-- Dividends -->
@@ -1782,6 +1796,7 @@
   <script src="./js/store.js"></script>
   <script src="./js/ui.js"></script>
   <script src="./js/features/stocks.js"></script>
+  <script src="./js/features/stockPlan.js"></script>
   <script src="./js/features/averages.js"></script>
   <script src="./js/features/transactions.js"></script>
   <script src="./js/features/dividends.js"></script>

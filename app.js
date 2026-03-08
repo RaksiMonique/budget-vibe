@@ -85,6 +85,7 @@ function init() {
   if (!Array.isArray(state.stocksMaster)) state.stocksMaster = [];
   if (!Array.isArray(state.holdings)) state.holdings = [];
   if (!state.dividends || typeof state.dividends !== "object") state.dividends = {};
+  if (!state.stockPlan || typeof state.stockPlan !== "object") state.stockPlan = {};
 
   if (!state.ui.rentalYear) state.ui.rentalYear = now.getFullYear();
   rentalYear.value = String(state.ui.rentalYear);
@@ -194,6 +195,7 @@ function wireEvents() {
   initAverages();
   initStocks();
   initTransactions();
+  initStockPlan();
   initDividends();
   initFIRE();
   initAccounts();
@@ -250,6 +252,7 @@ function refreshAll() {
   renderAnnualOverview();
   renderStocks();
   renderDividends();
+  renderStockPlan();
 
   refreshTopInvestmentMetrics();
 }
@@ -1058,6 +1061,7 @@ function importJSON(e) {
         stocksMaster: Array.isArray(parsed.stocksMaster) ? parsed.stocksMaster : [],
         holdings: Array.isArray(parsed.holdings) ? parsed.holdings : [],
         dividends: (parsed.dividends && typeof parsed.dividends === "object") ? parsed.dividends : {},
+        stockPlan: (parsed.stockPlan && typeof parsed.stockPlan === "object") ? parsed.stockPlan : {},
       };
 
       saveState();
