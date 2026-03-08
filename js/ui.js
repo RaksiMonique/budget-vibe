@@ -104,6 +104,8 @@ const avgTbody = document.getElementById("avgTbody");
 const btnAvgRefresh = document.getElementById("btnAvgRefresh");
 const annualOverviewYear = document.getElementById("annualOverviewYear");
 const annualOverviewTbody = document.getElementById("annualOverviewTbody");
+const annualMajor = document.getElementById("annualMajor");
+const annualMinor = document.getElementById("annualMinor");
 
 /* Stocks tab */
 const stockMasterForm = document.getElementById("stockMasterForm");

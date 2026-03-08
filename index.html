@@ -360,6 +360,14 @@
                 <div class="small text-muted">A summary of totals for the selected year.</div>
               </div>
               <div class="d-flex gap-2 align-items-end">
+                <div class="btn-group btn-group-sm" role="group">
+                  <input type="radio" class="btn-check" name="annualGranularity" id="annualMajor" autocomplete="off" value="major" checked>
+                  <label class="btn btn-outline-secondary" for="annualMajor">Major</label>
+
+                  <input type="radio" class="btn-check" name="annualGranularity" id="annualMinor" autocomplete="off" value="minor">
+                  <label class="btn btn-outline-secondary" for="annualMinor">Minor</label>
+                </div>
+
                 <div>
                   <label class="form-label mb-1 small">Select Year</label>
                   <input id="annualOverviewYear" type="number" class="form-control form-control-sm" min="2000" max="2100" style="width: 100px;">

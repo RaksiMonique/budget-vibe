@@ -19,6 +19,23 @@ function initAverages() {
       saveState();
       renderAnnualOverview();
     });
+
+    if (annualMajor) {
+      annualMajor.checked = state.ui.annualOverviewGranularity === 'major';
+      annualMajor.addEventListener("change", () => {
+        if (annualMajor.checked) state.ui.annualOverviewGranularity = 'major';
+        saveState();
+        renderAnnualOverview();
+      });
+    }
+    if (annualMinor) {
+      annualMinor.checked = state.ui.annualOverviewGranularity === 'minor';
+      annualMinor.addEventListener("change", () => {
+        if (annualMinor.checked) state.ui.annualOverviewGranularity = 'minor';
+        saveState();
+        renderAnnualOverview();
+      });
+    }
   }
 }
 
@@ -29,7 +46,9 @@ function renderAnnualOverview() {
   if (!year) return;
 
   const totals = {};
+  const totalsByMinor = {};
   MAJOR_CATEGORIES.forEach(m => { totals[m.key] = 0; });
+  state.minorCategories.forEach(c => { totalsByMinor[c.id] = 0; });
 
   let totalExpenses = 0;
   const monthlyStats = Array(12).fill(0).map(() => ({ income: 0, expense: 0 }));
@@ -48,6 +67,7 @@ function renderAnnualOverview() {
     if (type === 'transfer') continue;
 
     totals[cat.majorKey] = (totals[cat.majorKey] || 0) + amount;
+    totalsByMinor[cat.id] = (totalsByMinor[cat.id] || 0) + amount;
 
     if (type === 'outflow') {
       totalExpenses += amount;
@@ -70,16 +90,43 @@ function renderAnnualOverview() {
     </tr>
   `;
 
-  MAJOR_CATEGORIES.forEach(m => {
-    if (MAJOR_TYPES[m.key] === 'outflow' && totals[m.key] > 0) {
-      html += `
-        <tr>
-          <td class="ps-4 text-muted">${m.label}</td>
-          <td class="text-end">${formatMoney(totals[m.key])}</td>
-        </tr>
-      `;
-    }
-  });
+  const granularity = state.ui.annualOverviewGranularity || 'major';
+
+  if (granularity === 'major') {
+    MAJOR_CATEGORIES.forEach(m => {
+      if (MAJOR_TYPES[m.key] === 'outflow' && totals[m.key] > 0) {
+        html += `
+          <tr>
+            <td class="ps-4 text-muted">${m.label}</td>
+            <td class="text-end">${formatMoney(totals[m.key])}</td>
+          </tr>
+        `;
+      }
+    });
+  } else { // 'minor'
+    const groupedMinors = {};
+    state.minorCategories.forEach(c => {
+      if (MAJOR_TYPES[c.majorKey] !== 'outflow') return;
+      if (!groupedMinors[c.majorKey]) groupedMinors[c.majorKey] = [];
+      groupedMinors[c.majorKey].push(c);
+    });
+
+    MAJOR_CATEGORIES.forEach(major => {
+      if (MAJOR_TYPES[major.key] !== 'outflow') return;
+      const minorsInGroup = groupedMinors[major.key];
+      if (minorsInGroup && minorsInGroup.some(c => (totalsByMinor[c.id] || 0) > 0)) {
+        html += `<tr class="table-group-header"><td colspan="2">${escapeHtml(major.label)}</td></tr>`;
+        minorsInGroup.forEach(minor => {
+          const total = totalsByMinor[minor.id] || 0;
+          if (total > 0) {
+            html += `
+              <tr><td class="ps-4 text-muted">${escapeHtml(minor.name)}</td><td class="text-end">${formatMoney(total)}</td></tr>
+            `;
+          }
+        });
+      }
+    });
+  }
 
   html += `
     <tr class="fw-bold">
@@ -97,29 +144,47 @@ function renderAnnualOverview() {
   `;
 
   annualOverviewTbody.innerHTML = html;
-  renderAnnualOverviewCharts(totals, monthlyStats);
+  renderAnnualOverviewCharts(totals, totalsByMinor, monthlyStats);
 }
 
-function renderAnnualOverviewCharts(totals, monthlyStats) {
+function renderAnnualOverviewCharts(totals, totalsByMinor, monthlyStats) {
+  const granularity = state.ui.annualOverviewGranularity || 'major';
+
   // 1. Bar Chart (Allocation)
   const ctxBar = document.getElementById("annualOverviewBarChart")?.getContext("2d");
   if (ctxBar) {
     if (annualOverviewBarChart) annualOverviewBarChart.destroy();
 
-    const chartLabels = [];
-    const chartData = [];
-    const chartColors = [];
+    let chartLabels = [];
+    let chartData = [];
+    let chartColors = [];
 
-    MAJOR_CATEGORIES.forEach(cat => {
-      if (cat.key === 'transfer') return; // Skip transfers
+    if (granularity === 'major') {
+      MAJOR_CATEGORIES.forEach(cat => {
+        if (cat.key === 'transfer') return; // Skip transfers
+        const total = totals[cat.key] || 0;
+        if (total > 0) {
+          chartLabels.push(cat.label);
+          chartData.push(total);
+          chartColors.push(cat.color);
+        }
+      });
+    } else { // 'minor'
+      const minorChartData = state.minorCategories
+        .map(c => ({
+          label: c.name,
+          total: totalsByMinor[c.id] || 0,
+          color: MAJOR_CATEGORIES.find(m => m.key === c.majorKey)?.color || '#cccccc',
+          type: MAJOR_TYPES[c.majorKey]
+        }))
+        .filter(d => d.type === 'outflow' && d.total > 0)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 15); // Top 15
 
-      const total = totals[cat.key] || 0;
-      if (total > 0) {
-        chartLabels.push(cat.label);
-        chartData.push(total);
-        chartColors.push(cat.color);
-      }
-    });
+      chartLabels = minorChartData.map(d => d.label);
+      chartData = minorChartData.map(d => d.total);
+      chartColors = minorChartData.map(d => d.color);
+    }
 
     annualOverviewBarChart = new Chart(ctxBar, {
       type: "bar",

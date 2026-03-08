@@ -56,6 +56,11 @@ function init() {
     state.ui.annualOverviewYear = now.getFullYear();
   }
 
+  // Default for annual overview granularity
+  if (!state.ui.annualOverviewGranularity) {
+    state.ui.annualOverviewGranularity = 'major';
+  }
+
   // Default dividends year
   if (!state.ui.divYear) state.ui.divYear = now.getFullYear();
   divYear.value = String(state.ui.divYear);
