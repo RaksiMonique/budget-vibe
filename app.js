@@ -654,11 +654,23 @@ function handleBillModalOpen() {
     billSinkingFundSelectWrap.style.display = "none";
   }
 
+  // Create a map of sinking fund category ID -> goal name
+  const goalMap = new Map();
+  state.goals.forEach(g => {
+    goalMap.set(g.minorCategoryId, g.name);
+  });
+
   // Populate sinking funds dropdown
   const sinkingFunds = state.minorCategories
     .filter(c => c.majorKey === "sinking")
     .sort((a, b) => a.name.localeCompare(b.name));
-  billSinkingFundMinor.innerHTML = sinkingFunds.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  billSinkingFundMinor.innerHTML = sinkingFunds.map(c => {
+    const goalName = goalMap.get(c.id);
+    const optionText = goalName
+      ? `${escapeHtml(c.name)} (Goal: ${escapeHtml(goalName)})`
+      : escapeHtml(c.name);
+    return `<option value="${c.id}">${optionText}</option>`;
+  }).join("");
 
   // Show/hide based on frequency (must be after form is populated for 'edit')
   toggleBillSinkingFundWrap();

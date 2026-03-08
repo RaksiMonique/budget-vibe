@@ -180,8 +180,8 @@ const txDesc = document.getElementById("txDesc");
 const txAmount = document.getElementById("txAmount");
 const txBillFundWrap = document.getElementById("txBillFundWrap");
 const txUseBillFund = document.getElementById("txUseBillFund");
+const txBillFundLabel = document.getElementById("txBillFundLabel");
 const txBillFundAvailable = document.getElementById("txBillFundAvailable");
-const txBillFundAmount = document.getElementById("txBillFundAmount");
 
 /* Goals */
 const goalForm = document.getElementById("goalForm");

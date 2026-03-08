@@ -1489,10 +1489,9 @@
               <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="txUseBillFund">
                 <label class="form-check-label" for="txUseBillFund">
-                  Deduct from Sinking Fund? (Available: <span id="txBillFundAvailable" class="fw-bold">$0</span>)
+                  <span id="txBillFundLabel">Deduct from Sinking Fund?</span> (Available: <span id="txBillFundAvailable" class="fw-bold">$0</span>)
                 </label>
               </div>
-              <input id="txBillFundAmount" type="number" step="0.01" class="form-control form-control-sm" placeholder="Amount to use" style="display: none;">
             </div>
           </div>
         </div>
@@ -1558,18 +1557,6 @@
             <div class="form-text">Provide either a date or duration (months). If both, date wins.</div>
           </div>
 
-          <!-- Sinking Fund Usage (Hidden by default) -->
-          <div id="txBillFundWrap" class="card bg-light border-0 mb-3" style="display: none;">
-            <div class="card-body py-2">
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="txUseBillFund">
-                <label class="form-check-label" for="txUseBillFund">
-                  Deduct from Sinking Fund? (Available: <span id="txBillFundAvailable" class="fw-bold">$0</span>)
-                </label>
-              </div>
-              <input id="txBillFundAmount" type="number" step="0.01" class="form-control form-control-sm" placeholder="Amount to use" disabled>
-            </div>
-          </div>
         </div>
 
         <div class="modal-footer">

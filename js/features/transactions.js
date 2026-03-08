@@ -259,6 +259,17 @@ function checkBillSinkingLink() {
   if (bill && bill.sinkingFundLink) {
     txBillFundWrap.style.display = "block";
 
+    const sinkingFundCat = getCategory(bill.sinkingFundLink);
+    const goal = state.goals.find(g => g.minorCategoryId === bill.sinkingFundLink);
+
+    if (sinkingFundCat) {
+      let labelText = `Deduct from Sinking Fund: <b>${escapeHtml(sinkingFundCat.name)}</b>`;
+      if (goal) {
+        labelText = `Pay from Goal: <b>${escapeHtml(goal.name)}</b> (${escapeHtml(sinkingFundCat.name)})`;
+      }
+      txBillFundLabel.innerHTML = labelText;
+    }
+
     // Calculate and display available funds
     const actualAllTimeByMinor = computeActualByMinor(null, null);
     const available = actualAllTimeByMinor[bill.sinkingFundLink] || 0;
