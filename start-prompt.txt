@@ -105,5 +105,4 @@ calculate and display the totals of each portfolios table in the stock tab
 --Maybe change back transaction date to not be filled before.
 --The add minor category button seems to overwrite each time I add a new category using it.
 --(I could do this) Change the button title from add sinking fund to add sinking fund category
---fix stocks tab graphs
 --The sinking fund should also have a specific value based on the month chosen for the overall budget overview

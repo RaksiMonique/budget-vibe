@@ -1,3 +1,7 @@
+if (!window.portfolioChartInstances) {
+  window.portfolioChartInstances = {};
+}
+
 function initStocks() {
   stockMasterForm.addEventListener("submit", (e) => { e.preventDefault(); upsertStockMaster(); });
   stockMasterCancel.addEventListener("click", () => { stockMasterForm.reset(); stockMasterId.value = ""; });
@@ -29,6 +33,14 @@ function renderStocks() {
   }
 
   // 2. Render Holdings (Grouped by Portfolio)
+
+  // Clear old portfolio charts before re-rendering
+  for (const chartId in window.portfolioChartInstances) {
+    if (window.portfolioChartInstances[chartId]) {
+      window.portfolioChartInstances[chartId].destroy();
+    }
+  }
+  window.portfolioChartInstances = {};
   if (holdingsContainer) holdingsContainer.innerHTML = "";
 
   const holdings = state.holdings.slice();
@@ -58,57 +70,72 @@ function renderStocks() {
 
   sortedPortfolios.forEach(p => {
     const group = byPortfolio[p];
+    const chartId = `portfolio-chart-${p.replace(/[^a-zA-Z0-9]/g, '')}`;
     
     const wrapper = document.createElement("div");
     wrapper.className = "mb-4";
     wrapper.innerHTML = `
       <h6 class="fw-bold text-uppercase text-muted mb-2">${escapeHtml(p)}</h6>
-      <div class="table-responsive">
-        <table class="table table-sm align-middle table-soft mb-0">
-          <thead>
-            <tr>
-              <th>Ticker</th>
-              <th class="text-end">Avg Buy</th>
-              <th class="text-end">Shares</th>
-              <th class="text-end">Cost</th>
-              <th class="text-end">Value</th>
-              <th class="text-end">Gain/Loss</th>
-              <th style="width: 20%">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${group.map(h => {
-              const stock = state.stocksMaster.find(s => s.id === h.stockId);
-              const ticker = stock ? stock.ticker : "???";
-              const currentPrice = stock ? safeNumber(stock.price) : 0;
-              const avgBuy = safeNumber(h.avgPrice);
-              const shares = safeNumber(h.shares);
-              const cost = avgBuy * shares;
-              const value = currentPrice * shares;
-              const gain = value - cost;
-              const gainClass = gain >= 0 ? "text-success" : "text-danger";
-              return `
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+          <div class="table-responsive">
+            <table class="table table-sm align-middle table-soft mb-0">
+              <thead>
                 <tr>
-                  <td>${escapeHtml(ticker)}</td>
-                  <td class="text-end">${formatMoney(avgBuy)}</td>
-                  <td class="text-end">${shares}</td>
-                  <td class="text-end">${formatMoney(cost)}</td>
-                  <td class="text-end fw-bold">${formatMoney(value)}</td>
-                  <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
-                      <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
-                    </div>
-                  </td>
+                  <th>Ticker</th>
+                  <th class="text-end">Avg Buy</th>
+                  <th class="text-end">Shares</th>
+                  <th class="text-end">Cost</th>
+                  <th class="text-end">Value</th>
+                  <th class="text-end">Gain/Loss</th>
+                  <th style="width: 20%">Actions</th>
                 </tr>
-              `;
-            }).join("")}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                ${group.map(h => {
+                  const stock = state.stocksMaster.find(s => s.id === h.stockId);
+                  const ticker = stock ? stock.ticker : "???";
+                  const currentPrice = stock ? safeNumber(stock.price) : 0;
+                  const avgBuy = safeNumber(h.avgPrice);
+                  const shares = safeNumber(h.shares);
+                  const cost = avgBuy * shares;
+                  const value = currentPrice * shares;
+                  const gain = value - cost;
+                  const gainClass = gain >= 0 ? "text-success" : "text-danger";
+                  return `
+                    <tr>
+                      <td>${escapeHtml(ticker)}</td>
+                      <td class="text-end">${formatMoney(avgBuy)}</td>
+                      <td class="text-end">${shares}</td>
+                      <td class="text-end">${formatMoney(cost)}</td>
+                      <td class="text-end fw-bold">${formatMoney(value)}</td>
+                      <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
+                          <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card shadow-soft">
+            <div class="card-body">
+              <div style="height: 250px; position: relative;">
+                <canvas id="${chartId}"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
     if (holdingsContainer) holdingsContainer.appendChild(wrapper);
+    renderPortfolioCompositionChart(chartId, group);
   });
 
   // 3. Render Chart (Total Allocation by Ticker)
@@ -235,6 +262,53 @@ function computeTotalStockValue() {
     total += curr * shares;
   }
   return total;
+}
+
+function renderPortfolioCompositionChart(canvasId, holdingsInPortfolio) {
+  const ctx = document.getElementById(canvasId)?.getContext("2d");
+  if (!ctx) return;
+
+  const valueByStock = {};
+  holdingsInPortfolio.forEach(h => {
+    const stock = state.stocksMaster.find(s => s.id === h.stockId);
+    if (stock) {
+      const ticker = stock.ticker;
+      const val = safeNumber(stock.price) * safeNumber(h.shares);
+      valueByStock[ticker] = (valueByStock[ticker] || 0) + val;
+    }
+  });
+
+  const labels = Object.keys(valueByStock);
+  const data = Object.values(valueByStock);
+  const totalValue = data.reduce((a, b) => a + b, 0);
+  const colors = labels.map((_, i) => `hsl(${i * 55 + 210}, 65%, 60%)`);
+
+  if (window.portfolioChartInstances[canvasId]) {
+    window.portfolioChartInstances[canvasId].destroy();
+  }
+
+  window.portfolioChartInstances[canvasId] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: colors, borderWidth: 0 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 10, boxWidth: 12 }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => `${context.label}: ${formatMoney(context.parsed)} (${totalValue > 0 ? ((context.parsed / totalValue) * 100).toFixed(1) : 0}%)`
+          }
+        }
+      }
+    }
+  });
 }
 
 function renderStocksChart() {
