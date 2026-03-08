@@ -664,22 +664,7 @@
 
                 <hr class="my-3">
 
-                <div class="table-responsive">
-                  <table class="table table-sm align-middle table-soft">
-                    <thead>
-                      <tr>
-                        <th>Ticker</th>
-                        <th class="text-end">Avg Buy</th>
-                        <th class="text-end">Shares</th>
-                        <th class="text-end">Cost</th>
-                        <th class="text-end">Value</th>
-                        <th class="text-end">Gain/Loss</th>
-                        <th style="width: 20%">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody id="holdingsTbody"></tbody>
-                  </table>
-                </div>
+                <div id="holdingsContainer"></div>
 
                 <div class="small text-muted mt-2">
                   Dividends tab auto-populates from current holdings.
@@ -739,6 +724,7 @@
               </tr>
             </thead>
             <tbody id="divTbody"></tbody>
+            <tfoot id="divTfoot"></tfoot>
           </table>
         </div>
 

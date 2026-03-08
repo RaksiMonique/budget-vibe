@@ -124,7 +124,7 @@ const portfolioList = document.getElementById("portfolioList");
 const holdingAvgPrice = document.getElementById("holdingAvgPrice");
 const holdingShares = document.getElementById("holdingShares");
 const holdingCancel = document.getElementById("holdingCancel");
-const holdingsTbody = document.getElementById("holdingsTbody");
+const holdingsContainer = document.getElementById("holdingsContainer");
 
 /* Dividends tab */
 const divYear = document.getElementById("divYear");

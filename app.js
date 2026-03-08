@@ -33,8 +33,6 @@ const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 let state = loadState();
 let budgetDonutChart = null;
 
-init();
-
 function init() {
   const now = new Date();
   yearInput.value = state.ui.selectedYear ?? now.getFullYear();
@@ -1106,7 +1104,14 @@ window.renderStocks = function() {
     </tr>
   `).join("") || `<tr><td colspan="4" class="text-muted">No stocks in master list.</td></tr>`;
 
+  // Also populate the holdings dropdown
+  if (holdingStockId) {
+    holdingStockId.innerHTML = masterList.map(s => `<option value="${s.id}">${escapeHtml(s.ticker)}</option>`).join("") || `<option value="" disabled>Add a stock to master list first</option>`;
+  }
+
   // 2. Render Holdings (Grouped by Portfolio)
+  if (holdingsContainer) holdingsContainer.innerHTML = "";
+
   const holdings = state.holdings.slice();
   const byPortfolio = {};
   const portfolios = new Set();
@@ -1126,53 +1131,104 @@ window.renderStocks = function() {
       .join("");
   }
 
-  let holdingsHtml = "";
   const sortedPortfolios = Array.from(portfolios).sort();
+
+  if (sortedPortfolios.length === 0 && holdingsContainer) {
+    holdingsContainer.innerHTML = `<div class="text-muted fst-italic">No holdings added.</div>`;
+  }
 
   sortedPortfolios.forEach(p => {
     const group = byPortfolio[p];
-    // Header Row
-    holdingsHtml += `
-      <tr class="table-group-header table-light">
-        <td colspan="7" class="fw-bold text-uppercase small text-muted pt-3 pb-1">${escapeHtml(p)}</td>
-      </tr>
+    
+    const wrapper = document.createElement("div");
+    wrapper.className = "mb-4";
+    wrapper.innerHTML = `
+      <h6 class="fw-bold text-uppercase text-muted mb-2">${escapeHtml(p)}</h6>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle table-soft mb-0">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th class="text-end">Avg Buy</th>
+              <th class="text-end">Shares</th>
+              <th class="text-end">Cost</th>
+              <th class="text-end">Value</th>
+              <th class="text-end">Gain/Loss</th>
+              <th style="width: 20%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${group.map(h => {
+              const stock = state.stocksMaster.find(s => s.id === h.stockId);
+              const ticker = stock ? stock.ticker : "???";
+              const currentPrice = stock ? safeNumber(stock.price) : 0;
+              const avgBuy = safeNumber(h.avgPrice);
+              const shares = safeNumber(h.shares);
+              const cost = avgBuy * shares;
+              const value = currentPrice * shares;
+              const gain = value - cost;
+              const gainClass = gain >= 0 ? "text-success" : "text-danger";
+              return `
+                <tr>
+                  <td>${escapeHtml(ticker)}</td>
+                  <td class="text-end">${formatMoney(avgBuy)}</td>
+                  <td class="text-end">${shares}</td>
+                  <td class="text-end">${formatMoney(cost)}</td>
+                  <td class="text-end fw-bold">${formatMoney(value)}</td>
+                  <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
+                      <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
     `;
-
-    holdingsHtml += group.map(h => {
-      const stock = state.stocksMaster.find(s => s.id === h.stockId);
-      const ticker = stock ? stock.ticker : "???";
-      const currentPrice = stock ? safeNumber(stock.price) : 0;
-      const avgBuy = safeNumber(h.avgPrice);
-      const shares = safeNumber(h.shares);
-      
-      const cost = avgBuy * shares;
-      const value = currentPrice * shares;
-      const gain = value - cost;
-      const gainClass = gain >= 0 ? "text-success" : "text-danger";
-
-      return `
-        <tr>
-          <td>${escapeHtml(ticker)}</td>
-          <td class="text-end">${formatMoney(avgBuy)}</td>
-          <td class="text-end">${shares}</td>
-          <td class="text-end">${formatMoney(cost)}</td>
-          <td class="text-end fw-bold">${formatMoney(value)}</td>
-          <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
-          <td>
-            <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
-              <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join("");
+    if (holdingsContainer) holdingsContainer.appendChild(wrapper);
   });
-
-  holdingsTbody.innerHTML = holdingsHtml || `<tr><td colspan="7" class="text-muted">No holdings added.</td></tr>`;
 
   // 3. Render Chart (Total Allocation by Ticker)
   renderStocksChart();
+};
+
+window.upsertStockMaster = function() {
+  const id = stockMasterId.value?.trim();
+  const ticker = stockTicker.value.trim().toUpperCase();
+  const market = stockMarket.value.trim();
+  const price = safeNumber(stockPrice.value);
+
+  if (!ticker || !market || !isFinite(price) || price < 0) {
+    showToast("Please fill all stock fields with valid values.");
+    return;
+  }
+
+  if (id) {
+    const s = state.stocksMaster.find(x => x.id === id);
+    if (s) {
+      s.ticker = ticker;
+      s.market = market;
+      s.price = price;
+      showToast("Stock updated.");
+    }
+  } else {
+    const dupe = state.stocksMaster.find(s => s.ticker === ticker);
+    if (dupe) {
+      showToast("A stock with this ticker already exists.");
+      return;
+    }
+    state.stocksMaster.push({ id: uid(), ticker, market, price, createdAt: new Date().toISOString() });
+    showToast("Stock added to master list.");
+  }
+
+  saveState();
+  stockMasterForm.reset();
+  stockMasterId.value = "";
+  refreshAll();
 };
 
 window.upsertHolding = function() {
@@ -1290,3 +1346,110 @@ function renderStocksChart() {
     },
   });
 }
+
+/* =========================================================
+   DIVIDENDS OVERRIDES
+   ========================================================= */
+
+window.renderDividends = function() {
+  const year = parseInt(divYear.value) || new Date().getFullYear();
+  
+  // 1. Aggregate shares per stock
+  const sharesByStock = {};
+  state.holdings.forEach(h => {
+    sharesByStock[h.stockId] = (sharesByStock[h.stockId] || 0) + safeNumber(h.shares);
+  });
+
+  const stockIds = Object.keys(sharesByStock);
+  let html = "";
+  const monthlyIncomeTotals = Array(12).fill(0);
+  let totalYearIncome = 0;
+
+  stockIds.forEach(stockId => {
+    const stock = state.stocksMaster.find(s => s.id === stockId);
+    if (!stock) return;
+    
+    const shares = sharesByStock[stockId];
+    if (shares <= 0) return;
+
+    if (!state.dividends[stockId]) state.dividends[stockId] = {};
+    if (!state.dividends[stockId][year]) state.dividends[stockId][year] = Array(12).fill(0);
+    
+    const divs = state.dividends[stockId][year];
+    
+    let rowHtml = `<tr>
+      <td>${escapeHtml(stock.ticker)}</td>
+      <td class="text-end">${formatMoney(shares)}</td>`;
+      
+    let stockYearTotal = 0;
+    
+    for (let m = 0; m < 12; m++) {
+      const dps = divs[m] || 0;
+      const income = dps * shares;
+      monthlyIncomeTotals[m] += income;
+      stockYearTotal += income;
+      
+      rowHtml += `
+        <td class="p-1">
+          <input type="number" class="form-control form-control-sm text-end border-0 bg-transparent" 
+            step="0.0001" value="${dps === 0 ? '' : dps}" 
+            onchange="updateDividend('${stockId}', ${year}, ${m}, this.value)"
+            placeholder="-">
+        </td>`;
+    }
+    
+    totalYearIncome += stockYearTotal;
+    rowHtml += `<td class="text-end fw-bold">${formatMoney(stockYearTotal)}</td></tr>`;
+    html += rowHtml;
+  });
+
+  if (divTbody) divTbody.innerHTML = html || `<tr><td colspan="15" class="text-muted">No stocks with holdings found. Add holdings first.</td></tr>`;
+
+  // Render Footer (Summary Row)
+  const tfoot = document.getElementById("divTfoot");
+  if (tfoot) {
+    let footHtml = `<tr>
+      <td class="fw-bold">Total Income</td>
+      <td></td>`;
+      
+    for (let m = 0; m < 12; m++) {
+      footHtml += `<td class="text-end fw-bold text-success" style="font-size: 0.85rem;">${formatMoney(monthlyIncomeTotals[m])}</td>`;
+    }
+    footHtml += `<td class="text-end fw-bold text-success">${formatMoney(totalYearIncome)}</td></tr>`;
+    tfoot.innerHTML = footHtml;
+  }
+
+  // Update Chart
+  renderDividendsChart(monthlyIncomeTotals);
+
+  // Update separate totals row
+  if (divMonthlyTotalsRow) {
+     let totalsHtml = "";
+     monthlyIncomeTotals.forEach(val => {
+       totalsHtml += `<td class="text-end">${formatMoney(val)}</td>`;
+     });
+     totalsHtml += `<td class="text-end fw-bold">${formatMoney(totalYearIncome)}</td>`;
+     divMonthlyTotalsRow.innerHTML = totalsHtml;
+  }
+};
+
+window.updateDividend = function(stockId, year, month, val) {
+  const amount = safeNumber(val);
+  if (!state.dividends[stockId]) state.dividends[stockId] = {};
+  if (!state.dividends[stockId][year]) state.dividends[stockId][year] = Array(12).fill(0);
+  state.dividends[stockId][year][month] = amount;
+  saveState();
+  renderDividends();
+};
+
+window.renderDividendsChart = function(monthlyTotals) {
+  const ctx = document.getElementById("dividendsChart")?.getContext("2d");
+  if (!ctx) return;
+  if (window.dividendsChartInstance) window.dividendsChartInstance.destroy();
+  window.dividendsChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], datasets: [{ label: 'Dividend Income', data: monthlyTotals, backgroundColor: '#D29F80', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+};
+
+if (btnDivRefresh) btnDivRefresh.addEventListener("click", renderDividends);
+if (divYear) divYear.addEventListener("change", renderDividends);
+
+init();
