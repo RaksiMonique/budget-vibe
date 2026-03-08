@@ -55,7 +55,6 @@ function renderGoals(expectedByMinor) {
   }
 
   const sel = getSelectedMonth();
-  const actualAllTimeByMinor = computeActualByMinor(null, null);
   const actualMonthByMinor = computeActualByMinor(sel.year, sel.month);
 
   goalsWrap.innerHTML = state.goals
@@ -63,7 +62,7 @@ function renderGoals(expectedByMinor) {
     .sort((a, b) => (a.deadlineISO || "").localeCompare(b.deadlineISO || ""))
     .map(g => {
       const cat = getCategory(g.minorCategoryId);
-      const savedAll = actualAllTimeByMinor[g.minorCategoryId] || 0;
+      const savedAll = computeSinkingFundBalance(g.minorCategoryId);
       const savedMonth = actualMonthByMinor[g.minorCategoryId] || 0;
       const pct = g.totalAmount > 0 ? Math.min(100, (savedAll / g.totalAmount) * 100) : 0;
 

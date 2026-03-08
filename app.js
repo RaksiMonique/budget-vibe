@@ -1101,4 +1101,20 @@ function seedStarterCategories() {
   }));
 }
 
+function computeSinkingFundBalance(minorId) {
+  let balance = 0;
+  for (const t of state.transactions) {
+    const amt = safeNumber(t.amount);
+    // Add contributions (direct transactions to the sinking fund)
+    if (t.minorCategoryId === minorId) {
+      balance += amt;
+    }
+    // Subtract usage (transactions linked to this sinking fund)
+    if (t.sinkingFundId === minorId) {
+      balance -= amt;
+    }
+  }
+  return balance;
+}
+
 init();

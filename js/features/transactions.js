@@ -168,19 +168,19 @@ function upsertTransaction(keepOpen = false) {
     return;
   }
 
-  let finalMinorId = originalMinorId;
+  let sinkingFundId = null;
 
   // Sinking fund logic override
   if (txBillFundWrap.style.display !== 'none' && txUseBillFund.checked) {
     const originalBill = state.bills.find(b => b.minorCategoryId === originalMinorId);
     if (originalBill && originalBill.sinkingFundLink) {
-      finalMinorId = originalBill.sinkingFundLink;
+      sinkingFundId = originalBill.sinkingFundLink;
     }
   }
 
-  if (!date || !accId || !finalMinorId || !isFinite(amount)) return;
+  if (!date || !accId || !originalMinorId || !isFinite(amount)) return;
 
-  const cat = getCategory(finalMinorId);
+  const cat = getCategory(originalMinorId);
   if (!cat) {
     alert("Could not find the category for this transaction.");
     return;
@@ -192,9 +192,10 @@ function upsertTransaction(keepOpen = false) {
 
     t.date = date;
     t.accountId = accId;
-    t.minorCategoryId = finalMinorId;
+    t.minorCategoryId = originalMinorId;
     t.amount = amount;
     t.description = desc;
+    t.sinkingFundId = sinkingFundId;
 
     showToast("Transaction updated.");
   } else {
@@ -202,9 +203,10 @@ function upsertTransaction(keepOpen = false) {
       id: uid(),
       date,
       accountId: accId,
-      minorCategoryId: finalMinorId,
+      minorCategoryId: originalMinorId,
       amount,
       description: desc,
+      sinkingFundId,
       createdAt: new Date().toISOString(),
     });
     showToast("Transaction added.");
@@ -250,6 +252,13 @@ function editTransaction(id) {
 
   repopulateTxMinorOptions(majorKey, false);
   txMinor.value = t.minorCategoryId;
+
+  checkBillSinkingLink();
+  if (t.sinkingFundId && txBillFundWrap.style.display !== 'none') {
+    txUseBillFund.checked = true;
+  } else {
+    txUseBillFund.checked = false;
+  }
 
   txDesc.value = t.description || "";
   txAmount.value = String(t.amount);
@@ -366,8 +375,7 @@ function checkBillSinkingLink() {
     }
 
     // Calculate and display available funds
-    const actualAllTimeByMinor = computeActualByMinor(null, null);
-    const available = actualAllTimeByMinor[bill.sinkingFundLink] || 0;
+    const available = computeSinkingFundBalance(bill.sinkingFundLink);
     txBillFundAvailable.textContent = formatMoney(available);
   } else {
     txBillFundWrap.style.display = "none";
