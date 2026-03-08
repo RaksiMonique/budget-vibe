@@ -51,6 +51,11 @@ function init() {
   avgStart.value = state.ui.avgStart;
   avgEnd.value = state.ui.avgEnd;
 
+  // Default for annual overview year
+  if (!state.ui.annualOverviewYear) {
+    state.ui.annualOverviewYear = now.getFullYear();
+  }
+
   // Default dividends year
   if (!state.ui.divYear) state.ui.divYear = now.getFullYear();
   divYear.value = String(state.ui.divYear);
@@ -226,6 +231,7 @@ function refreshAll() {
 
   renderBudgetDonutChart(actualByMinor);
   renderAverages();
+  renderAnnualOverview();
   renderStocks();
   renderDividends();
 

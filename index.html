@@ -352,6 +352,49 @@
 
       <!-- Averages -->
       <div class="tab-pane fade" id="pane-averages" role="tabpanel">
+        <div class="card shadow-soft mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <div>
+                <h5 class="mb-0">Annual Overview</h5>
+                <div class="small text-muted">A summary of totals for the selected year.</div>
+              </div>
+              <div class="d-flex gap-2 align-items-end">
+                <div>
+                  <label class="form-label mb-1 small">Select Year</label>
+                  <input id="annualOverviewYear" type="number" class="form-control form-control-sm" min="2000" max="2100" style="width: 100px;">
+                </div>
+              </div>
+            </div>
+            
+            <div class="row g-4 mb-4">
+              <div class="col-lg-5">
+                <div class="table-responsive">
+                  <table class="table table-sm table-soft">
+                    <thead>
+                      <tr>
+                        <th>Metric</th>
+                        <th class="text-end">Annual Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="annualOverviewTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div style="height: 220px; position: relative;">
+                  <canvas id="annualOverviewBarChart"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <h6 class="small text-muted text-uppercase mb-2">Monthly Trends</h6>
+            <div style="height: 250px; position: relative;">
+              <canvas id="annualOverviewLineChart"></canvas>
+            </div>
+          </div>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
           <div>
             <h5 class="mb-0">Average Actuals (Monthly)</h5>

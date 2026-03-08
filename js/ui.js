@@ -102,6 +102,8 @@ const avgIncomeValue = document.getElementById("avgIncomeValue");
 const avgExpenseValue = document.getElementById("avgExpenseValue");
 const avgTbody = document.getElementById("avgTbody");
 const btnAvgRefresh = document.getElementById("btnAvgRefresh");
+const annualOverviewYear = document.getElementById("annualOverviewYear");
+const annualOverviewTbody = document.getElementById("annualOverviewTbody");
 
 /* Stocks tab */
 const stockMasterForm = document.getElementById("stockMasterForm");

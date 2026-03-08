@@ -1,4 +1,6 @@
 let averagesBarChart = null;
+let annualOverviewBarChart = null;
+let annualOverviewLineChart = null;
 
 function initAverages() {
   btnAvgRefresh.addEventListener("click", () => {
@@ -9,6 +11,182 @@ function initAverages() {
   });
   avgStart.addEventListener("change", () => { state.ui.avgStart = avgStart.value; saveState(); renderAverages(); });
   avgEnd.addEventListener("change", () => { state.ui.avgEnd = avgEnd.value; saveState(); renderAverages(); });
+
+  if (annualOverviewYear) {
+    annualOverviewYear.value = String(state.ui.annualOverviewYear || new Date().getFullYear());
+    annualOverviewYear.addEventListener("change", () => {
+      state.ui.annualOverviewYear = Number(annualOverviewYear.value);
+      saveState();
+      renderAnnualOverview();
+    });
+  }
+}
+
+function renderAnnualOverview() {
+  if (!annualOverviewTbody) return;
+
+  const year = Number(annualOverviewYear.value);
+  if (!year) return;
+
+  const totals = {};
+  MAJOR_CATEGORIES.forEach(m => { totals[m.key] = 0; });
+
+  let totalExpenses = 0;
+  const monthlyStats = Array(12).fill(0).map(() => ({ income: 0, expense: 0 }));
+
+  for (const t of state.transactions) {
+    if (!t.date) continue;
+    const d = new Date(t.date + "T00:00:00");
+    if (d.getFullYear() !== year) continue;
+
+    const cat = getCategory(t.minorCategoryId);
+    if (!cat) continue;
+
+    const amount = safeNumber(t.amount);
+    const type = MAJOR_TYPES[cat.majorKey];
+
+    if (type === 'transfer') continue;
+
+    totals[cat.majorKey] = (totals[cat.majorKey] || 0) + amount;
+
+    if (type === 'outflow') {
+      totalExpenses += amount;
+      monthlyStats[d.getMonth()].expense += amount;
+    } else if (type === 'inflow') {
+      monthlyStats[d.getMonth()].income += amount;
+    }
+  }
+
+  const net = totals.income - totalExpenses;
+  const spending = totalExpenses - (totals.sinking || 0) - (totals.invest || 0);
+
+  let html = `
+    <tr>
+      <td>Total Income</td>
+      <td class="text-end fw-bold text-success">${formatMoney(totals.income)}</td>
+    </tr>
+    <tr>
+      <td>Total Expenses</td>
+      <td class="text-end fw-bold text-danger">${formatMoney(totalExpenses)}</td>
+    </tr>
+  `;
+
+  MAJOR_CATEGORIES.forEach(m => {
+    if (MAJOR_TYPES[m.key] === 'outflow' && totals[m.key] > 0) {
+      html += `
+        <tr>
+          <td class="ps-4 text-muted">${m.label}</td>
+          <td class="text-end">${formatMoney(totals[m.key])}</td>
+        </tr>
+      `;
+    }
+  });
+
+  html += `
+    <tr class="fw-bold">
+      <td>Net Income</td>
+      <td class="text-end ${net >= 0 ? 'text-success' : 'text-danger'}">${formatMoney(net)}</td>
+    </tr>
+    <tr>
+      <td>Total Savings (Sinking Funds)</td>
+      <td class="text-end">${formatMoney(totals.sinking)}</td>
+    </tr>
+    <tr>
+      <td>Total Investments</td>
+      <td class="text-end">${formatMoney(totals.invest)}</td>
+    </tr>
+  `;
+
+  annualOverviewTbody.innerHTML = html;
+  renderAnnualOverviewCharts(totals, spending, monthlyStats);
+}
+
+function renderAnnualOverviewCharts(totals, spending, monthlyStats) {
+  // 1. Bar Chart (Allocation)
+  const ctxBar = document.getElementById("annualOverviewBarChart")?.getContext("2d");
+  if (ctxBar) {
+    if (annualOverviewBarChart) annualOverviewBarChart.destroy();
+
+    const labels = ["Income", "Spending", "Savings", "Investments"];
+    const data = [totals.income, spending, totals.sinking, totals.invest];
+    const colors = [
+      MAJOR_CATEGORIES.find(m => m.key === "income")?.color || "#A4747D",
+      "#D29F80", // Spending (Variable color)
+      MAJOR_CATEGORIES.find(m => m.key === "sinking")?.color || "#69856D",
+      MAJOR_CATEGORIES.find(m => m.key === "invest")?.color || "#B6C1B1"
+    ];
+
+    annualOverviewBarChart = new Chart(ctxBar, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Total",
+          data: data,
+          backgroundColor: colors,
+          borderRadius: 6,
+          barPercentage: 0.6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (c) => formatMoney(c.raw) } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: (v) => formatMoney(v).replace(".00", "") } }
+        }
+      }
+    });
+  }
+
+  // 2. Line Chart (Monthly Trends)
+  const ctxLine = document.getElementById("annualOverviewLineChart")?.getContext("2d");
+  if (ctxLine) {
+    if (annualOverviewLineChart) annualOverviewLineChart.destroy();
+
+    const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const incomeData = monthlyStats.map(s => s.income);
+    const expenseData = monthlyStats.map(s => s.expense);
+
+    annualOverviewLineChart = new Chart(ctxLine, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Income",
+            data: incomeData,
+            borderColor: MAJOR_CATEGORIES.find(m => m.key === "income")?.color || "#A4747D",
+            backgroundColor: "rgba(164, 116, 125, 0.1)",
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: "Expenses",
+            data: expenseData,
+            borderColor: "#C27250",
+            backgroundColor: "rgba(194, 114, 80, 0.1)",
+            tension: 0.3,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${formatMoney(c.raw)}` } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: (v) => formatMoney(v).replace(".00", "") } }
+        }
+      }
+    });
+  }
 }
 
 /* =========================

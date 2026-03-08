@@ -81,6 +81,15 @@ Update 8:
 
 link savings goal to a specific account (chosen by the user). update the website so the user can see where the savings goals are saved and they can see what savings goal are saved in th accounts on the account tab. also allow them to see the value/progress of each the savings goal related to each account
 
+Error 9:
+
+When I added a new bill on disappear and only three were visible. Please ensure that new bills only add to the list of bills and dont overwrite any previously existing bills or remove them from the display
+
+when scrolling down allow the tabs to be seen as we move to the lower part of the page
+
+
+
+
 
 
 
