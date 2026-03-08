@@ -393,12 +393,13 @@ function refreshTopInvestmentMetrics() {
    Bills paid tracker (auto)
    ========================= */
 function renderBillsPaidTracker(year, month) {
-  // For monthly tracker we treat each bill as one "to pay" item in the month.
-  const bills = state.bills.slice();
-  const total = bills.length;
+  // Filter for bills that are actually due in the selected month.
+  const dueThisMonthBills = state.bills.filter(b => computeFirstDueInMonth(b, year, month) !== null);
+
+  const total = dueThisMonthBills.length;
 
   let paid = 0;
-  for (const b of bills) {
+  for (const b of dueThisMonthBills) {
     if (isBillPaidByTransactions(b, year, month)) paid += 1;
   }
 

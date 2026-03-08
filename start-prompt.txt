@@ -87,6 +87,8 @@ When I added a new bill on disappear and only three were visible. Please ensure 
 
 when scrolling down allow the tabs to be seen as we move to the lower part of the page
 
+ensure that only bills that are due this month are counted in the bills paid for the month
+
 move the rentals tab below the networth tab, move the averages tab above stocks, and move the accounts tab below categories
 
 
@@ -96,4 +98,3 @@ move the rentals tab below the networth tab, move the averages tab above stocks,
 --Maybe change back transaction date to not be filled before.
 --The add minor category button seems to overwrite each time I add a new category using it.
 --(I could do this) Change the button title from add sinking fund to add sinking fund category
---ensure that only bills that are due this month are counted in the bills paid for the month 
