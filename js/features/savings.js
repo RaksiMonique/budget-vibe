@@ -19,6 +19,12 @@ function initSavings() {
       ? availableSinkingFunds.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
       : `<option value="" disabled selected>No available Sinking Funds</option>`;
 
+    // Populate accounts dropdown
+    const accs = state.accounts.slice().sort((a,b) => a.name.localeCompare(b.name));
+    if (goalAccount) {
+      goalAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+    }
+
     // Handle modal state
     if (!isEditing) {
       goalModalTitle.textContent = "Add Savings Goal";
@@ -30,6 +36,7 @@ function initSavings() {
       const g = state.goals.find(x => x.id === currentGoalId);
       if (g) {
         goalMinor.value = g.minorCategoryId;
+        if (goalAccount) goalAccount.value = g.accountId || "";
       }
     }
   });
@@ -60,6 +67,7 @@ function renderGoals(expectedByMinor) {
       const savedMonth = actualMonthByMinor[g.minorCategoryId] || 0;
       const pct = g.totalAmount > 0 ? Math.min(100, (savedAll / g.totalAmount) * 100) : 0;
 
+      const acc = state.accounts.find(a => a.id === g.accountId);
       const monthlyReq = computeGoalMonthlyRequired(g);
       const expForCat = expectedByMinor[g.minorCategoryId] || 0;
 
@@ -71,6 +79,7 @@ function renderGoals(expectedByMinor) {
                 <div>
                   <div class="fw-semibold">${escapeHtml(g.name)}</div>
                   <div class="small text-muted">Category: <b>${escapeHtml(cat ? cat.name : "—")}</b></div>
+                  <div class="small text-muted">Account: <b>${escapeHtml(acc ? acc.name : "Unlinked")}</b></div>
                 </div>
                 <div class="d-flex gap-2">
                   <button class="btn btn-sm btn-outline-secondary" onclick="editGoal('${g.id}')">Edit</button>
@@ -114,12 +123,13 @@ function upsertGoal() {
   const id = goalId.value?.trim();
   const name = goalName.value.trim();
   const minorId = goalMinor.value;
+  const accId = goalAccount ? goalAccount.value : "";
   const total = safeNumber(goalTotal.value);
 
   const dateISO = goalDeadlineDate.value || "";
   const durationMonthsRaw = goalDurationMonths.value ? clampInt(goalDurationMonths.value, 1, 600, 12) : null;
 
-  if (!name || !minorId || !isFinite(total) || total <= 0) return;
+  if (!name || !minorId || !accId || !isFinite(total) || total <= 0) return;
 
   const cat = getCategory(minorId);
   if (!cat || cat.majorKey !== "sinking") {
@@ -144,6 +154,7 @@ function upsertGoal() {
     if (!g) return;
     g.name = name;
     g.minorCategoryId = minorId;
+    g.accountId = accId;
     g.totalAmount = total;
     g.deadlineISO = deadlineISO;
     showToast("Goal updated.");
@@ -152,6 +163,7 @@ function upsertGoal() {
       id: uid(),
       name,
       minorCategoryId: minorId,
+      accountId: accId,
       totalAmount: total,
       deadlineISO,
       createdAt: new Date().toISOString(),
@@ -174,6 +186,7 @@ window.editGoal = function (id) {
   goalId.value = g.id;
   goalName.value = g.name;
   goalMinor.value = g.minorCategoryId;
+  if (goalAccount) goalAccount.value = g.accountId || "";
   goalTotal.value = String(g.totalAmount || 0);
 
   goalDeadlineDate.value = g.deadlineISO || "";

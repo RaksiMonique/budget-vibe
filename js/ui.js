@@ -190,6 +190,7 @@ const goalModalTitle = document.getElementById("goalModalTitle");
 const goalId = document.getElementById("goalId");
 const goalName = document.getElementById("goalName");
 const goalMinor = document.getElementById("goalMinor");
+const goalAccount = document.getElementById("goalAccount");
 const goalTotal = document.getElementById("goalTotal");
 const goalDeadlineDate = document.getElementById("goalDeadlineDate");
 const goalDurationMonths = document.getElementById("goalDurationMonths");

@@ -71,6 +71,7 @@ function init() {
   if (!Array.isArray(state.debts)) state.debts = [];
   if (!Array.isArray(state.otherAssets)) state.otherAssets = [];
   if (!Array.isArray(state.rentals)) state.rentals = [];
+  if (!Array.isArray(state.goals)) state.goals = [];
 
   if (!Array.isArray(state.billPayments)) state.billPayments = [];
   if (!Array.isArray(state.stocksMaster)) state.stocksMaster = [];

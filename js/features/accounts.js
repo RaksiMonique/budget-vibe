@@ -22,36 +22,8 @@ function initAccounts() {
 function renderAccounts() {
   if (!accountsTbody) return;
 
-  // Calculate current balances
-  // Balance = Initial + Inflow - Outflow
-  const balances = {};
-  state.accounts.forEach(a => {
-    balances[a.id] = safeNumber(a.initialBalance);
-  });
-
-  state.transactions.forEach(t => {
-    if (!t.accountId) return;
-    if (balances[t.accountId] === undefined) return;
-
-    const cat = getCategory(t.minorCategoryId);
-    if (!cat) return; // Should not happen often
-    const type = MAJOR_TYPES[cat.majorKey];
-
-    if (type === 'transfer') {
-      // For transfers, 'in' adds to balance, 'out' subtracts.
-      // This correctly handles moving money between any two accounts.
-      if (t.transferType === 'in') {
-        balances[t.accountId] += safeNumber(t.amount);
-      } else { // 'out' or undefined for legacy transfers
-        balances[t.accountId] -= safeNumber(t.amount);
-      }
-    } else if (type === "inflow") {
-      balances[t.accountId] += safeNumber(t.amount);
-    } else {
-      // Outflow or Savings (treated as money leaving the account)
-      balances[t.accountId] -= safeNumber(t.amount);
-    }
-  });
+  const balances = computeAccountBalances();
+  const actualAllTimeByMinor = computeActualByMinor(null, null);
 
   // Group accounts by type
   const groupedAccounts = {};
@@ -81,9 +53,26 @@ function renderAccounts() {
 
       accountsInGroup.forEach(a => {
         const current = balances[a.id];
+
+        // Find linked goals
+        const linkedGoals = state.goals.filter(g => g.accountId === a.id);
+        let goalsHtml = "";
+        if (linkedGoals.length > 0) {
+          goalsHtml = `<div class="mt-1 small text-muted">`;
+          linkedGoals.forEach(g => {
+            const saved = actualAllTimeByMinor[g.minorCategoryId] || 0;
+            const pct = g.totalAmount > 0 ? Math.min(100, (saved / g.totalAmount) * 100).toFixed(0) : 0;
+            goalsHtml += `<div><span class="badge bg-light text-dark border me-1">Goal</span> ${escapeHtml(g.name)}: ${formatMoney(saved)} / ${formatMoney(g.totalAmount)} (${pct}%)</div>`;
+          });
+          goalsHtml += `</div>`;
+        }
+
         html += `
           <tr>
-            <td class="ps-4">${escapeHtml(a.name)}</td>
+            <td class="ps-4">
+              <div class="fw-medium">${escapeHtml(a.name)}</div>
+              ${goalsHtml}
+            </td>
             <td class="text-end text-muted">${formatMoney(a.initialBalance)}</td>
             <td class="text-end fw-bold ${current < 0 ? 'text-danger' : ''}">${formatMoney(current)}</td>
             <td>
@@ -147,9 +136,10 @@ function deleteAccount(id) {
   if (!a) return;
 
   // Check if used in transactions
-  const used = state.transactions.some(t => t.accountId === id);
-  if (used) {
-    alert("Cannot delete account: It has associated transactions. Delete them first.");
+  const usedInTx = state.transactions.some(t => t.accountId === id);
+  const usedInGoals = state.goals.some(g => g.accountId === id);
+  if (usedInTx || usedInGoals) {
+    alert("Cannot delete account: It has associated transactions or savings goals. Delete/unlink them first.");
     return;
   }
 
@@ -166,4 +156,38 @@ function seedStarterAccounts() {
     { id: uid(), name: "Cash", type: "Cash", initialBalance: 0, createdAt: new Date().toISOString() },
     { id: uid(), name: "Checking", type: "Checking", initialBalance: 0, createdAt: new Date().toISOString() }
   ];
+}
+
+function computeAccountBalances() {
+  const balances = {};
+  if (!state.accounts) return balances;
+
+  // Initialize with starting balances
+  state.accounts.forEach(a => { balances[a.id] = safeNumber(a.initialBalance); });
+
+  if (!state.transactions) return balances;
+
+  // Process transactions
+  state.transactions.forEach(t => {
+    if (balances[t.accountId] === undefined) return;
+
+    const amt = safeNumber(t.amount);
+
+    // Handle transfers
+    if (t.transferId) {
+      if (t.transferType === 'in') balances[t.accountId] += amt;
+      else if (t.transferType === 'out') balances[t.accountId] -= amt;
+      return;
+    }
+
+    // Handle standard income/expense
+    const cat = getCategory(t.minorCategoryId);
+    if (!cat) return;
+
+    const type = MAJOR_TYPES[cat.majorKey];
+    if (type === 'inflow') balances[t.accountId] += amt;
+    else if (type === 'outflow') balances[t.accountId] -= amt;
+  });
+
+  return balances;
 }
