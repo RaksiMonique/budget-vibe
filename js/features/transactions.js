@@ -1,5 +1,8 @@
 function initTransactions() {
   modalTransactionEl.addEventListener("show.bs.modal", () => {
+    txNewMinorWrap.style.display = 'none';
+    txNewMinorName.value = '';
+
     if (!txId.value) {
       setTxModalMode("add");
       txDate.value = toISODate(new Date());
@@ -7,6 +10,7 @@ function initTransactions() {
       txAmount.value = "";
       if (!txMajor.value) txMajor.value = "variable";
       repopulateTxMinorOptions(txMajor.value, true);
+      toggleNewMinorInput();
     }
     // Populate accounts dropdown
     const currentAccId = txAccount.value;
@@ -26,11 +30,18 @@ function initTransactions() {
 
   txMajor.addEventListener("change", () => {
     repopulateTxMinorOptions(txMajor.value, true);
+    toggleNewMinorInput();
     checkBillSinkingLink();
   });
 
   txAccount.addEventListener("change", updateTxAccountBalance);
-  txMinor.addEventListener("change", checkBillSinkingLink);
+
+  txMinor.addEventListener("change", () => {
+    toggleNewMinorInput();
+    checkBillSinkingLink();
+  });
+
+  btnSaveNewTxMinor.addEventListener('click', saveNewTxMinorCategory);
 
   txForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransaction(false); });
   txSubmitAddAnotherBtn.addEventListener("click", () => upsertTransaction(true));
@@ -127,6 +138,11 @@ function upsertTransaction(keepOpen = false) {
   const originalMinorId = txMinor.value;
   const amount = safeNumber(txAmount.value);
   const desc = txDesc.value.trim();
+
+  if (originalMinorId === '--new--') {
+    showToast("Please select or save a new minor category.");
+    return;
+  }
 
   let finalMinorId = originalMinorId;
 
@@ -245,11 +261,58 @@ function repopulateTxMinorOptions(majorKey, forceSelectFirst) {
     .filter(c => c.majorKey === majorKey)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  txMinor.innerHTML = minors.length
-    ? minors.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
-    : `<option value="" disabled selected>No minor categories in this major</option>`;
+  const optionsHtml = minors.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  const addNewOption = `<option value="--new--">-- Add New Category --</option>`;
 
-  if (forceSelectFirst && minors.length) txMinor.value = minors[0].id;
+  txMinor.innerHTML = addNewOption + optionsHtml;
+
+  if (forceSelectFirst && minors.length) {
+    txMinor.value = minors[0].id;
+  } else if (!minors.length) {
+    txMinor.value = "--new--";
+  }
+}
+
+function toggleNewMinorInput() {
+  if (txMinor.value === '--new--') {
+    txNewMinorWrap.style.display = 'block';
+    txNewMinorName.focus();
+  } else {
+    txNewMinorWrap.style.display = 'none';
+  }
+}
+
+function saveNewTxMinorCategory() {
+  const newName = txNewMinorName.value.trim();
+  const majorKey = txMajor.value;
+
+  if (!newName) {
+    showToast("Please enter a category name.");
+    return;
+  }
+
+  const dupe = state.minorCategories.find(c =>
+    c.majorKey === majorKey &&
+    c.name.toLowerCase() === newName.toLowerCase()
+  );
+  if (dupe) {
+    showToast("That category already exists.");
+    return;
+  }
+
+  const newCategory = {
+    id: uid(), majorKey, name: newName,
+    manualExpectedMonthly: 0, createdAt: new Date().toISOString(),
+  };
+  state.minorCategories.push(newCategory);
+  saveState();
+  showToast("Category added.");
+
+  txNewMinorName.value = '';
+  repopulateTxMinorOptions(majorKey, false);
+  txMinor.value = newCategory.id;
+  toggleNewMinorInput();
+  checkBillSinkingLink();
 }
 
 function checkBillSinkingLink() {
