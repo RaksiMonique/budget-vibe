@@ -9,12 +9,19 @@ function initTransactions() {
       repopulateTxMinorOptions(txMajor.value, true);
     }
     // Populate accounts dropdown
+    const currentAccId = txAccount.value;
     const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
     txAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
-    if (!txId.value && accs.length) txAccount.value = accs[0].id;
+    
+    if (currentAccId && accs.some(a => a.id === currentAccId)) {
+      txAccount.value = currentAccId;
+    } else if (!txId.value && accs.length) {
+      txAccount.value = accs[0].id;
+    }
 
     // After everything, check for the link
     checkBillSinkingLink();
+    updateTxAccountBalance();
   });
 
   txMajor.addEventListener("change", () => {
@@ -22,6 +29,7 @@ function initTransactions() {
     checkBillSinkingLink();
   });
 
+  txAccount.addEventListener("change", updateTxAccountBalance);
   txMinor.addEventListener("change", checkBillSinkingLink);
 
   txForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransaction(false); });
@@ -278,4 +286,18 @@ function checkBillSinkingLink() {
     txBillFundWrap.style.display = "none";
     txUseBillFund.checked = false;
   }
+}
+
+function updateTxAccountBalance() {
+  if (!txAccountBalance) return;
+  const accId = txAccount.value;
+  if (!accId) {
+    txAccountBalance.textContent = "—";
+    txAccountBalance.className = "fw-bold";
+    return;
+  }
+  const balances = computeAccountBalances();
+  const bal = balances[accId] || 0;
+  txAccountBalance.textContent = formatMoney(bal);
+  txAccountBalance.className = "fw-bold " + (bal < 0 ? "text-danger" : "text-success");
 }

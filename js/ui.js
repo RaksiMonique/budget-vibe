@@ -178,6 +178,7 @@ const txSubmitAddAnotherBtn = document.getElementById("txSubmitAddAnotherBtn");
 const txId = document.getElementById("txId");
 const txDate = document.getElementById("txDate");
 const txAccount = document.getElementById("txAccount");
+const txAccountBalance = document.getElementById("txAccountBalance");
 const txMajor = document.getElementById("txMajor");
 const txMinor = document.getElementById("txMinor");
 const txDesc = document.getElementById("txDesc");
