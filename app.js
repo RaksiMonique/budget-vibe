@@ -32,8 +32,6 @@ const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 
 let state = loadState();
 let budgetDonutChart = null;
-let averagesBarChart = null;
-let netWorthChart = null;
 
 init();
 
@@ -171,16 +169,7 @@ function wireEvents() {
     });
   });
 
-  /* Averages */
-  btnAvgRefresh.addEventListener("click", () => {
-    state.ui.avgStart = avgStart.value || state.ui.avgStart;
-    state.ui.avgEnd = avgEnd.value || state.ui.avgEnd;
-    saveState();
-    renderAverages();
-  });
-  avgStart.addEventListener("change", () => { state.ui.avgStart = avgStart.value; saveState(); renderAverages(); });
-  avgEnd.addEventListener("change", () => { state.ui.avgEnd = avgEnd.value; saveState(); renderAverages(); });
-
+  initAverages();
   initStocks();
   initTransactions();
   initDividends();
@@ -189,6 +178,7 @@ function wireEvents() {
   initDebts();
   initRentals();
   initAssets();
+  initNetWorth();
 
   initModalAutoFocus();
 }
@@ -455,147 +445,6 @@ function renderBudgetTable(expectedByMinor, actualByMinor) {
   }
 
   budgetTbody.innerHTML = rows || `<tr><td colspan="6" class="text-muted">No categories yet.</td></tr>`;
-}
-
-/* =========================
-   Averages Tab (UPDATED % denominator)
-   ========================= */
-function renderAverages() {
-  if (!avgTbody) return;
-
-  const startISO = avgStart.value || state.ui.avgStart;
-  const endISO = avgEnd.value || state.ui.avgEnd;
-
-  if (!startISO || !endISO) {
-    avgMonths.value = "—";
-    avgIncomeValue.textContent = "—";
-    avgExpenseValue.textContent = "—";
-    avgTbody.innerHTML = `<tr><td colspan="4" class="text-muted">Select a date range.</td></tr>`;
-    return;
-  }
-
-  const start = parseISODate(startISO);
-  const end = parseISODate(endISO);
-  if (!start || !end || start > end) {
-    avgMonths.value = "—";
-    avgIncomeValue.textContent = "—";
-    avgExpenseValue.textContent = "—";
-    avgTbody.innerHTML = `<tr><td colspan="4" class="text-muted">Invalid range. Start must be <= End.</td></tr>`;
-    return;
-  }
-
-  const monthsCount = countMonthsInclusive(start, end);
-  avgMonths.value = String(monthsCount);
-
-  // Sum by category for range
-  const sumsByMinor = {};
-  for (const t of state.transactions) {
-    if (!t.date) continue;
-    if (!isInRange(t.date, startISO, endISO)) continue;
-    sumsByMinor[t.minorCategoryId] = (sumsByMinor[t.minorCategoryId] || 0) + safeNumber(t.amount);
-  }
-
-  // Avg monthly income
-  let incomeTotal = 0;
-  for (const c of state.minorCategories) {
-    if (c.majorKey !== "income") continue;
-    incomeTotal += (sumsByMinor[c.id] || 0);
-  }
-  const avgIncome = monthsCount > 0 ? (incomeTotal / monthsCount) : 0;
-  avgIncomeValue.textContent = formatMoney(avgIncome);
-
-  // Avg monthly total expenses (outflow categories only)
-  let expenseTotal = 0;
-  for (const c of state.minorCategories) {
-    const type = MAJOR_TYPES[c.majorKey];
-    if (type !== "outflow") continue;
-    expenseTotal += (sumsByMinor[c.id] || 0);
-  }
-  const avgTotalExpenses = monthsCount > 0 ? (expenseTotal / monthsCount) : 0;
-  avgExpenseValue.textContent = formatMoney(avgTotalExpenses);
-
-  const sortedCats = state.minorCategories
-    .slice()
-    .sort((a, b) => (a.majorKey + a.name).localeCompare(b.majorKey + b.name));
-
-  const rows = sortedCats.map(c => {
-    const total = sumsByMinor[c.id] || 0;
-    const avg = monthsCount > 0 ? (total / monthsCount) : 0;
-
-    const type = MAJOR_TYPES[c.majorKey];
-
-    let pctStr = "—";
-    // Only compute % for outflow categories against total outflow
-    if (type === "outflow") {
-      const pct = avgTotalExpenses > 0 ? (avg / avgTotalExpenses) * 100 : 0;
-      pctStr = avgTotalExpenses > 0 ? `${pct.toFixed(1)}%` : "—";
-    }
-
-    return `
-      <tr>
-        <td>${escapeHtml(getMajorLabel(c.majorKey))}</td>
-        <td>${escapeHtml(c.name)}</td>
-        <td class="text-end">${formatMoney(avg)}</td>
-        <td class="text-end">${pctStr}</td>
-      </tr>
-    `;
-  }).join("");
-
-  avgTbody.innerHTML = rows || `<tr><td colspan="4" class="text-muted">No categories yet.</td></tr>`;
-
-  renderAveragesBarChart(sortedCats, sumsByMinor, monthsCount);
-}
-
-function renderAveragesBarChart(sortedCats, sumsByMinor, monthsCount) {
-  const ctx = document.getElementById("averagesBarChart")?.getContext("2d");
-  if (!ctx) return;
-
-  const chartData = sortedCats
-    .map(c => {
-      const total = sumsByMinor[c.id] || 0;
-      const avg = monthsCount > 0 ? (total / monthsCount) : 0;
-      return {
-        label: c.name,
-        avg: avg,
-        majorKey: c.majorKey,
-        type: MAJOR_TYPES[c.majorKey]
-      };
-    })
-    .filter(d => d.type === "outflow" && d.avg > 0)
-    .sort((a, b) => b.avg - a.avg)
-    .slice(0, 15); // Top 15
-
-  const labels = chartData.map(d => d.label);
-  const data = chartData.map(d => d.avg);
-  const colors = chartData.map(d => MAJOR_CATEGORIES.find(m => m.key === d.majorKey)?.color || "#cccccc");
-
-  if (averagesBarChart) {
-    averagesBarChart.data.labels = labels;
-    averagesBarChart.data.datasets[0].data = data;
-    averagesBarChart.data.datasets[0].backgroundColor = colors;
-    averagesBarChart.update();
-  } else {
-    averagesBarChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: labels,
-        datasets: [{
-          label: "Average Monthly Spend",
-          data: data,
-          backgroundColor: colors,
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { x: { beginAtZero: true } },
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
-  }
 }
 
 /* =========================
@@ -1288,100 +1137,6 @@ function upsertTransfer() {
   showToast("Transfer recorded.");
   closeModal("modalTransfer");
   refreshAll();
-}
-
-/* =========================
-   Net Worth
-   ========================= */
-function renderNetWorth() {
-  if (!nwTbody) return;
-
-  // 1. Calculate Assets
-  // Accounts > 0
-  let cashAssets = 0;
-  let investmentAssets = 0;
-  
-  // Calculate current balances first (reusing logic from renderAccounts)
-  const balances = {};
-  state.accounts.forEach(a => balances[a.id] = safeNumber(a.initialBalance));
-  state.transactions.forEach(t => {
-    if (!t.accountId || balances[t.accountId] === undefined) return;
-    const cat = getCategory(t.minorCategoryId);
-    const type = cat ? MAJOR_TYPES[cat.majorKey] : null;
-    if (type === 'transfer') {
-      if (t.transferType === 'in') balances[t.accountId] += safeNumber(t.amount);
-      else balances[t.accountId] -= safeNumber(t.amount);
-    } else if (type === "inflow") {
-      balances[t.accountId] += safeNumber(t.amount);
-    } else {
-      balances[t.accountId] -= safeNumber(t.amount);
-    }
-  });
-
-  state.accounts.forEach(a => {
-    const bal = balances[a.id];
-    if (bal > 0) {
-      if (a.type === 'Investment') investmentAssets += bal;
-      else cashAssets += bal;
-    }
-  });
-
-  // Stocks
-  const stockAssets = computeTotalStockValue();
-  // Other Assets
-  const otherAssets = state.otherAssets.reduce((sum, a) => sum + safeNumber(a.value), 0);
-
-  const totalAssets = cashAssets + investmentAssets + stockAssets + otherAssets;
-
-  // 2. Calculate Liabilities
-  // Accounts < 0
-  let accountLiabilities = 0;
-  state.accounts.forEach(a => {
-    const bal = balances[a.id];
-    if (bal < 0) accountLiabilities += Math.abs(bal);
-  });
-
-  // Debts from Debt Snowball
-  let otherDebts = state.debts.reduce((sum, d) => sum + safeNumber(d.balance), 0);
-  const totalLiabilities = accountLiabilities + otherDebts;
-
-  // 3. Render
-  nwAssets.textContent = formatMoney(totalAssets);
-  nwLiabilities.textContent = formatMoney(totalLiabilities);
-  const netWorth = totalAssets - totalLiabilities;
-  nwTotal.textContent = formatMoney(netWorth);
-  nwTotal.classList.toggle("text-danger", netWorth < 0);
-  nwTotal.classList.toggle("text-success", netWorth >= 0);
-
-  nwTbody.innerHTML = `
-    <tr><td>Cash & Bank Accounts</td><td class="text-end">${formatMoney(cashAssets)}</td></tr>
-    <tr><td>Investment Accounts</td><td class="text-end">${formatMoney(investmentAssets)}</td></tr>
-    <tr><td>Stock Holdings</td><td class="text-end">${formatMoney(stockAssets)}</td></tr>
-    <tr><td>Property & Other Assets</td><td class="text-end">${formatMoney(otherAssets)}</td></tr>
-    <tr class="table-light fw-bold"><td>Total Assets</td><td class="text-end">${formatMoney(totalAssets)}</td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
-    <tr><td>Credit Cards / Overdrafts</td><td class="text-end text-danger">-${formatMoney(accountLiabilities)}</td></tr>
-    <tr><td>Other Debts (Loans, etc.)</td><td class="text-end text-danger">-${formatMoney(otherDebts)}</td></tr>
-    <tr class="table-light fw-bold"><td>Total Liabilities</td><td class="text-end text-danger">-${formatMoney(totalLiabilities)}</td></tr>
-  `;
-
-  // 4. Chart
-  const ctx = document.getElementById("netWorthChart")?.getContext("2d");
-  if (ctx) {
-    if (netWorthChart) netWorthChart.destroy();
-    netWorthChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Assets', 'Liabilities'],
-        datasets: [{
-          data: [totalAssets, totalLiabilities],
-          backgroundColor: ['#69856D', '#C27250'],
-          borderWidth: 0
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-    });
-  }
 }
 
 /* =========================
