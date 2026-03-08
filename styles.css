@@ -352,6 +352,9 @@ body{
   padding-right: .5rem;
   margin-top: 0 !important;
   gap: 0;
+  position: sticky;
+  top: 20px;
+  z-index: 5;
 }
 
 .tabs-vertical-shell .nav-tabs .nav-item{
@@ -386,6 +389,11 @@ body{
     overflow-x: auto;
     flex-wrap: nowrap;
     gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-main);
+    padding: 10px 0;
   }
   .tabs-vertical-shell .nav-tabs .nav-link{
     white-space: nowrap;
