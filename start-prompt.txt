@@ -77,7 +77,9 @@ Change the website so that the month you are working in is more visible/obvious 
 Add house rental income tab
 
 
+Update 8:
 
+link savings goal to a specific account (chosen by the user). update the website so the user can see where the savings goals are saved and they can see what savings goal are saved in th accounts on the account tab. also allow them to see the value/progress of each the savings goal related to each account
 
 
 
