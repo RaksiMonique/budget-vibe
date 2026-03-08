@@ -1084,3 +1084,209 @@ function seedStarterCategories() {
     createdAt: new Date().toISOString(),
   }));
 }
+
+/* =========================================================
+   STOCKS OVERRIDES (To support Portfolio Grouping)
+   ========================================================= */
+
+window.renderStocks = function() {
+  // 1. Render Master List
+  const masterList = state.stocksMaster.slice().sort((a,b) => a.ticker.localeCompare(b.ticker));
+  stocksMasterTbody.innerHTML = masterList.map(s => `
+    <tr>
+      <td><span class="fw-bold">${escapeHtml(s.ticker)}</span></td>
+      <td>${escapeHtml(s.market)}</td>
+      <td class="text-end">${formatMoney(s.price)}</td>
+      <td>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" onclick="editStockMaster('${s.id}')">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteStockMaster('${s.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="4" class="text-muted">No stocks in master list.</td></tr>`;
+
+  // 2. Render Holdings (Grouped by Portfolio)
+  const holdings = state.holdings.slice();
+  const byPortfolio = {};
+  const portfolios = new Set();
+
+  holdings.forEach(h => {
+    const p = h.portfolio || "Uncategorized";
+    if (!byPortfolio[p]) byPortfolio[p] = [];
+    byPortfolio[p].push(h);
+    portfolios.add(p);
+  });
+
+  // Update datalist for portfolio input
+  if (document.getElementById('portfolioList')) {
+    document.getElementById('portfolioList').innerHTML = Array.from(portfolios)
+      .sort()
+      .map(p => `<option value="${escapeHtml(p)}">`)
+      .join("");
+  }
+
+  let holdingsHtml = "";
+  const sortedPortfolios = Array.from(portfolios).sort();
+
+  sortedPortfolios.forEach(p => {
+    const group = byPortfolio[p];
+    // Header Row
+    holdingsHtml += `
+      <tr class="table-group-header table-light">
+        <td colspan="7" class="fw-bold text-uppercase small text-muted pt-3 pb-1">${escapeHtml(p)}</td>
+      </tr>
+    `;
+
+    holdingsHtml += group.map(h => {
+      const stock = state.stocksMaster.find(s => s.id === h.stockId);
+      const ticker = stock ? stock.ticker : "???";
+      const currentPrice = stock ? safeNumber(stock.price) : 0;
+      const avgBuy = safeNumber(h.avgPrice);
+      const shares = safeNumber(h.shares);
+      
+      const cost = avgBuy * shares;
+      const value = currentPrice * shares;
+      const gain = value - cost;
+      const gainClass = gain >= 0 ? "text-success" : "text-danger";
+
+      return `
+        <tr>
+          <td>${escapeHtml(ticker)}</td>
+          <td class="text-end">${formatMoney(avgBuy)}</td>
+          <td class="text-end">${shares}</td>
+          <td class="text-end">${formatMoney(cost)}</td>
+          <td class="text-end fw-bold">${formatMoney(value)}</td>
+          <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  });
+
+  holdingsTbody.innerHTML = holdingsHtml || `<tr><td colspan="7" class="text-muted">No holdings added.</td></tr>`;
+
+  // 3. Render Chart (Total Allocation by Ticker)
+  renderStocksChart();
+};
+
+window.upsertHolding = function() {
+  const id = holdingId.value?.trim();
+  const stockId = holdingStockId.value;
+  const portfolio = holdingPortfolio.value?.trim() || "General";
+  const avgPrice = safeNumber(holdingAvgPrice.value);
+  const shares = safeNumber(holdingShares.value);
+
+  if (!stockId || shares <= 0) return;
+
+  if (id) {
+    const h = state.holdings.find(x => x.id === id);
+    if (h) {
+      h.stockId = stockId;
+      h.portfolio = portfolio;
+      h.avgPrice = avgPrice;
+      h.shares = shares;
+      showToast("Holding updated.");
+    }
+  } else {
+    state.holdings.push({
+      id: uid(),
+      stockId,
+      portfolio,
+      avgPrice,
+      shares,
+      createdAt: new Date().toISOString()
+    });
+    showToast("Holding added.");
+  }
+  saveState();
+  holdingForm.reset();
+  holdingId.value = "";
+  refreshAll();
+};
+
+window.editHolding = function(id) {
+  const h = state.holdings.find(x => x.id === id);
+  if (!h) return;
+  holdingId.value = h.id;
+  holdingStockId.value = h.stockId;
+  holdingPortfolio.value = h.portfolio || "";
+  holdingAvgPrice.value = h.avgPrice;
+  holdingShares.value = h.shares;
+};
+
+window.deleteHolding = function(id) {
+  if(!confirm("Delete this holding?")) return;
+  state.holdings = state.holdings.filter(x => x.id !== id);
+  saveState();
+  refreshAll();
+};
+
+/* Re-implement Master List actions to ensure they work with the new render */
+window.editStockMaster = function(id) {
+  const s = state.stocksMaster.find(x => x.id === id);
+  if (!s) return;
+  stockMasterId.value = s.id;
+  stockTicker.value = s.ticker;
+  stockMarket.value = s.market;
+  stockPrice.value = s.price;
+};
+
+window.deleteStockMaster = function(id) {
+  if (state.holdings.some(h => h.stockId === id)) {
+    alert("Cannot delete stock: referenced by holdings.");
+    return;
+  }
+  if(!confirm("Delete this stock?")) return;
+  state.stocksMaster = state.stocksMaster.filter(x => x.id !== id);
+  saveState();
+  refreshAll();
+};
+
+function renderStocksChart() {
+  const ctx = document.getElementById("stocksChart")?.getContext("2d");
+  if (!ctx) return;
+
+  const valueByPortfolio = {};
+  state.holdings.forEach(h => {
+    const s = state.stocksMaster.find(x => x.id === h.stockId);
+    if (s) {
+      const portfolioName = h.portfolio || "Uncategorized";
+      const val = safeNumber(s.price) * safeNumber(h.shares);
+      valueByPortfolio[portfolioName] = (valueByPortfolio[portfolioName] || 0) + val;
+    }
+  });
+
+  const labels = Object.keys(valueByPortfolio);
+  const data = Object.values(valueByPortfolio);
+  const colors = labels.map((_, i) => `hsl(${i * 55 + 210}, 65%, 60%)`);
+
+  if (window.stocksChartInstance) {
+    window.stocksChartInstance.destroy();
+  }
+
+  window.stocksChartInstance = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: colors, borderWidth: 0 }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: (context) => `${context.label}: ${formatMoney(context.parsed)}`,
+          },
+        },
+      },
+    },
+  });
+}
