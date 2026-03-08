@@ -58,7 +58,6 @@ function renderAnnualOverview() {
   }
 
   const net = totals.income - totalExpenses;
-  const spending = totalExpenses - (totals.sinking || 0) - (totals.invest || 0);
 
   let html = `
     <tr>
@@ -98,32 +97,38 @@ function renderAnnualOverview() {
   `;
 
   annualOverviewTbody.innerHTML = html;
-  renderAnnualOverviewCharts(totals, spending, monthlyStats);
+  renderAnnualOverviewCharts(totals, monthlyStats);
 }
 
-function renderAnnualOverviewCharts(totals, spending, monthlyStats) {
+function renderAnnualOverviewCharts(totals, monthlyStats) {
   // 1. Bar Chart (Allocation)
   const ctxBar = document.getElementById("annualOverviewBarChart")?.getContext("2d");
   if (ctxBar) {
     if (annualOverviewBarChart) annualOverviewBarChart.destroy();
 
-    const labels = ["Income", "Spending", "Savings", "Investments"];
-    const data = [totals.income, spending, totals.sinking, totals.invest];
-    const colors = [
-      MAJOR_CATEGORIES.find(m => m.key === "income")?.color || "#A4747D",
-      "#D29F80", // Spending (Variable color)
-      MAJOR_CATEGORIES.find(m => m.key === "sinking")?.color || "#69856D",
-      MAJOR_CATEGORIES.find(m => m.key === "invest")?.color || "#B6C1B1"
-    ];
+    const chartLabels = [];
+    const chartData = [];
+    const chartColors = [];
+
+    MAJOR_CATEGORIES.forEach(cat => {
+      if (cat.key === 'transfer') return; // Skip transfers
+
+      const total = totals[cat.key] || 0;
+      if (total > 0) {
+        chartLabels.push(cat.label);
+        chartData.push(total);
+        chartColors.push(cat.color);
+      }
+    });
 
     annualOverviewBarChart = new Chart(ctxBar, {
       type: "bar",
       data: {
-        labels: labels,
+        labels: chartLabels,
         datasets: [{
-          label: "Total",
-          data: data,
-          backgroundColor: colors,
+          label: "Annual Total",
+          data: chartData,
+          backgroundColor: chartColors,
           borderRadius: 6,
           barPercentage: 0.6
         }]

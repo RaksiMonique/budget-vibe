@@ -87,7 +87,7 @@ When I added a new bill on disappear and only three were visible. Please ensure 
 
 when scrolling down allow the tabs to be seen as we move to the lower part of the page
 
-
+move the rentals tab below the networth tab, move the averages tab above stocks, and move the accounts tab below categories
 
 
 
