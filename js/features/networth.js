@@ -1,4 +1,5 @@
-let netWorthChart = null;
+let netWorthAssetsChart = null;
+let netWorthLiabilitiesChart = null;
 
 function initNetWorth() {
   // No specific event listeners for net worth tab itself,
@@ -78,20 +79,77 @@ function renderNetWorth() {
   `;
 
   // 4. Chart
-  const ctx = document.getElementById("netWorthChart")?.getContext("2d");
-  if (ctx) {
-    if (netWorthChart) netWorthChart.destroy();
-    netWorthChart = new Chart(ctx, {
-      type: 'doughnut',
+  const THEME_COLORS = [
+    "#69856D", // Sage
+    "#D29F80", // Sand
+    "#97866A", // Tan
+    "#B6C1B1", // Sage Light
+    "#C27250", // Clay
+    "#A4747D", // Mauve
+    "#735557", // Plum Soft
+  ];
+
+  // Asset Chart
+  const ctxAssets = document.getElementById("netWorthAssetsChart")?.getContext("2d");
+  if (ctxAssets) {
+    if (netWorthAssetsChart) netWorthAssetsChart.destroy();
+    
+    const assetDataPoints = [
+      { label: 'Cash & Bank', value: cashAssets, color: THEME_COLORS[0] },
+      { label: 'Investment Accounts', value: investmentAssets, color: THEME_COLORS[1] },
+      { label: 'Stock Holdings', value: stockAssets, color: THEME_COLORS[2] },
+      { label: 'Property & Other Assets', value: otherAssets, color: THEME_COLORS[3] },
+    ].filter(d => d.value > 0);
+
+    netWorthAssetsChart = new Chart(ctxAssets, {
+      type: 'pie',
       data: {
-        labels: ['Assets', 'Liabilities'],
+        labels: assetDataPoints.map(d => d.label),
         datasets: [{
-          data: [totalAssets, totalLiabilities],
-          backgroundColor: ['#69856D', '#C27250'],
+          data: assetDataPoints.map(d => d.value),
+          backgroundColor: assetDataPoints.map(d => d.color),
           borderWidth: 0
         }]
       },
-      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          plugins: { 
+              legend: { position: 'bottom', labels: { padding: 10, boxWidth: 12 } },
+              tooltip: { callbacks: { label: (c) => `${c.label}: ${formatMoney(c.raw)}` } }
+          } 
+      }
+    });
+  }
+
+  // Liability Chart
+  const ctxLiabilities = document.getElementById("netWorthLiabilitiesChart")?.getContext("2d");
+  if (ctxLiabilities) {
+    if (netWorthLiabilitiesChart) netWorthLiabilitiesChart.destroy();
+
+    const liabilityDataPoints = [
+        { label: 'Credit/Overdraft', value: accountLiabilities, color: THEME_COLORS[4] },
+        { label: 'Other Debts', value: otherDebts, color: THEME_COLORS[6] },
+    ].filter(d => d.value > 0);
+
+    netWorthLiabilitiesChart = new Chart(ctxLiabilities, {
+      type: 'pie',
+      data: {
+        labels: liabilityDataPoints.map(d => d.label),
+        datasets: [{
+          data: liabilityDataPoints.map(d => d.value),
+          backgroundColor: liabilityDataPoints.map(d => d.color),
+          borderWidth: 0
+        }]
+      },
+      options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          plugins: { 
+              legend: { position: 'bottom', labels: { padding: 10, boxWidth: 12 } },
+              tooltip: { callbacks: { label: (c) => `${c.label}: ${formatMoney(c.raw)}` } }
+          } 
+      }
     });
   }
 }

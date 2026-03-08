@@ -869,7 +869,7 @@
         </div>
 
         <div class="row g-3">
-          <div class="col-lg-8">
+          <div class="col-lg-7">
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <div class="metric metric-savings">
@@ -911,9 +911,22 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-4">
-            <div style="height: 300px; position: relative;">
-              <canvas id="netWorthChart"></canvas>
+          <div class="col-lg-5">
+            <div class="card shadow-soft mb-3">
+              <div class="card-body">
+                <h6 class="card-title text-center mb-3">Asset Allocation</h6>
+                <div style="height: 250px; position: relative;">
+                  <canvas id="netWorthAssetsChart"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card shadow-soft">
+              <div class="card-body">
+                <h6 class="card-title text-center mb-3">Liability Allocation</h6>
+                <div style="height: 250px; position: relative;">
+                  <canvas id="netWorthLiabilitiesChart"></canvas>
+                </div>
+              </div>
             </div>
           </div>
         </div>
