@@ -284,7 +284,10 @@
             <h5 class="mb-0">Accounts</h5>
             <div class="small text-muted">Manage bank accounts, cash, and balances.</div>
           </div>
-          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAccount">Add Account</button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalTransfer">Transfer Money</button>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAccount">Add Account</button>
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -294,7 +297,7 @@
                 <th style="width: 40%;">Name</th>
                 <th class="text-end" style="width: 20%;">Initial Balance</th>
                 <th class="text-end">Current Balance</th>
-                <th style="width: 18%">Actions</th>
+                <th style="width: 25%">Actions</th>
               </tr>
             </thead>
             <tbody id="accountsTbody"></tbody>

@@ -123,17 +123,30 @@ function wireEvents() {
   });
 
   transferForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransfer(); });
-  modalTransferEl.addEventListener("show.bs.modal", () => {
+  modalTransferEl.addEventListener("show.bs.modal", (event) => {
+    const button = event.relatedTarget;
+    const fromAccountId = button ? button.dataset.fromAccountId : null;
+
     transferForm.reset();
     transferDate.value = toISODate(new Date());
     const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
     const options = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
     transferFromAccount.innerHTML = options;
     transferToAccount.innerHTML = options;
-    if (accs.length > 1) {
+
+    if (fromAccountId && accs.some(a => a.id === fromAccountId)) {
+      transferFromAccount.value = fromAccountId;
+      // Pre-select a different 'to' account if possible
+      const toAccount = accs.find(a => a.id !== fromAccountId);
+      if (toAccount) {
+        transferToAccount.value = toAccount.id;
+      }
+    } else if (accs.length > 1) {
       transferFromAccount.value = accs[0].id;
       transferToAccount.value = accs[1].id;
     }
+    updateTransferToOptions();
+    updateTransferFromOptions();
   });
 
   categoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertGeneralMinorCategory(); });
@@ -820,6 +833,34 @@ function upsertTransfer() {
   showToast("Transfer recorded.");
   closeModal("modalTransfer");
   refreshAll();
+}
+
+function updateTransferToOptions() {
+  const fromId = transferFromAccount.value;
+  for (const option of transferToAccount.options) {
+    option.disabled = (option.value === fromId);
+  }
+  // If the current 'to' is now disabled, find a new one
+  if (transferToAccount.options[transferToAccount.selectedIndex]?.disabled) {
+    const firstAvailable = Array.from(transferToAccount.options).find(opt => !opt.disabled);
+    if (firstAvailable) {
+      transferToAccount.value = firstAvailable.value;
+    }
+  }
+}
+
+function updateTransferFromOptions() {
+  const toId = transferToAccount.value;
+  for (const option of transferFromAccount.options) {
+    option.disabled = (option.value === toId);
+  }
+  // If the current 'from' is now disabled, find a new one
+  if (transferFromAccount.options[transferFromAccount.selectedIndex]?.disabled) {
+    const firstAvailable = Array.from(transferFromAccount.options).find(opt => !opt.disabled);
+    if (firstAvailable) {
+      transferFromAccount.value = firstAvailable.value;
+    }
+  }
 }
 
 /* =========================

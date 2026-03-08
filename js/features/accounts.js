@@ -77,6 +77,7 @@ function renderAccounts() {
             <td class="text-end fw-bold ${current < 0 ? 'text-danger' : ''}">${formatMoney(current)}</td>
             <td>
               <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modalTransfer" data-from-account-id="${a.id}">Transfer</button>
                 <button class="btn btn-sm btn-outline-secondary" data-action="edit-account" data-id="${a.id}">Edit</button>
                 <button class="btn btn-sm btn-outline-danger" data-action="delete-account" data-id="${a.id}">Delete</button>
               </div>
