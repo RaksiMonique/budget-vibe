@@ -446,135 +446,150 @@
 
       <!-- Averages -->
       <div class="tab-pane fade" id="pane-averages" role="tabpanel">
-        <div class="card shadow-soft mb-4">
-          <div class="card-body">
+        <!-- View Toggles -->
+        <ul class="nav nav-pills mb-3" id="averages-view-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="avg-view-annual-tab" data-bs-toggle="pill" data-bs-target="#avg-view-annual" type="button" role="tab">Annual Overview</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="avg-view-actuals-tab" data-bs-toggle="pill" data-bs-target="#avg-view-actuals" type="button" role="tab">Average Actuals</button>
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="averages-view-content">
+          <!-- Annual Overview View -->
+          <div class="tab-pane fade show active" id="avg-view-annual" role="tabpanel">
+            <div class="card shadow-soft mb-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                  <div>
+                    <h5 class="mb-0">Annual Overview</h5>
+                    <div class="small text-muted">A summary of totals for the selected year.</div>
+                  </div>
+                  <div class="d-flex gap-2 align-items-end">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <input type="radio" class="btn-check" name="annualGranularity" id="annualMajor" autocomplete="off" value="major" checked>
+                      <label class="btn btn-outline-secondary" for="annualMajor">Major</label>
+
+                      <input type="radio" class="btn-check" name="annualGranularity" id="annualMinor" autocomplete="off" value="minor">
+                      <label class="btn btn-outline-secondary" for="annualMinor">Minor</label>
+                    </div>
+
+                    <div>
+                      <label class="form-label mb-1 small">Select Year</label>
+                      <input id="annualOverviewYear" type="number" class="form-control form-control-sm" min="2000" max="2100" style="width: 100px;">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row g-4 mb-4">
+                  <div class="col-lg-5">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-soft">
+                        <thead>
+                          <tr>
+                            <th>Metric</th>
+                            <th class="text-end">Annual Total</th>
+                          </tr>
+                        </thead>
+                        <tbody id="annualOverviewTbody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-lg-7">
+                    <div style="height: 220px; position: relative;">
+                      <canvas id="annualOverviewBarChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+                
+                <h6 class="small text-muted text-uppercase mb-2">Monthly Trends</h6>
+                <div style="height: 250px; position: relative;">
+                  <canvas id="annualOverviewLineChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Average Actuals View -->
+          <div class="tab-pane fade" id="avg-view-actuals" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
               <div>
-                <h5 class="mb-0">Annual Overview</h5>
-                <div class="small text-muted">A summary of totals for the selected year.</div>
+                <h5 class="mb-0">Average Actuals (Monthly)</h5>
+                <div class="small text-muted">Select a date range. Averages are computed as totals divided by number of months in range.</div>
               </div>
-              <div class="d-flex gap-2 align-items-end">
-                <div class="btn-group btn-group-sm" role="group">
-                  <input type="radio" class="btn-check" name="annualGranularity" id="annualMajor" autocomplete="off" value="major" checked>
-                  <label class="btn btn-outline-secondary" for="annualMajor">Major</label>
+              <button id="btnAvgRefresh" class="btn btn-sm btn-secondary">Recalculate</button>
+            </div>
 
-                  <input type="radio" class="btn-check" name="annualGranularity" id="annualMinor" autocomplete="off" value="minor">
-                  <label class="btn btn-outline-secondary" for="annualMinor">Minor</label>
+            <div class="row g-3 mb-2">
+              <div class="col-md-4">
+                <label class="form-label">Start date</label>
+                <input id="avgStart" type="date" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">End date</label>
+                <input id="avgEnd" type="date" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Months in range</label>
+                <input id="avgMonths" class="form-control" disabled value="—">
+              </div>
+            </div>
+
+            <div class="row g-3 mb-2">
+              <div class="col-lg-6">
+                <div class="card shadow-soft">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <div class="metric-label" style="color: var(--plum);">Average Monthly Income</div>
+                        <div id="avgIncomeValue" class="fs-4 fw-bold">—</div>
+                      </div>
+                      <div class="text-muted small">Reference only</div>
+                    </div>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <label class="form-label mb-1 small">Select Year</label>
-                  <input id="annualOverviewYear" type="number" class="form-control form-control-sm" min="2000" max="2100" style="width: 100px;">
+              <div class="col-lg-6">
+                <div class="card shadow-soft">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <div class="metric-label" style="color: var(--plum);">Average Monthly Total Expenses</div>
+                        <div id="avgExpenseValue" class="fs-4 fw-bold">—</div>
+                      </div>
+                      <div class="text-muted small">Used for % of expenses</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            <div class="row g-4 mb-4">
-              <div class="col-lg-5">
-                <div class="table-responsive">
-                  <table class="table table-sm table-soft">
-                    <thead>
-                      <tr>
-                        <th>Metric</th>
-                        <th class="text-end">Annual Total</th>
-                      </tr>
-                    </thead>
-                    <tbody id="annualOverviewTbody"></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="col-lg-7">
-                <div style="height: 220px; position: relative;">
-                  <canvas id="annualOverviewBarChart"></canvas>
-                </div>
-              </div>
-            </div>
-            
-            <h6 class="small text-muted text-uppercase mb-2">Monthly Trends</h6>
-            <div style="height: 250px; position: relative;">
-              <canvas id="annualOverviewLineChart"></canvas>
-            </div>
-          </div>
-        </div>
 
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Average Actuals (Monthly)</h5>
-            <div class="small text-muted">Select a date range. Averages are computed as totals divided by number of months in range.</div>
-          </div>
-          <button id="btnAvgRefresh" class="btn btn-sm btn-secondary">Recalculate</button>
-        </div>
-
-        <div class="row g-3 mb-2">
-          <div class="col-md-4">
-            <label class="form-label">Start date</label>
-            <input id="avgStart" type="date" class="form-control">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">End date</label>
-            <input id="avgEnd" type="date" class="form-control">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Months in range</label>
-            <input id="avgMonths" class="form-control" disabled value="—">
-          </div>
-        </div>
-
-        <div class="row g-3 mb-2">
-          <div class="col-lg-6">
-            <div class="card shadow-soft">
+            <div class="card shadow-soft mt-3">
               <div class="card-body">
-                <div class="d-flex justify-content-between">
-                  <div>
-                    <div class="metric-label" style="color: var(--plum);">Average Monthly Income</div>
-                    <div id="avgIncomeValue" class="fs-4 fw-bold">—</div>
-                  </div>
-                  <div class="text-muted small">
-                    Reference only
-                  </div>
+                <h6 class="mb-3">Top Average Monthly Expenses (by Minor Category)</h6>
+                <div style="height: 400px; position: relative;">
+                  <canvas id="averagesBarChart"></canvas>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-lg-6">
-            <div class="card shadow-soft">
-              <div class="card-body">
-                <div class="d-flex justify-content-between">
-                  <div>
-                    <div class="metric-label" style="color: var(--plum);">Average Monthly Total Expenses</div>
-                    <div id="avgExpenseValue" class="fs-4 fw-bold">—</div>
-                  </div>
-                  <div class="text-muted small">
-                    Used for % of expenses
-                  </div>
-                </div>
-              </div>
+            <div class="table-responsive mt-3">
+              <table class="table table-sm align-middle table-soft">
+                <thead>
+                  <tr>
+                    <th>Major</th>
+                    <th>Minor</th>
+                    <th class="text-end">Monthly Avg (Actual)</th>
+                    <th class="text-end">% of Avg Total Expenses</th>
+                  </tr>
+                </thead>
+                <tbody id="avgTbody"></tbody>
+              </table>
             </div>
           </div>
-        </div>
-
-        <div class="card shadow-soft mt-3">
-          <div class="card-body">
-            <h6 class="mb-3">Top Average Monthly Expenses (by Minor Category)</h6>
-            <div style="height: 400px; position: relative;">
-              <canvas id="averagesBarChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-sm align-middle table-soft">
-            <thead>
-              <tr>
-                <th>Major</th>
-                <th>Minor</th>
-                <th class="text-end">Monthly Avg (Actual)</th>
-                <th class="text-end">% of Avg Total Expenses</th>
-              </tr>
-            </thead>
-            <tbody id="avgTbody"></tbody>
-          </table>
         </div>
       </div>
 

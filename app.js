@@ -407,29 +407,34 @@ function renderBillsChart(expectedByMinor, actualByMinor) {
     billsBarChart.update();
   } else {
     billsBarChart = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: labels,
         datasets: [
           {
             label: 'Expected',
             data: expectedData,
-            backgroundColor: '#D29F80', // Variable Expenses color
-            borderColor: '#C27250',
-            borderWidth: 1
+            backgroundColor: 'rgba(210, 159, 128, 0.2)',
+            borderColor: '#D29F80', // sand
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
           },
           {
             label: 'Actual',
             data: actualData,
-            backgroundColor: '#735557', // Bills color
-            borderColor: '#533537',
-            borderWidth: 1
+            backgroundColor: 'rgba(115, 85, 87, 0.2)',
+            borderColor: '#735557', // plum-soft
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           y: {
             beginAtZero: true,

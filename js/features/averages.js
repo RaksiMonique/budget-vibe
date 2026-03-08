@@ -3,6 +3,29 @@ let annualOverviewBarChart = null;
 let annualOverviewLineChart = null;
 
 function initAverages() {
+  const avgViewAnnualTab = document.getElementById("avg-view-annual-tab");
+  const avgViewActualsTab = document.getElementById("avg-view-actuals-tab");
+
+  if (avgViewAnnualTab && avgViewActualsTab) {
+    // Set initial view from state, defaulting to 'annual'
+    const currentView = state.ui.averagesView || 'annual';
+    const tabToActivate = currentView === 'annual' ? avgViewAnnualTab : avgViewActualsTab;
+    
+    // Use Bootstrap's Tab instance to show the correct tab
+    const bsTab = new bootstrap.Tab(tabToActivate);
+    bsTab.show();
+
+    // Listen for tab changes to save state
+    avgViewAnnualTab.addEventListener('shown.bs.tab', () => {
+      state.ui.averagesView = 'annual';
+      saveState();
+    });
+    avgViewActualsTab.addEventListener('shown.bs.tab', () => {
+      state.ui.averagesView = 'actuals';
+      saveState();
+    });
+  }
+
   btnAvgRefresh.addEventListener("click", () => {
     state.ui.avgStart = avgStart.value || state.ui.avgStart;
     state.ui.avgEnd = avgEnd.value || state.ui.avgEnd;
