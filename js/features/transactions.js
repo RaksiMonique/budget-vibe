@@ -11,13 +11,18 @@ function initTransactions() {
     // Populate accounts dropdown
     const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
     txAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
-    // If adding new, default to first or previously selected? Default to first for now.
     if (!txId.value && accs.length) txAccount.value = accs[0].id;
+
+    // After everything, check for the link
+    checkBillSinkingLink();
   });
 
   txMajor.addEventListener("change", () => {
     repopulateTxMinorOptions(txMajor.value, true);
+    checkBillSinkingLink();
   });
+
+  txMinor.addEventListener("change", checkBillSinkingLink);
 
   txForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransaction(false); });
   txSubmitAddAnotherBtn.addEventListener("click", () => upsertTransaction(true));
@@ -111,16 +116,25 @@ function upsertTransaction(keepOpen = false) {
   const id = txId.value?.trim();
   const date = txDate.value;
   const accId = txAccount.value;
-  const majorKey = txMajor.value;
-  const minorId = txMinor.value;
+  const originalMinorId = txMinor.value;
   const amount = safeNumber(txAmount.value);
   const desc = txDesc.value.trim();
 
-  if (!date || !accId || !majorKey || !minorId || !isFinite(amount)) return;
+  let finalMinorId = originalMinorId;
 
-  const cat = getCategory(minorId);
-  if (!cat || cat.majorKey !== majorKey) {
-    alert("Selected minor category does not match the selected major category.");
+  // Sinking fund logic override
+  if (txBillFundWrap.style.display !== 'none' && txUseBillFund.checked) {
+    const originalBill = state.bills.find(b => b.minorCategoryId === originalMinorId);
+    if (originalBill && originalBill.sinkingFundLink) {
+      finalMinorId = originalBill.sinkingFundLink;
+    }
+  }
+
+  if (!date || !accId || !finalMinorId || !isFinite(amount)) return;
+
+  const cat = getCategory(finalMinorId);
+  if (!cat) {
+    alert("Could not find the category for this transaction.");
     return;
   }
 
@@ -130,7 +144,7 @@ function upsertTransaction(keepOpen = false) {
 
     t.date = date;
     t.accountId = accId;
-    t.minorCategoryId = minorId;
+    t.minorCategoryId = finalMinorId;
     t.amount = amount;
     t.description = desc;
 
@@ -140,7 +154,7 @@ function upsertTransaction(keepOpen = false) {
       id: uid(),
       date,
       accountId: accId,
-      minorCategoryId: minorId,
+      minorCategoryId: finalMinorId,
       amount,
       description: desc,
       createdAt: new Date().toISOString(),
@@ -228,4 +242,29 @@ function repopulateTxMinorOptions(majorKey, forceSelectFirst) {
     : `<option value="" disabled selected>No minor categories in this major</option>`;
 
   if (forceSelectFirst && minors.length) txMinor.value = minors[0].id;
+}
+
+function checkBillSinkingLink() {
+  const minorId = txMinor.value;
+  const cat = getCategory(minorId);
+
+  // Only applies to "Bills" categories
+  if (!cat || cat.majorKey !== 'bills') {
+    txBillFundWrap.style.display = "none";
+    txUseBillFund.checked = false;
+    return;
+  }
+
+  const bill = state.bills.find(b => b.minorCategoryId === minorId);
+  if (bill && bill.sinkingFundLink) {
+    txBillFundWrap.style.display = "block";
+
+    // Calculate and display available funds
+    const actualAllTimeByMinor = computeActualByMinor(null, null);
+    const available = actualAllTimeByMinor[bill.sinkingFundLink] || 0;
+    txBillFundAvailable.textContent = formatMoney(available);
+  } else {
+    txBillFundWrap.style.display = "none";
+    txUseBillFund.checked = false;
+  }
 }

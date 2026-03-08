@@ -564,6 +564,8 @@ function upsertBill() {
   const amount = safeNumber(billAmount.value);
   const freq = billFreq.value;
   const nextDue = billNextDue.value;
+  const useSinkingFund = billSinkingFund.checked;
+  const sinkingFundLink = (useSinkingFund && billSinkingFundWrap.style.display !== 'none') ? billSinkingFundMinor.value : null;
 
   if (!minorId || !isFinite(amount) || amount <= 0 || !nextDue) return;
 
@@ -583,6 +585,7 @@ function upsertBill() {
     b.amount = amount;
     b.frequency = freq;
     b.nextDueISO = nextDue;
+    b.sinkingFundLink = sinkingFundLink;
     showToast("Bill updated.");
   } else {
     state.bills.push({
@@ -592,6 +595,7 @@ function upsertBill() {
       amount,
       frequency: freq,
       nextDueISO: nextDue,
+      sinkingFundLink: sinkingFundLink,
       createdAt: new Date().toISOString(),
     });
     showToast("Bill added.");
@@ -615,6 +619,18 @@ window.editBill = function (id) {
   billFreq.value = b.frequency;
   billNextDue.value = b.nextDueISO;
 
+  // Must call this first to ensure wrap is visible for correct frequencies
+  toggleBillSinkingFundWrap();
+
+  if (b.sinkingFundLink && billSinkingFundWrap.style.display !== 'none') {
+    billSinkingFund.checked = true;
+    billSinkingFundSelectWrap.style.display = "block";
+    billSinkingFundMinor.value = b.sinkingFundLink;
+  } else {
+    billSinkingFund.checked = false;
+    billSinkingFundSelectWrap.style.display = "none";
+  }
+
   billModalTitle.textContent = "Edit Recurring Bill";
   openModal("modalBill");
 };
@@ -628,6 +644,34 @@ function deleteBill(id) {
     showToast("Bill deleted.");
     refreshAll();
   });
+}
+
+function handleBillModalOpen() {
+  if (!billId.value) {
+    billModalTitle.textContent = "Add Recurring Bill";
+    // Reset sinking fund section for new bills
+    billSinkingFund.checked = false;
+    billSinkingFundSelectWrap.style.display = "none";
+  }
+
+  // Populate sinking funds dropdown
+  const sinkingFunds = state.minorCategories
+    .filter(c => c.majorKey === "sinking")
+    .sort((a, b) => a.name.localeCompare(b.name));
+  billSinkingFundMinor.innerHTML = sinkingFunds.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+
+  // Show/hide based on frequency (must be after form is populated for 'edit')
+  toggleBillSinkingFundWrap();
+}
+
+function toggleBillSinkingFundWrap() {
+  const freq = billFreq.value;
+  const show = freq === 'quarterly' || freq === 'yearly';
+  billSinkingFundWrap.style.display = show ? "block" : "none";
+  if (!show) { // If hiding, also reset the inputs
+    billSinkingFund.checked = false;
+    billSinkingFundSelectWrap.style.display = "none";
+  }
 }
 
 function addByFrequency(dateObj, freq) {

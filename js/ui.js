@@ -205,6 +205,8 @@ const billFreq = document.getElementById("billFreq");
 const billNextDue = document.getElementById("billNextDue");
 const billSinkingFund = document.getElementById("billSinkingFund");
 const billSinkingFundWrap = document.getElementById("billSinkingFundWrap");
+const billSinkingFundSelectWrap = document.getElementById("billSinkingFundSelectWrap");
+const billSinkingFundMinor = document.getElementById("billSinkingFundMinor");
 
 /* Bill Fund Modal */
 const modalBillFundEl = document.getElementById("modalBillFund");
