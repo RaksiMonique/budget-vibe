@@ -602,23 +602,11 @@
           </div>
         </div>
 
-        <!-- Stocks Chart -->
-        <div class="row mb-4">
-          <div class="col-lg-6 offset-lg-3">
-            <div class="card shadow-soft">
-              <div class="card-body">
-                <h6 class="mb-3 text-center">Portfolio Allocation (Current Value)</h6>
-                <div style="height: 300px; position: relative;">
-                  <canvas id="stocksChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-3">
+        <div class="row g-4">
+          <!-- Left Column -->
           <div class="col-lg-6">
-            <div class="card shadow-soft">
+            <!-- Master List Card -->
+            <div class="card shadow-soft mb-4">
               <div class="card-body">
                 <h6 class="mb-2">Stock Master List</h6>
                 <form id="stockMasterForm" class="row g-2 align-items-end">
@@ -643,9 +631,7 @@
                     <button id="stockMasterCancel" class="btn btn-sm btn-outline-secondary" type="button">Cancel</button>
                   </div>
                 </form>
-
                 <hr class="my-3">
-
                 <div class="table-responsive">
                   <table class="table table-sm align-middle table-soft">
                     <thead>
@@ -661,13 +647,28 @@
                 </div>
               </div>
             </div>
+
+            <!-- Graphs Section -->
+            <div id="stocksGraphsContainer">
+              <!-- Main Chart -->
+              <div class="card shadow-soft mb-4">
+                <div class="card-body">
+                  <h6 class="mb-3 text-center">Portfolio Allocation (Current Value)</h6>
+                  <div style="height: 300px; position: relative;">
+                    <canvas id="stocksChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <!-- JS will append portfolio-specific charts here -->
+              <div id="portfolioChartsContainer"></div>
+            </div>
           </div>
 
+          <!-- Right Column -->
           <div class="col-lg-6">
             <div class="card shadow-soft">
               <div class="card-body">
                 <h6 class="mb-2">Holdings</h6>
-
                 <form id="holdingForm" class="row g-2 align-items-end">
                   <input type="hidden" id="holdingId" />
                   <div class="col-sm-3">
@@ -696,11 +697,8 @@
                     <button id="holdingCancel" class="btn btn-sm btn-outline-secondary" type="button">Cancel</button>
                   </div>
                 </form>
-
                 <hr class="my-3">
-
                 <div id="holdingsContainer"></div>
-
                 <div class="small text-muted mt-2">
                   Dividends tab auto-populates from current holdings.
                 </div>

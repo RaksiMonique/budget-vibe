@@ -1,3 +1,16 @@
+const STOCK_THEME_COLORS = [
+  "#69856D", // Sage
+  "#D29F80", // Sand
+  "#C27250", // Clay
+  "#A4747D", // Mauve
+  "#735557", // Plum Soft
+  "#97866A", // Tan
+  "#B6C1B1", // Sage Light
+  "#604653", // Plum
+  "#B25C5A", // Rose
+  "#D3E3EB", // Ice
+];
+
 if (!window.portfolioChartInstances) {
   window.portfolioChartInstances = {};
 }
@@ -41,6 +54,9 @@ function renderStocks() {
     }
   }
   window.portfolioChartInstances = {};
+  const portfolioChartsContainer = document.getElementById("portfolioChartsContainer");
+  if (portfolioChartsContainer) portfolioChartsContainer.innerHTML = "";
+
   if (holdingsContainer) holdingsContainer.innerHTML = "";
 
   const holdings = state.holdings.slice();
@@ -71,70 +87,70 @@ function renderStocks() {
   sortedPortfolios.forEach(p => {
     const group = byPortfolio[p];
     const chartId = `portfolio-chart-${p.replace(/[^a-zA-Z0-9]/g, '')}`;
-    
-    const wrapper = document.createElement("div");
-    wrapper.className = "mb-4";
-    wrapper.innerHTML = `
+
+    // 1. Create and append TABLE to holdingsContainer (right column)
+    const tableWrapper = document.createElement("div");
+    tableWrapper.className = "mb-4";
+    tableWrapper.innerHTML = `
       <h6 class="fw-bold text-uppercase text-muted mb-2">${escapeHtml(p)}</h6>
-      <div class="row g-4 align-items-center">
-        <div class="col-lg-8">
-          <div class="table-responsive">
-            <table class="table table-sm align-middle table-soft mb-0">
-              <thead>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle table-soft mb-0">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th class="text-end">Avg Buy</th>
+              <th class="text-end">Shares</th>
+              <th class="text-end">Cost</th>
+              <th class="text-end">Value</th>
+              <th class="text-end">Gain/Loss</th>
+              <th style="width: 20%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${group.map(h => {
+              const stock = state.stocksMaster.find(s => s.id === h.stockId);
+              const ticker = stock ? stock.ticker : "???";
+              const currentPrice = stock ? safeNumber(stock.price) : 0;
+              const avgBuy = safeNumber(h.avgPrice);
+              const shares = safeNumber(h.shares);
+              const cost = avgBuy * shares;
+              const value = currentPrice * shares;
+              const gain = value - cost;
+              const gainClass = gain >= 0 ? "text-success" : "text-danger";
+              return `
                 <tr>
-                  <th>Ticker</th>
-                  <th class="text-end">Avg Buy</th>
-                  <th class="text-end">Shares</th>
-                  <th class="text-end">Cost</th>
-                  <th class="text-end">Value</th>
-                  <th class="text-end">Gain/Loss</th>
-                  <th style="width: 20%">Actions</th>
+                  <td>${escapeHtml(ticker)}</td>
+                  <td class="text-end">${formatMoney(avgBuy)}</td>
+                  <td class="text-end">${shares}</td>
+                  <td class="text-end">${formatMoney(cost)}</td>
+                  <td class="text-end fw-bold">${formatMoney(value)}</td>
+                  <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
+                      <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                ${group.map(h => {
-                  const stock = state.stocksMaster.find(s => s.id === h.stockId);
-                  const ticker = stock ? stock.ticker : "???";
-                  const currentPrice = stock ? safeNumber(stock.price) : 0;
-                  const avgBuy = safeNumber(h.avgPrice);
-                  const shares = safeNumber(h.shares);
-                  const cost = avgBuy * shares;
-                  const value = currentPrice * shares;
-                  const gain = value - cost;
-                  const gainClass = gain >= 0 ? "text-success" : "text-danger";
-                  return `
-                    <tr>
-                      <td>${escapeHtml(ticker)}</td>
-                      <td class="text-end">${formatMoney(avgBuy)}</td>
-                      <td class="text-end">${shares}</td>
-                      <td class="text-end">${formatMoney(cost)}</td>
-                      <td class="text-end fw-bold">${formatMoney(value)}</td>
-                      <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
-                      <td>
-                        <div class="d-flex gap-2">
-                          <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
-                          <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
-                        </div>
-                      </td>
-                    </tr>
-                  `;
-                }).join("")}
-              </tbody>
-            </table>
-          </div>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>`;
+    if (holdingsContainer) holdingsContainer.appendChild(tableWrapper);
+
+    // 2. Create and append CHART to portfolioChartsContainer (left column)
+    const chartWrapper = document.createElement("div");
+    chartWrapper.className = "card shadow-soft mb-4";
+    chartWrapper.innerHTML = `
+      <div class="card-body">
+        <h6 class="card-title text-center mb-3">Allocation: ${escapeHtml(p)}</h6>
+        <div style="height: 250px; position: relative;">
+          <canvas id="${chartId}"></canvas>
         </div>
-        <div class="col-lg-4">
-          <div class="card shadow-soft">
-            <div class="card-body">
-              <div style="height: 250px; position: relative;">
-                <canvas id="${chartId}"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    if (holdingsContainer) holdingsContainer.appendChild(wrapper);
+      </div>`;
+    if (portfolioChartsContainer) portfolioChartsContainer.appendChild(chartWrapper);
+
     renderPortfolioCompositionChart(chartId, group);
   });
 
@@ -281,7 +297,7 @@ function renderPortfolioCompositionChart(canvasId, holdingsInPortfolio) {
   const labels = Object.keys(valueByStock);
   const data = Object.values(valueByStock);
   const totalValue = data.reduce((a, b) => a + b, 0);
-  const colors = labels.map((_, i) => `hsl(${i * 55 + 210}, 65%, 60%)`);
+  const colors = labels.map((_, i) => STOCK_THEME_COLORS[i % STOCK_THEME_COLORS.length]);
 
   if (window.portfolioChartInstances[canvasId]) {
     window.portfolioChartInstances[canvasId].destroy();
@@ -327,7 +343,7 @@ function renderStocksChart() {
 
   const labels = Object.keys(valueByPortfolio);
   const data = Object.values(valueByPortfolio);
-  const colors = labels.map((_, i) => `hsl(${i * 55 + 210}, 65%, 60%)`);
+  const colors = labels.map((_, i) => STOCK_THEME_COLORS[i % STOCK_THEME_COLORS.length]);
 
   if (window.stocksChartInstance) {
     window.stocksChartInstance.destroy();
