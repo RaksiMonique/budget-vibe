@@ -32,6 +32,7 @@ const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 
 let state = loadState();
 let budgetDonutChart = null;
+let billsBarChart = null;
 
 function init() {
   const now = new Date();
@@ -252,6 +253,7 @@ function refreshAll() {
   renderBillsPaidTracker(sel.year, sel.month);
 
   renderBudgetDonutChart(actualByMinor);
+  renderBillsChart(expectedByMinor, actualByMinor);
   renderAverages();
   renderAnnualOverview();
   renderStocks();
@@ -381,6 +383,69 @@ function renderBudgetDonutChart(actualByMinor) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { position: "bottom" } }
+      }
+    });
+  }
+}
+
+function renderBillsChart(expectedByMinor, actualByMinor) {
+  const ctx = document.getElementById("billsChart")?.getContext("2d");
+  if (!ctx) return;
+
+  const billCategories = state.minorCategories
+    .filter(c => c.majorKey === 'bills')
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const labels = billCategories.map(c => c.name);
+  const expectedData = billCategories.map(c => expectedByMinor[c.id] || 0);
+  const actualData = billCategories.map(c => actualByMinor[c.id] || 0);
+
+  if (billsBarChart) {
+    billsBarChart.data.labels = labels;
+    billsBarChart.data.datasets[0].data = expectedData;
+    billsBarChart.data.datasets[1].data = actualData;
+    billsBarChart.update();
+  } else {
+    billsBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Expected',
+            data: expectedData,
+            backgroundColor: '#D29F80', // Variable Expenses color
+            borderColor: '#C27250',
+            borderWidth: 1
+          },
+          {
+            label: 'Actual',
+            data: actualData,
+            backgroundColor: '#735557', // Bills color
+            borderColor: '#533537',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) { return formatMoney(value); }
+            }
+          }
+        },
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: function(context) { return `${context.dataset.label}: ${formatMoney(context.parsed.y)}`; }
+            }
+          }
+        }
       }
     });
   }
