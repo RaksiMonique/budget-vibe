@@ -81,7 +81,7 @@ Update 8:
 
 link savings goal to a specific account (chosen by the user). update the website so the user can see where the savings goals are saved and they can see what savings goal are saved in th accounts on the account tab. also allow them to see the value/progress of each the savings goal related to each account
 
-add a stock purchase plan tab that will use the information already entered on the stocks and dividends page to recommend next purchase. For each portfolio you can switch between the dividend or ratio plan. The dividend plan recommends you the number of stocks to buy  
+add a stock purchase plan tab that will use the information already entered on the stocks and dividends page to recommend next purchase. For each portfolio you can switch between the dividend or ratio plan. The dividend plan recommends you the number of stocks to buy based on a formula (twelve trailing month dividend yeild multiplied by 100, divided by the stocks current value and multiplied by a number chosen by the user called a multiplier). The number of stocks being recommended to by will always be a whole number. The ratio plan requires the user to put in percentages for each stock, and a target total value of portfolio then calculates the recommended amounts of stocks to buy or sell based on a formula (total value times percentage divided by current value of the stock). Each recommended number of stocks to buy is a whole number 
 
 Error 9:
 
