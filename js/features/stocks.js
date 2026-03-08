@@ -1,22 +1,19 @@
-let stocksChart = null;
-
 function initStocks() {
   stockMasterForm.addEventListener("submit", (e) => { e.preventDefault(); upsertStockMaster(); });
-  stockMasterCancel.addEventListener("click", () => resetStockMasterForm());
+  stockMasterCancel.addEventListener("click", () => { stockMasterForm.reset(); stockMasterId.value = ""; });
 
   holdingForm.addEventListener("submit", (e) => { e.preventDefault(); upsertHolding(); });
-  holdingCancel.addEventListener("click", () => resetHoldingForm());
+  holdingCancel.addEventListener("click", () => { holdingForm.reset(); holdingId.value = ""; });
 }
 
 function renderStocks() {
-  if (!stocksMasterTbody || !holdingsTbody) return;
-
-  const masters = state.stocksMaster.slice().sort((a,b) => a.ticker.localeCompare(b.ticker));
-  stocksMasterTbody.innerHTML = masters.map(s => `
+  // 1. Render Master List
+  const masterList = state.stocksMaster.slice().sort((a,b) => a.ticker.localeCompare(b.ticker));
+  stocksMasterTbody.innerHTML = masterList.map(s => `
     <tr>
-      <td>${escapeHtml(s.ticker)}</td>
+      <td><span class="fw-bold">${escapeHtml(s.ticker)}</span></td>
       <td>${escapeHtml(s.market)}</td>
-      <td class="text-end">${formatNumber(s.currentPrice)}</td>
+      <td class="text-end">${formatMoney(s.price)}</td>
       <td>
         <div class="d-flex gap-2">
           <button class="btn btn-sm btn-outline-secondary" onclick="editStockMaster('${s.id}')">Edit</button>
@@ -24,46 +21,97 @@ function renderStocks() {
         </div>
       </td>
     </tr>
-  `).join("") || `<tr><td colspan="4" class="text-muted">No stocks added yet.</td></tr>`;
+  `).join("") || `<tr><td colspan="4" class="text-muted">No stocks in master list.</td></tr>`;
 
-  const options = masters.map(s => `<option value="${s.id}">${escapeHtml(s.ticker)} (${escapeHtml(s.market)})</option>`).join("");
-  holdingStockId.innerHTML = options || `<option value="" disabled selected>Add stocks in the master list first</option>`;
+  // Also populate the holdings dropdown
+  if (holdingStockId) {
+    holdingStockId.innerHTML = masterList.map(s => `<option value="${s.id}">${escapeHtml(s.ticker)}</option>`).join("") || `<option value="" disabled>Add a stock to master list first</option>`;
+  }
 
-  const holdings = state.holdings.slice().sort((a,b) => {
-    const sa = getStockMaster(a.stockId)?.ticker || "";
-    const sb = getStockMaster(b.stockId)?.ticker || "";
-    return sa.localeCompare(sb);
+  // 2. Render Holdings (Grouped by Portfolio)
+  if (holdingsContainer) holdingsContainer.innerHTML = "";
+
+  const holdings = state.holdings.slice();
+  const byPortfolio = {};
+  const portfolios = new Set();
+
+  holdings.forEach(h => {
+    const p = h.portfolio || "Uncategorized";
+    if (!byPortfolio[p]) byPortfolio[p] = [];
+    byPortfolio[p].push(h);
+    portfolios.add(p);
   });
 
-  holdingsTbody.innerHTML = holdings.map(h => {
-    const s = getStockMaster(h.stockId);
-    const ticker = s ? s.ticker : "—";
-    const curr = s ? safeNumber(s.currentPrice) : 0;
-    const avg = safeNumber(h.avgBuyPrice);
-    const shares = safeNumber(h.shares);
+  // Update datalist for portfolio input
+  if (document.getElementById('portfolioList')) {
+    document.getElementById('portfolioList').innerHTML = Array.from(portfolios)
+      .sort()
+      .map(p => `<option value="${escapeHtml(p)}">`)
+      .join("");
+  }
 
-    const cost = avg * shares;
-    const value = curr * shares;
-    const gl = value - cost;
+  const sortedPortfolios = Array.from(portfolios).sort();
 
-    return `
-      <tr>
-        <td>${escapeHtml(ticker)}</td>
-        <td class="text-end">${formatNumber(avg)}</td>
-        <td class="text-end">${formatNumber(shares)}</td>
-        <td class="text-end">${formatMoney(cost)}</td>
-        <td class="text-end">${formatMoney(value)}</td>
-        <td class="text-end ${gl < 0 ? "text-danger" : "text-success"}">${formatMoney(gl)}</td>
-        <td>
-          <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
-          </div>
-        </td>
-      </tr>
+  if (sortedPortfolios.length === 0 && holdingsContainer) {
+    holdingsContainer.innerHTML = `<div class="text-muted fst-italic">No holdings added.</div>`;
+  }
+
+  sortedPortfolios.forEach(p => {
+    const group = byPortfolio[p];
+    
+    const wrapper = document.createElement("div");
+    wrapper.className = "mb-4";
+    wrapper.innerHTML = `
+      <h6 class="fw-bold text-uppercase text-muted mb-2">${escapeHtml(p)}</h6>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle table-soft mb-0">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th class="text-end">Avg Buy</th>
+              <th class="text-end">Shares</th>
+              <th class="text-end">Cost</th>
+              <th class="text-end">Value</th>
+              <th class="text-end">Gain/Loss</th>
+              <th style="width: 20%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${group.map(h => {
+              const stock = state.stocksMaster.find(s => s.id === h.stockId);
+              const ticker = stock ? stock.ticker : "???";
+              const currentPrice = stock ? safeNumber(stock.price) : 0;
+              const avgBuy = safeNumber(h.avgPrice);
+              const shares = safeNumber(h.shares);
+              const cost = avgBuy * shares;
+              const value = currentPrice * shares;
+              const gain = value - cost;
+              const gainClass = gain >= 0 ? "text-success" : "text-danger";
+              return `
+                <tr>
+                  <td>${escapeHtml(ticker)}</td>
+                  <td class="text-end">${formatMoney(avgBuy)}</td>
+                  <td class="text-end">${shares}</td>
+                  <td class="text-end">${formatMoney(cost)}</td>
+                  <td class="text-end fw-bold">${formatMoney(value)}</td>
+                  <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
+                      <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
     `;
-  }).join("") || `<tr><td colspan="7" class="text-muted">No holdings yet.</td></tr>`;
+    if (holdingsContainer) holdingsContainer.appendChild(wrapper);
+  });
 
+  // 3. Render Chart (Total Allocation by Ticker)
   renderStocksChart();
 }
 
@@ -73,43 +121,33 @@ function upsertStockMaster() {
   const market = stockMarket.value.trim();
   const price = safeNumber(stockPrice.value);
 
-  if (!ticker || !market || !isFinite(price) || price < 0) return;
-
-  const dupe = state.stocksMaster.find(s => s.ticker === ticker && s.market.toLowerCase() === market.toLowerCase() && s.id !== id);
-  if (dupe) { showToast("That ticker/market already exists."); return; }
+  if (!ticker || !market || !isFinite(price) || price < 0) {
+    showToast("Please fill all stock fields with valid values.");
+    return;
+  }
 
   if (id) {
     const s = state.stocksMaster.find(x => x.id === id);
-    if (!s) return;
-    s.ticker = ticker;
-    s.market = market;
-    s.currentPrice = price;
-    s.updatedAt = new Date().toISOString();
-    showToast("Stock updated.");
+    if (s) {
+      s.ticker = ticker;
+      s.market = market;
+      s.price = price;
+      showToast("Stock updated.");
+    }
   } else {
-    state.stocksMaster.push({
-      id: uid(),
-      ticker,
-      market,
-      currentPrice: price,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-    showToast("Stock added.");
+    const dupe = state.stocksMaster.find(s => s.ticker === ticker);
+    if (dupe) {
+      showToast("A stock with this ticker already exists.");
+      return;
+    }
+    state.stocksMaster.push({ id: uid(), ticker, market, price, createdAt: new Date().toISOString() });
+    showToast("Stock added to master list.");
   }
 
   saveState();
-  resetStockMasterForm();
-  renderStocks();
-  renderDividends();
-  refreshTopInvestmentMetrics();
-}
-
-function resetStockMasterForm() {
+  stockMasterForm.reset();
   stockMasterId.value = "";
-  stockTicker.value = "";
-  stockMarket.value = "";
-  stockPrice.value = "";
+  refreshAll();
 }
 
 window.editStockMaster = function(id) {
@@ -118,72 +156,57 @@ window.editStockMaster = function(id) {
   stockMasterId.value = s.id;
   stockTicker.value = s.ticker;
   stockMarket.value = s.market;
-  stockPrice.value = String(s.currentPrice);
+  stockPrice.value = s.price;
 };
 
-function deleteStockMaster(id) {
+window.deleteStockMaster = function(id) {
   const s = state.stocksMaster.find(x => x.id === id);
   if (!s) return;
 
-  showConfirmationModal(`Delete stock ${s.ticker} (${s.market})?`, () => {
-    const usedInHoldings = state.holdings.some(h => h.stockId === id);
-    if (usedInHoldings) {
-      alert("Cannot delete: this stock is linked to holdings. Delete holdings first.");
-      return;
-    }
-
-    state.stocksMaster = state.stocksMaster.filter(x => x.id !== id);
-    for (const y of Object.keys(state.dividends || {})) {
-      if (state.dividends[y] && state.dividends[y][id]) delete state.dividends[y][id];
-    }
-    saveState();
-    showToast("Stock deleted.");
-    resetStockMasterForm();
-    renderStocks();
-    renderDividends();
-    refreshTopInvestmentMetrics();
-  });
+  if (state.holdings.some(h => h.stockId === id)) {
+    alert("Cannot delete stock: referenced by holdings.");
+    return;
+  }
+  if(!confirm("Delete this stock?")) return;
+  state.stocksMaster = state.stocksMaster.filter(x => x.id !== id);
+  saveState();
+  refreshAll();
 }
 
-function upsertHolding() {
+window.upsertHolding = function() {
   const id = holdingId.value?.trim();
   const stockId = holdingStockId.value;
+  const portfolio = holdingPortfolio.value?.trim() || "General";
   const avg = safeNumber(holdingAvgPrice.value);
   const shares = safeNumber(holdingShares.value);
 
-  if (!stockId || !isFinite(avg) || avg < 0 || !isFinite(shares) || shares <= 0) return;
+  if (!stockId || shares <= 0) return;
 
   if (id) {
     const h = state.holdings.find(x => x.id === id);
-    if (!h) return;
-    h.stockId = stockId;
-    h.avgBuyPrice = avg;
-    h.shares = shares;
-    h.updatedAt = new Date().toISOString();
-    showToast("Holding updated.");
+    if (h) {
+      h.stockId = stockId;
+      h.portfolio = portfolio;
+      h.avgPrice = avg;
+      h.shares = shares;
+      showToast("Holding updated.");
+    }
   } else {
     state.holdings.push({
       id: uid(),
       stockId,
-      avgBuyPrice: avg,
+      portfolio,
+      avgPrice: avg,
       shares,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     });
     showToast("Holding added.");
   }
 
   saveState();
-  resetHoldingForm();
-  renderStocks();
-  renderDividends();
-  refreshTopInvestmentMetrics();
-}
-
-function resetHoldingForm() {
+  holdingForm.reset();
   holdingId.value = "";
-  holdingAvgPrice.value = "";
-  holdingShares.value = "";
+  refreshAll();
 }
 
 window.editHolding = function(id) {
@@ -191,33 +214,23 @@ window.editHolding = function(id) {
   if (!h) return;
   holdingId.value = h.id;
   holdingStockId.value = h.stockId;
-  holdingAvgPrice.value = String(h.avgBuyPrice);
-  holdingShares.value = String(h.shares);
+  holdingPortfolio.value = h.portfolio || "";
+  holdingAvgPrice.value = h.avgPrice;
+  holdingShares.value = h.shares;
 };
 
-function deleteHolding(id) {
-  const h = state.holdings.find(x => x.id === id);
-  if (!h) return;
-  showConfirmationModal("Delete this holding?", () => {
-    state.holdings = state.holdings.filter(x => x.id !== id);
-    saveState();
-    showToast("Holding deleted.");
-    resetHoldingForm();
-    renderStocks();
-    renderDividends();
-    refreshTopInvestmentMetrics();
-  });
-}
-
-function getStockMaster(id) {
-  return state.stocksMaster.find(s => s.id === id) || null;
+window.deleteHolding = function(id) {
+  if(!confirm("Delete this holding?")) return;
+  state.holdings = state.holdings.filter(x => x.id !== id);
+  saveState();
+  refreshAll();
 }
 
 function computeTotalStockValue() {
   let total = 0;
   for (const h of state.holdings) {
-    const s = getStockMaster(h.stockId);
-    const curr = s ? safeNumber(s.currentPrice) : 0;
+    const s = state.stocksMaster.find(x => x.id === h.stockId);
+    const curr = s ? safeNumber(s.price) : 0;
     const shares = safeNumber(h.shares);
     total += curr * shares;
   }
@@ -228,41 +241,41 @@ function renderStocksChart() {
   const ctx = document.getElementById("stocksChart")?.getContext("2d");
   if (!ctx) return;
 
-  // Aggregate value by stock
-  const valueByStock = {};
-  for (const h of state.holdings) {
-    const s = getStockMaster(h.stockId);
-    if (!s) continue;
-    const val = safeNumber(h.shares) * safeNumber(s.currentPrice);
-    valueByStock[s.ticker] = (valueByStock[s.ticker] || 0) + val;
+  const valueByPortfolio = {};
+  state.holdings.forEach(h => {
+    const s = state.stocksMaster.find(x => x.id === h.stockId);
+    if (s) {
+      const portfolioName = h.portfolio || "Uncategorized";
+      const val = safeNumber(s.price) * safeNumber(h.shares);
+      valueByPortfolio[portfolioName] = (valueByPortfolio[portfolioName] || 0) + val;
+    }
+  });
+
+  const labels = Object.keys(valueByPortfolio);
+  const data = Object.values(valueByPortfolio);
+  const colors = labels.map((_, i) => `hsl(${i * 55 + 210}, 65%, 60%)`);
+
+  if (window.stocksChartInstance) {
+    window.stocksChartInstance.destroy();
   }
 
-  const labels = Object.keys(valueByStock);
-  const data = Object.values(valueByStock);
-  // Simple palette generator
-  const colors = labels.map((_, i) => `hsl(${ (i * 360) / labels.length }, 40%, 60%)`);
-
-  if (stocksChart) {
-    stocksChart.data.labels = labels;
-    stocksChart.data.datasets[0].data = data;
-    stocksChart.data.datasets[0].backgroundColor = colors;
-    stocksChart.update();
-  } else {
-    stocksChart = new Chart(ctx, {
+  window.stocksChartInstance = new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: labels,
-        datasets: [{
-          data: data,
-          backgroundColor: colors,
-          borderWidth: 0
-        }]
+        labels,
+        datasets: [{ data, backgroundColor: colors, borderWidth: 0 }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: "right" } }
-      }
-    });
-  }
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: (context) => `${context.label}: ${formatMoney(context.parsed)}`,
+          },
+        },
+      },
+    },
+  });
 }

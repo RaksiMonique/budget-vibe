@@ -1,186 +1,104 @@
-let dividendsChart = null;
-
 function initDividends() {
-  divYear.addEventListener("change", () => {
-    state.ui.divYear = clampInt(divYear.value, 2000, 2100, new Date().getFullYear());
-    divYear.value = String(state.ui.divYear);
-    saveState();
-    renderDividends();
-    refreshTopInvestmentMetrics(); // keep top in sync
-  });
-  btnDivRefresh.addEventListener("click", () => { renderDividends(); refreshTopInvestmentMetrics(); });
+  if (btnDivRefresh) btnDivRefresh.addEventListener("click", renderDividends);
+  if (divYear) divYear.addEventListener("change", renderDividends);
 }
 
 function renderDividends() {
-  if (!divTbody || !divMonthlyTotalsRow) return;
-
-  const year = clampInt(divYear.value, 2000, 2100, new Date().getFullYear());
-  divYear.value = String(year);
-  state.ui.divYear = year;
-  saveState();
-
-  ensureDivYear(year);
-
+  const year = parseInt(divYear.value) || new Date().getFullYear();
+  
+  // 1. Aggregate shares per stock
   const sharesByStock = {};
-  for (const h of state.holdings) {
+  state.holdings.forEach(h => {
     sharesByStock[h.stockId] = (sharesByStock[h.stockId] || 0) + safeNumber(h.shares);
-  }
-
-  const stockIds = Object.keys(sharesByStock).sort((a,b) => {
-    const ta = (getStockMaster(a)?.ticker || "");
-    const tb = (getStockMaster(b)?.ticker || "");
-    return ta.localeCompare(tb);
   });
 
-  if (stockIds.length === 0) {
-    divTbody.innerHTML = `<tr><td colspan="15" class="text-muted">No holdings yet. Add holdings in the Stocks tab.</td></tr>`;
-    divMonthlyTotalsRow.innerHTML = `<td class="text-muted" colspan="13">—</td>`;
-    return;
-  }
-
-  divTbody.innerHTML = stockIds.map(stockId => {
-    const s = getStockMaster(stockId);
-    const ticker = s ? `${s.ticker}` : "—";
-    const shares = sharesByStock[stockId] || 0;
-
-    const arr = getDivArray(year, stockId);
-    const perShareYearTotal = arr.reduce((a,b) => a + safeNumber(b), 0);
-    const yearIncome = perShareYearTotal * shares;
-
-    const inputs = arr.map((val, idx) => {
-      const v = safeNumber(val);
-      return `
-        <td class="text-end">
-          <input
-            class="form-control form-control-sm text-end"
-            style="min-width:80px;"
-            data-div-year="${year}"
-            data-div-stock="${stockId}"
-            data-div-month="${idx}"
-            value="${v ? String(v) : ""}"
-            placeholder="0"
-          >
-        </td>
-      `;
-    }).join("");
-
-    return `
-      <tr>
-        <td>${escapeHtml(ticker)}</td>
-        <td class="text-end">${formatNumber(shares)}</td>
-        ${inputs}
-        <td class="text-end fw-semibold">${formatMoney(yearIncome)}</td>
-      </tr>
-    `;
-  }).join("");
-
-  divTbody.querySelectorAll("input[data-div-year]").forEach(inp => {
-    inp.addEventListener("input", (e) => {
-      const el = e.target;
-      const y = parseInt(el.dataset.divYear, 10);
-      const stockId = el.dataset.divStock;
-      const m = parseInt(el.dataset.divMonth, 10);
-      const v = safeNumber(el.value);
-
-      setDivValue(y, stockId, m, v);
-      saveState();
-      renderDividendsTotalsOnly();
-      refreshTopInvestmentMetrics();
-    });
-  });
-
-  renderDividendsTotalsOnly();
-  refreshTopInvestmentMetrics();
-  renderDividendsChart();
-}
-
-function ensureDivYear(year) {
-  if (!state.dividends[year]) state.dividends[year] = {};
-}
-
-function getDivArray(year, stockId) {
-  ensureDivYear(year);
-  if (!state.dividends[year][stockId]) state.dividends[year][stockId] = Array(12).fill(0);
-  if (!Array.isArray(state.dividends[year][stockId]) || state.dividends[year][stockId].length !== 12) {
-    const old = Array.isArray(state.dividends[year][stockId]) ? state.dividends[year][stockId] : [];
-    const next = Array(12).fill(0);
-    for (let i = 0; i < Math.min(12, old.length); i++) next[i] = safeNumber(old[i]);
-    state.dividends[year][stockId] = next;
-  }
-  return state.dividends[year][stockId];
-}
-
-function setDivValue(year, stockId, monthIdx, value) {
-  const arr = getDivArray(year, stockId);
-  arr[monthIdx] = safeNumber(value);
-  state.dividends[year][stockId] = arr;
-}
-
-function renderDividendsTotalsOnly() {
-  const year = clampInt(divYear.value, 2000, 2100, new Date().getFullYear());
-  ensureDivYear(year);
-
-  const sharesByStock = {};
-  for (const h of state.holdings) {
-    sharesByStock[h.stockId] = (sharesByStock[h.stockId] || 0) + safeNumber(h.shares);
-  }
   const stockIds = Object.keys(sharesByStock);
+  let html = "";
+  const monthlyIncomeTotals = Array(12).fill(0);
+  let totalYearIncome = 0;
 
-  const monthlyIncome = Array(12).fill(0);
-  for (const stockId of stockIds) {
-    const shares = sharesByStock[stockId] || 0;
-    const arr = getDivArray(year, stockId);
+  stockIds.forEach(stockId => {
+    const stock = state.stocksMaster.find(s => s.id === stockId);
+    if (!stock) return;
+    
+    const shares = sharesByStock[stockId];
+    if (shares <= 0) return;
+
+    if (!state.dividends[stockId]) state.dividends[stockId] = {};
+    if (!state.dividends[stockId][year]) state.dividends[stockId][year] = Array(12).fill(0);
+    
+    const divs = state.dividends[stockId][year];
+    
+    let rowHtml = `<tr>
+      <td>${escapeHtml(stock.ticker)}</td>
+      <td class="text-end">${formatMoney(shares)}</td>`;
+      
+    let stockYearTotal = 0;
+    
     for (let m = 0; m < 12; m++) {
-      monthlyIncome[m] += safeNumber(arr[m]) * shares;
+      const dps = divs[m] || 0;
+      const income = dps * shares;
+      monthlyIncomeTotals[m] += income;
+      stockYearTotal += income;
+      
+      rowHtml += `
+        <td class="p-1">
+          <input type="number" class="form-control form-control-sm text-end border-0 bg-transparent" 
+            step="0.0001" value="${dps === 0 ? '' : dps}" 
+            onchange="updateDividend('${stockId}', ${year}, ${m}, this.value)"
+            placeholder="-">
+        </td>`;
     }
+    
+    totalYearIncome += stockYearTotal;
+    rowHtml += `<td class="text-end fw-bold">${formatMoney(stockYearTotal)}</td></tr>`;
+    html += rowHtml;
+  });
+
+  if (divTbody) divTbody.innerHTML = html || `<tr><td colspan="15" class="text-muted">No stocks with holdings found. Add holdings first.</td></tr>`;
+
+  // Render Footer (Summary Row)
+  const tfoot = document.getElementById("divTfoot");
+  if (tfoot) {
+    let footHtml = `<tr>
+      <td class="fw-bold">Total Income</td>
+      <td></td>`;
+      
+    for (let m = 0; m < 12; m++) {
+      footHtml += `<td class="text-end fw-bold text-success" style="font-size: 0.85rem;">${formatMoney(monthlyIncomeTotals[m])}</td>`;
+    }
+    footHtml += `<td class="text-end fw-bold text-success">${formatMoney(totalYearIncome)}</td></tr>`;
+    tfoot.innerHTML = footHtml;
   }
 
-  const yearTotal = monthlyIncome.reduce((a,b) => a + b, 0);
+  // Update Chart
+  renderDividendsChart(monthlyIncomeTotals);
 
-  divMonthlyTotalsRow.innerHTML =
-    monthlyIncome.map(v => `<td>${formatMoney(v)}</td>`).join("") +
-    `<td class="text-end fw-semibold">${formatMoney(yearTotal)}</td>`;
+  // Update separate totals row
+  if (divMonthlyTotalsRow) {
+     let totalsHtml = "";
+     monthlyIncomeTotals.forEach(val => {
+       totalsHtml += `<td class="text-end">${formatMoney(val)}</td>`;
+     });
+     totalsHtml += `<td class="text-end fw-bold">${formatMoney(totalYearIncome)}</td>`;
+     divMonthlyTotalsRow.innerHTML = totalsHtml;
+  }
 }
 
-function renderDividendsChart() {
+window.updateDividend = function(stockId, year, month, val) {
+  const amount = safeNumber(val);
+  if (!state.dividends[stockId]) state.dividends[stockId] = {};
+  if (!state.dividends[stockId][year]) state.dividends[stockId][year] = Array(12).fill(0);
+  state.dividends[stockId][year][month] = amount;
+  saveState();
+  renderDividends();
+}
+
+window.renderDividendsChart = function(monthlyTotals) {
   const ctx = document.getElementById("dividendsChart")?.getContext("2d");
   if (!ctx) return;
-
-  const year = clampInt(divYear.value, 2000, 2100, new Date().getFullYear());
-  ensureDivYear(year);
-
-  // Calculate monthly totals
-  const monthlyIncome = Array(12).fill(0);
-  for (const h of state.holdings) {
-    const arr = getDivArray(year, h.stockId);
-    const shares = safeNumber(h.shares);
-    for (let i = 0; i < 12; i++) {
-      monthlyIncome[i] += safeNumber(arr[i]) * shares;
-    }
-  }
-
-  if (dividendsChart) {
-    dividendsChart.data.datasets[0].data = monthlyIncome;
-    dividendsChart.update();
-  } else {
-    dividendsChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: MONTHS,
-        datasets: [{
-          label: "Dividend Income",
-          data: monthlyIncome,
-          backgroundColor: "#7EAD86", // Sage color
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-  }
+  if (window.dividendsChartInstance) window.dividendsChartInstance.destroy();
+  window.dividendsChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], datasets: [{ label: 'Dividend Income', data: monthlyTotals, backgroundColor: '#D29F80', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
 }
 
 function computeTrailing12MDividendIncome() {
@@ -196,7 +114,7 @@ function computeTrailing12MDividendIncome() {
 
 function computeDividendIncomeForMonth(year, monthIdx) {
   // monthIdx: 0-11
-  ensureDivYear(year);
+  if (!state.dividends[year]) state.dividends[year] = {};
 
   // shares per stock
   const sharesByStock = {};
@@ -207,7 +125,7 @@ function computeDividendIncomeForMonth(year, monthIdx) {
   let total = 0;
   for (const stockId of Object.keys(sharesByStock)) {
     const shares = sharesByStock[stockId] || 0;
-    const arr = getDivArray(year, stockId); // 12 per-share values
+    const arr = state.dividends[year]?.[stockId] || [];
     const perShare = safeNumber(arr[monthIdx] || 0);
     total += perShare * shares;
   }
