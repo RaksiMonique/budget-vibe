@@ -343,7 +343,6 @@
             <div class="small text-muted">Create sinking fund categories and link savings goals to them.</div>
           </div>
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSinkingCategory">Add Sinking Fund</button>
             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Savings Goal</button>
           </div>
         </div>
@@ -1644,6 +1643,12 @@
             <label class="form-label">Link to Sinking Fund Category</label>
             <select id="goalMinor" class="form-select" required></select>
             <div class="form-text">Each sinking fund can only be linked to one goal.</div>
+          </div>
+
+          <!-- New Sinking Fund Input -->
+          <div id="goalNewMinorWrap" class="mb-3 p-3 rounded" style="display: none; background-color: var(--bg-soft);">
+            <label class="form-label small fw-bold">New Sinking Fund Name</label>
+            <input id="goalNewMinorName" type="text" class="form-control" placeholder="e.g., New Roof">
           </div>
 
           <div class="mb-3">
