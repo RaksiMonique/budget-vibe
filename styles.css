@@ -405,6 +405,15 @@ body{
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     border-top: 0;
   }
+
+  /* Adjust sticky header in dividends table for mobile */
+  #pane-dividends thead th {
+    top: 56px; /* Approx height of sticky nav tabs */
+  }
+
+  #pane-dividends thead th:first-child {
+    top: 56px; /* Approx height of sticky nav tabs */
+  }
 }
 
 /* Theme Toggle Icons */

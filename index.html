@@ -29,16 +29,16 @@
             <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162h1.212a.217.217 0 0 1 .134.386l-.979.712.387 1.162a.217.217 0 0 1-.316.242l-.979-.712-1.023.724a.217.217 0 0 1-.316-.242l.387-1.162-.979-.712a.217.217 0 0 1 .134-.386h1.212l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774.258c.346-.115.617-.386.732-.732L13.863.1z"/>
           </svg>
         </button>
-        <button id="btnExport" class="btn btn-outline-light btn-sm">Export JSON</button>
-        <label class="btn btn-outline-light btn-sm mb-0">
-          Import JSON <input id="fileImport" type="file" accept="application/json" hidden>
+        <button id="btnExport" class="btn btn-outline-light btn-sm">Export<span class="d-none d-sm-inline"> JSON</span></button>
+        <label class="btn btn-outline-light btn-sm mb-0" for="fileImport">
+          Import<span class="d-none d-sm-inline"> JSON</span> <input id="fileImport" type="file" accept="application/json" hidden>
         </label>
         <button id="btnReset" class="btn btn-danger btn-sm">Reset</button>
       </div>
     </div>
   </nav>
 
-  <main class="container-fluid px-4 my-4">
+  <main class="container-fluid px-2 px-sm-4 my-4">
     <!-- Vertical Tabs + Content Shell -->
     <div class="tabs-vertical-shell mt-0">
       <!-- Tabs -->
@@ -479,7 +479,7 @@
 
                     <div>
                       <label class="form-label mb-1 small">Select Year</label>
-                      <input id="annualOverviewYear" type="number" class="form-control form-control-sm" min="2000" max="2100" style="width: 100px;">
+                      <input id="annualOverviewYear" type="number" class="form-control form-control-sm" min="2000" max="2100">
                     </div>
                   </div>
                 </div>
@@ -731,7 +731,7 @@
           <div class="d-flex gap-2 align-items-end">
             <div>
               <label class="form-label mb-1">Year</label>
-              <input id="divYear" type="number" class="form-control" min="2000" max="2100" style="width: 120px;">
+              <input id="divYear" type="number" class="form-control" min="2000" max="2100">
             </div>
             <button id="btnDivRefresh" class="btn btn-sm btn-secondary">Recalculate</button>
           </div>
@@ -1023,7 +1023,7 @@
           <div class="d-flex gap-2 align-items-end">
             <div>
               <label class="form-label mb-1 small">Year</label>
-              <input id="rentalYear" type="number" class="form-control form-control-sm" min="2000" max="2100" style="width: 100px;">
+              <input id="rentalYear" type="number" class="form-control form-control-sm" min="2000" max="2100">
             </div>
             <button id="btnRentalRefresh" class="btn btn-sm btn-secondary">Refresh</button>
           </div>
