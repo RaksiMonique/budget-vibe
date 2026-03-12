@@ -326,17 +326,13 @@ function renderSummary(actualByMinor, year, month) {
   sumNet.classList.toggle("text-success", net >= 0);
 
   // Rates Calculation
-  // Pension Amount = Income * (Rate / 100)
-  // Total Income (Adjusted) = Income + Pension Amount
   const pKey = `${year}-${month}`;
   const pensionRate = safeNumber(state.pensionRates?.[pKey] || 0);
-  const pensionAmount = income * (pensionRate / 100);
-  const totalIncome = income + pensionAmount;
-  const totalSavings = sinking;
-  const totalInvest = invest + pensionAmount;
 
-  metricSavingsRate.textContent = income > 0 ? ((totalSavings / income) * 100).toFixed(1) + "%" : "0.0%";
-  metricInvestRate.textContent = totalIncome > 0 ? ((totalInvest / totalIncome) * 100).toFixed(1) + "%" : "0.0%";
+  metricSavingsRate.textContent = income > 0 ? ((sinking / income) * 100).toFixed(1) + "%" : "0.0%";
+  
+  const investPct = income > 0 ? ((invest / income) * 100) : 0;
+  metricInvestRate.textContent = (investPct + pensionRate).toFixed(1) + "%";
 }
 
 /* =========================
