@@ -39,170 +39,15 @@
   </nav>
 
   <main class="container-fluid px-4 my-4">
-    <!-- Month selector + summary -->
-    <div class="row g-3 align-items-stretch">
-      <div class="col-xl-3 col-lg-4">
-        <div class="card h-100 shadow-soft">
-          <div class="card-body">
-            <div class="text-center mb-4">
-              <div class="text-uppercase text-muted small fw-bold mb-1">Current Budget</div>
-              <h2 id="displayMonthYear" class="fw-bold mb-0" style="color: var(--plum);">—</h2>
-            </div>
-
-            <div class="d-flex gap-2 flex-wrap align-items-end">
-              <div class="flex-grow-1">
-                <label class="form-label">Year</label>
-                <input id="yearInput" type="number" class="form-control" min="2000" max="2100">
-              </div>
-
-              <div class="flex-grow-1">
-                <label class="form-label">Month</label>
-                <select id="monthSelect" class="form-select">
-                  <option value="0">January</option>
-                  <option value="1">February</option>
-                  <option value="2">March</option>
-                  <option value="3">April</option>
-                  <option value="4">May</option>
-                  <option value="5">June</option>
-                  <option value="6">July</option>
-                  <option value="7">August</option>
-                  <option value="8">September</option>
-                  <option value="9">October</option>
-                  <option value="10">November</option>
-                  <option value="11">December</option>
-                </select>
-              </div>
-
-              <button id="btnThisMonth" class="btn btn-primary">This Month</button>
-            </div>
-
-            <div class="mt-3">
-              <label class="form-label small text-muted mb-1">Pension Contribution (%)</label>
-              <div class="input-group input-group-sm">
-                <input id="pensionInput" type="number" class="form-control" placeholder="0" min="0" max="100" step="0.1">
-                <span class="input-group-text">%</span>
-              </div>
-            </div>
-
-            <div class="small text-muted mt-3">
-              Actual totals are calculated from transactions for the selected month.
-            </div>
-
-            <hr class="my-3">
-
-            <div class="d-grid gap-2">
-              <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalCategory">Add Minor Category</button>
-              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
-              <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Savings Goal</button>
-              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Recurring Bill</button>
-              <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalTransfer">Transfer Money</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xl-9 col-lg-8">
-        <div class="card h-100 shadow-soft">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Dashboard</h5>
-
-            <div class="row g-4">
-              <!-- Metrics Column -->
-              <div class="col-xl-7 col-lg-12">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <div class="metric metric-income">
-                      <div class="metric-label">Income</div>
-                      <div id="sumIncome" class="metric-value">—</div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="metric metric-expenses">
-                      <div class="metric-label">Expenses</div>
-                      <div id="sumExpenses" class="metric-value">—</div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="metric metric-net">
-                      <div class="metric-label">Net</div>
-                      <div id="sumNet" class="metric-value">—</div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <div class="metric metric-savings">
-                      <div class="metric-label">Savings Rate</div>
-                      <div id="metricSavingsRate" class="metric-value">—</div>
-                      <div class="small opacity-75 mt-1">Sinking Fund / Income</div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="metric metric-stocks">
-                      <div class="metric-label">Investment Rate</div>
-                      <div id="metricInvestRate" class="metric-value">—</div>
-                      <div class="small opacity-75 mt-1">Invest + Pension</div>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <div class="metric metric-bills">
-                      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div>
-                          <div class="metric-label mb-1">Bills Paid (Selected Month)</div>
-                          <div class="metric-subtext small">Paid when a transaction exists for that bill’s minor category</div>
-                        </div>
-                        <div class="metric-value" style="font-size:1.25rem;">
-                          <span id="billsPaidSummary">—</span>
-                        </div>
-                      </div>
-                      <div class="progress mt-2">
-                        <div id="billsPaidBar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Visuals Column -->
-              <div class="col-xl-5 col-lg-12">
-                <div class="h-100 d-flex flex-column">
-                  <h6 class="text-muted small text-uppercase mb-2">Expenses Breakdown</h6>
-                  <div class="flex-grow-1 position-relative" style="min-height: 200px;">
-                    <canvas id="budgetDonutChart"></canvas>
-                  </div>
-
-                  <div class="row g-2 mt-3">
-                    <div class="col-6">
-                      <div class="metric metric-stocks p-3 h-100">
-                        <div class="metric-label">Total Stock Value</div>
-                        <div id="sumStocksValue" class="fw-bold fs-5">—</div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="metric metric-dividends p-3 h-100">
-                        <div class="metric-label">TTM Dividends</div>
-                        <div id="sumDivTTM" class="fw-bold fs-5">—</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="small text-muted mt-3">
-              Net = Income − Expenses
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Vertical Tabs + Content Shell -->
-    <div class="tabs-vertical-shell mt-4">
+    <div class="tabs-vertical-shell mt-0">
       <!-- Tabs -->
       <ul class="nav nav-tabs" id="mainTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tab-budget" data-bs-toggle="tab" data-bs-target="#pane-budget" type="button" role="tab">Monthly Budget</button>
+          <button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button" role="tab">Dashboard</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-budget" data-bs-toggle="tab" data-bs-target="#pane-budget" type="button" role="tab">Monthly Budget</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-transactions" data-bs-toggle="tab" data-bs-target="#pane-transactions" type="button" role="tab">Transactions</button>
@@ -249,8 +94,168 @@
       </ul>
 
       <div class="tab-content tab-shell p-3" id="tabContent">
+      <!-- Dashboard -->
+      <div class="tab-pane fade show active" id="pane-dashboard" role="tabpanel">
+        <div class="row g-3 align-items-stretch">
+          <div class="col-xl-3 col-lg-4">
+            <div class="card h-100 shadow-soft">
+              <div class="card-body">
+                <div class="text-center mb-4">
+                  <div class="text-uppercase text-muted small fw-bold mb-1">Current Budget</div>
+                  <h2 id="displayMonthYear" class="fw-bold mb-0" style="color: var(--plum);">—</h2>
+                </div>
+    
+                <div class="d-flex gap-2 flex-wrap align-items-end">
+                  <div class="flex-grow-1">
+                    <label class="form-label">Year</label>
+                    <input id="yearInput" type="number" class="form-control" min="2000" max="2100">
+                  </div>
+    
+                  <div class="flex-grow-1">
+                    <label class="form-label">Month</label>
+                    <select id="monthSelect" class="form-select">
+                      <option value="0">January</option>
+                      <option value="1">February</option>
+                      <option value="2">March</option>
+                      <option value="3">April</option>
+                      <option value="4">May</option>
+                      <option value="5">June</option>
+                      <option value="6">July</option>
+                      <option value="7">August</option>
+                      <option value="8">September</option>
+                      <option value="9">October</option>
+                      <option value="10">November</option>
+                      <option value="11">December</option>
+                    </select>
+                  </div>
+    
+                  <button id="btnThisMonth" class="btn btn-primary">This Month</button>
+                </div>
+    
+                <div class="mt-3">
+                  <label class="form-label small text-muted mb-1">Pension Contribution (%)</label>
+                  <div class="input-group input-group-sm">
+                    <input id="pensionInput" type="number" class="form-control" placeholder="0" min="0" max="100" step="0.1">
+                    <span class="input-group-text">%</span>
+                  </div>
+                </div>
+    
+                <div class="small text-muted mt-3">
+                  Actual totals are calculated from transactions for the selected month.
+                </div>
+    
+                <hr class="my-3">
+    
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalCategory">Add Minor Category</button>
+                  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
+                  <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Savings Goal</button>
+                  <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Recurring Bill</button>
+                  <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalTransfer">Transfer Money</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-xl-9 col-lg-8">
+            <div class="card h-100 shadow-soft">
+              <div class="card-body">
+                <h5 class="card-title mb-3">Dashboard</h5>
+    
+                <div class="row g-4">
+                  <!-- Metrics Column -->
+                  <div class="col-xl-7 col-lg-12">
+                    <div class="row g-3">
+                      <div class="col-md-4">
+                        <div class="metric metric-income">
+                          <div class="metric-label">Income</div>
+                          <div id="sumIncome" class="metric-value">—</div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="metric metric-expenses">
+                          <div class="metric-label">Expenses</div>
+                          <div id="sumExpenses" class="metric-value">—</div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="metric metric-net">
+                          <div class="metric-label">Net</div>
+                          <div id="sumNet" class="metric-value">—</div>
+                        </div>
+                      </div>
+    
+                      <div class="col-md-6">
+                        <div class="metric metric-savings">
+                          <div class="metric-label">Savings Rate</div>
+                          <div id="metricSavingsRate" class="metric-value">—</div>
+                          <div class="small opacity-75 mt-1">Sinking Fund / Income</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="metric metric-stocks">
+                          <div class="metric-label">Investment Rate</div>
+                          <div id="metricInvestRate" class="metric-value">—</div>
+                          <div class="small opacity-75 mt-1">Invest + Pension</div>
+                        </div>
+                      </div>
+    
+                      <div class="col-12">
+                        <div class="metric metric-bills">
+                          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                              <div class="metric-label mb-1">Bills Paid (Selected Month)</div>
+                              <div class="metric-subtext small">Paid when a transaction exists for that bill’s minor category</div>
+                            </div>
+                            <div class="metric-value" style="font-size:1.25rem;">
+                              <span id="billsPaidSummary">—</span>
+                            </div>
+                          </div>
+                          <div class="progress mt-2">
+                            <div id="billsPaidBar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+    
+                  <!-- Visuals Column -->
+                  <div class="col-xl-5 col-lg-12">
+                    <div class="h-100 d-flex flex-column">
+                      <h6 class="text-muted small text-uppercase mb-2">Expenses Breakdown</h6>
+                      <div class="flex-grow-1 position-relative" style="min-height: 200px;">
+                        <canvas id="budgetDonutChart"></canvas>
+                      </div>
+    
+                      <div class="row g-2 mt-3">
+                        <div class="col-6">
+                          <div class="metric metric-stocks p-3 h-100">
+                            <div class="metric-label">Total Stock Value</div>
+                            <div id="sumStocksValue" class="fw-bold fs-5">—</div>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="metric metric-dividends p-3 h-100">
+                            <div class="metric-label">TTM Dividends</div>
+                            <div id="sumDivTTM" class="fw-bold fs-5">—</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+    
+                <div class="small text-muted mt-3">
+                  Net = Income − Expenses
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Budget -->
-      <div class="tab-pane fade show active" id="pane-budget" role="tabpanel">
+      <div class="tab-pane fade" id="pane-budget" role="tabpanel">
         <div class="row g-3">
           <div class="col-12">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
