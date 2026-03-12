@@ -398,9 +398,7 @@
                 <h5 class="mb-0">Bills Minor Categories</h5>
                 <div class="small text-muted">Expected is auto-calculated from recurring bills.</div>
               </div>
-              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalBillsCategory">Add Bills Category</button>
             </div>
-
             <div class="table-responsive">
               <table class="table table-sm align-middle table-soft">
                 <thead>
@@ -421,9 +419,8 @@
                 <h5 class="mb-0">Recurring Bills</h5>
                 <div class="small text-muted">Shows all recurring bills added. Paid if a transaction exists in the month.</div>
               </div>
-              <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Bill</button>
+              <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Recurring Bill</button>
             </div>
-
             <div class="table-responsive">
               <table class="table table-sm align-middle table-soft">
                 <thead>
@@ -1705,6 +1702,12 @@
           <div class="mb-3">
             <label class="form-label">Bills Minor Category (This is the Bill Name)</label>
             <select id="billMinor" class="form-select" required></select>
+          </div>
+
+          <!-- New Bill Category Input -->
+          <div id="billNewMinorWrap" class="mb-3 p-3 rounded" style="display: none; background-color: var(--bg-soft);">
+            <label class="form-label small fw-bold">New Bill Category Name</label>
+            <input id="billNewMinorName" type="text" class="form-control" placeholder="e.g., Internet Bill">
           </div>
 
           <div class="mb-3">

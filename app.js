@@ -144,6 +144,7 @@ function wireEvents() {
     });
   }
 
+  billMinor.addEventListener("change", toggleNewBillMinorInput);
   billFreq.addEventListener("change", toggleBillSinkingFundWrap);
   billSinkingFund.addEventListener("change", () => {
     billSinkingFundSelectWrap.style.display = billSinkingFund.checked ? "block" : "none";
@@ -658,9 +659,48 @@ function computeFirstDueInMonth(bill, year, month) {
   return null;
 }
 
+function toggleNewBillMinorInput() {
+  const show = billMinor.value === '--new--';
+  billNewMinorWrap.style.display = show ? 'block' : 'none';
+  if (show) {
+    billNewMinorName.focus();
+  }
+}
+
+function createNewBillCategory(name) {
+  const dupe = state.minorCategories.find(c => c.majorKey === "bills" && c.name.toLowerCase() === name.toLowerCase());
+  if (dupe) {
+    showToast("A bill category with that name already exists.");
+    return null;
+  }
+
+  const newCat = { id: uid(), majorKey: "bills", name, manualExpectedMonthly: 0, createdAt: new Date().toISOString() };
+  state.minorCategories.push(newCat);
+  showToast("New bill category created.");
+  return newCat.id;
+}
+
 function upsertBill() {
   const id = billId.value?.trim();
-  const minorId = billMinor.value;
+  let minorId = billMinor.value;
+
+  // Handle creation of new Bill Category on the fly
+  if (minorId === '--new--') {
+    const newName = billNewMinorName.value.trim();
+    if (!newName) {
+      showToast("Please enter a name for the new bill category.");
+      return;
+    }
+    const existing = state.minorCategories.find(c => c.majorKey === "bills" && c.name.toLowerCase() === newName.toLowerCase());
+    if (existing) {
+      minorId = existing.id;
+    } else {
+      const newId = createNewBillCategory(newName);
+      if (!newId) return;
+      minorId = newId;
+    }
+  }
+
   const amount = safeNumber(billAmount.value);
   const freq = billFreq.value;
   const nextDue = billNextDue.value;
@@ -754,6 +794,22 @@ function handleBillModalOpen() {
     billSinkingFundSelectWrap.style.display = "none";
   }
 
+  // Reset new category input
+  billNewMinorWrap.style.display = 'none';
+  billNewMinorName.value = '';
+
+  // Populate bills dropdown
+  const bills = state.minorCategories
+    .filter(c => c.majorKey === "bills")
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const options = bills.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  const addNewOption = `<option value="--new--">-- Add New Bill Category --</option>`;
+  const currentVal = billMinor.value; // Preserve value if editing
+  billMinor.innerHTML = addNewOption + options;
+  if (billId.value && bills.some(c => c.id === currentVal)) {
+    billMinor.value = currentVal;
+  }
+
   // Create a map of sinking fund category ID -> goal name
   const goalMap = new Map();
   state.goals.forEach(g => {
@@ -774,6 +830,7 @@ function handleBillModalOpen() {
 
   // Show/hide based on frequency (must be after form is populated for 'edit')
   toggleBillSinkingFundWrap();
+  toggleNewBillMinorInput();
 }
 
 function toggleBillSinkingFundWrap() {
