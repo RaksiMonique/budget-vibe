@@ -950,4 +950,147 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   
   #divMonthlyTotalsRow td:nth-child(13) { grid-column: 1 / -1; background: var(--sage); color: #fff; flex-direction: row; justify-content: space-between; padding: 1rem; font-weight: 700; }
   #divMonthlyTotalsRow td:nth-child(13)::before { content: "Total Year Income"; font-weight: 500; color: rgba(255,255,255,0.9); }
+
+  /* Mobile Assets Tab Adaptations */
+  #pane-assets .table thead {
+    display: none;
+  }
+
+  #pane-assets .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-assets .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Assets Table Specifics */
+  #assetsTbody tr td:nth-child(1) { /* Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  #assetsTbody tr td:nth-child(2)::before { content: "Category"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsTbody tr td:nth-child(3)::before { content: "Value"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsTbody tr td:nth-child(3) { font-weight: 700; color: var(--sage); }
+  
+  #assetsTbody tr td:nth-child(4) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Liabilities Table Specifics */
+  #assetsDebtsTbody tr td:nth-child(1) { /* Debt Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  #assetsDebtsTbody tr td:nth-child(2)::before { content: "Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsDebtsTbody tr td:nth-child(2) { font-weight: 700; color: var(--rose); }
+
+  #assetsDebtsTbody tr td:nth-child(3)::before { content: "Min. Pmt"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsDebtsTbody tr td:nth-child(4)::before { content: "APR %"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #assetsDebtsTbody tr td:nth-child(5) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Mobile Categories Tab Adaptations */
+  #pane-categories .table thead {
+    display: none;
+  }
+
+  #pane-categories .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-categories .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Header adjustments for Add Button */
+  #pane-categories > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  #pane-categories > .d-flex .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Table Content Styling */
+  #catTbody tr td:nth-child(1) { /* Major */
+    justify-content: flex-start;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding-bottom: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  #catTbody tr td:nth-child(2) { /* Minor */
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0.25rem;
+  }
+
+  #catTbody tr td:nth-child(3)::before { content: "Expected"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #catTbody tr td:nth-child(3) { font-weight: 700; font-size: 1.1rem; }
+
+  #catTbody tr td:nth-child(4) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
 }
