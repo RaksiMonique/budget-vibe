@@ -794,4 +794,160 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   #pane-stocks form .col-12 .btn {
     flex-grow: 1;
   }
+
+  /* Mobile Stock Plan Adaptations */
+  #pane-stock-plan .table thead {
+    display: none;
+  }
+
+  #pane-stock-plan .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-stock-plan .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-stock-plan .table tbody tr td:first-child {
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #pane-stock-plan .table input.form-control-sm {
+    min-height: 44px;
+    font-size: 16px;
+    max-width: 50%;
+  }
+
+  /* Force columns to stack if they aren't already */
+  #stockPlanContainer .row > [class*="col-"] {
+    width: 100% !important;
+  }
+
+  /* Mobile Dividends Tab Adaptations */
+  #pane-dividends .table thead {
+    display: none;
+  }
+  
+  /* Reset sticky positioning for mobile */
+  #pane-dividends thead th,
+  #pane-dividends tbody td:first-child,
+  #pane-dividends thead th:first-child {
+    position: static;
+    box-shadow: none;
+    border: none;
+    z-index: auto;
+  }
+
+  #pane-dividends #divTbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-dividends #divTbody tr td {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  /* Stock Name (Col 1) - Full Width */
+  #pane-dividends #divTbody tr td:nth-child(1) {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Shares (Col 2) - Full Width with Label */
+  #pane-dividends #divTbody tr td:nth-child(2) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+  }
+  #pane-dividends #divTbody tr td:nth-child(2)::before { content: "Shares Held"; color: var(--text-muted); font-weight: 500; }
+
+  /* Months (Col 3-14) - 3 Columns Grid */
+  #pane-dividends #divTbody tr td:nth-child(n+3):nth-child(-n+14) {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  /* Labels for Months */
+  #pane-dividends #divTbody tr td:nth-child(3)::before { content: "Jan"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(4)::before { content: "Feb"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(5)::before { content: "Mar"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(6)::before { content: "Apr"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(7)::before { content: "May"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(8)::before { content: "Jun"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(9)::before { content: "Jul"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(10)::before { content: "Aug"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(11)::before { content: "Sep"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(12)::before { content: "Oct"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(13)::before { content: "Nov"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(14)::before { content: "Dec"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+
+  /* Input styling inside cells */
+  #pane-dividends #divTbody input { width: 100%; text-align: center; padding: 0.25rem; background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; }
+
+  /* Total (Col 15) - Full Width Footer */
+  #pane-dividends #divTbody tr td:nth-child(15) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  #pane-dividends #divTbody tr td:nth-child(15)::before { content: "Total Income"; font-weight: 500; font-size: 0.9rem; color: var(--text-muted); }
+
+  /* Header Controls Adaptation */
+  #pane-dividends .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2.mb-2 { flex-direction: column; align-items: stretch !important; }
+  #pane-dividends .d-flex.gap-2.align-items-end { display: grid !important; grid-template-columns: 1fr 1fr; gap: 1rem !important; width: 100%; margin-top: 0.5rem; }
+  #pane-dividends #btnDivRefresh { width: 100%; }
+
+  /* Summary Table Grid Layout */
+  #divMonthlyTotalsRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  #divMonthlyTotalsRow td { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-soft); padding: 0.75rem; border-radius: 8px; border: none; }
+  
+  #divMonthlyTotalsRow td:nth-child(1)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); }
+  #divMonthlyTotalsRow td:nth-child(2)::before { content: "Feb"; font-size: 0.75rem; color: var(--text-muted); }
+  /* (Labels for 3-12 are implied by position but can be explicit if needed, keeping CSS concise here) */
+  
+  #divMonthlyTotalsRow td:nth-child(13) { grid-column: 1 / -1; background: var(--sage); color: #fff; flex-direction: row; justify-content: space-between; padding: 1rem; font-weight: 700; }
+  #divMonthlyTotalsRow td:nth-child(13)::before { content: "Total Year Income"; font-weight: 500; color: rgba(255,255,255,0.9); }
 }
