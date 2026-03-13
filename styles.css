@@ -650,4 +650,148 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     min-height: 44px;
     font-size: 16px; 
   }
+
+  /* Mobile Bills Tab Adaptations */
+  #pane-bills .table thead {
+    display: none;
+  }
+
+  #pane-bills .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-bills .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Recurring Bills Table Specifics */
+  #billsTbody tr td:nth-child(1) { /* Bill Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #billsTbody tr td:nth-child(2) { font-weight: 700; font-size: 1.1rem; }
+  #billsTbody tr td:nth-child(2)::before { content: "Amount"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(3)::before { content: "Frequency"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(4)::before { content: "Next Due"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(5)::before { content: "Due in Month"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(6)::before { content: "Monthly Eq."; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(7)::before { content: "Status"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #billsTbody tr td:nth-child(8) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Bills Minor Categories Table Specifics */
+  #billsCatTbody tr td:nth-child(1) { /* Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #billsCatTbody tr td:nth-child(2)::before { content: "Expected (Auto)"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #billsCatTbody tr td:nth-child(3) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+  }
+
+  /* Mobile Stocks Tab Adaptations */
+  #pane-stocks .table thead {
+    display: none;
+  }
+
+  #pane-stocks .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-stocks .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-stocks .table tbody tr td:first-child {
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Master List Table */
+  #stocksMasterTbody tr td:nth-child(2)::before { content: "Market"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #stocksMasterTbody tr td:nth-child(3)::before { content: "Current Price"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #stocksMasterTbody tr td:nth-child(4) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Holdings Tables */
+  #holdingsContainer .table tbody tr td:nth-child(2)::before { content: "Avg Buy"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(3)::before { content: "Shares"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(4)::before { content: "Cost"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(5)::before { content: "Value"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(6)::before { content: "Gain/Loss"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(5) { font-weight: 700; } /* Value */
+  #holdingsContainer .table tbody tr td:nth-child(7) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Forms */
+  #pane-stocks form .btn {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  #pane-stocks form .col-12 .btn {
+    flex-grow: 1;
+  }
 }
