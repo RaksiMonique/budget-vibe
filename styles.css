@@ -504,3 +504,150 @@ html:not([data-theme="dark"]) #theme-icon-dark {
 [data-theme="dark"] #pane-dividends tbody td:first-child {
   border-right-color: rgba(255,255,255,0.08);
 }
+
+/* Mobile Budget Tab Adaptations */
+@media (max-width: 768px) {
+  /* Stack the Budget table rows as cards */
+  #pane-budget .table thead {
+    display: none;
+  }
+
+  #pane-budget .table tbody tr.table-group-header {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #pane-budget .table tbody tr.table-group-header td {
+    padding: 0 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: none;
+    display: block;
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.5rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(1) {
+    text-align: left;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(2)::before { content: "Expected"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(3)::before { content: "Actual"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(4)::before { content: "Variance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(5)::before { content: "Group Total"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(5):empty {
+    display: none;
+  }
+
+  #pane-budget #btnRecalc {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Mobile Transactions Tab Adaptations */
+  #pane-transactions .table thead {
+    display: none;
+  }
+
+  #pane-transactions .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-transactions .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-transactions .table tbody tr td:nth-child(1) { /* Date */
+    justify-content: flex-start;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding-bottom: 0;
+  }
+
+  #pane-transactions .table tbody tr td:nth-child(2) { /* Description */
+    display: block;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0.25rem;
+  }
+
+  #pane-transactions .table tbody tr td:nth-child(3)::before { content: "Account"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-transactions .table tbody tr td:nth-child(4)::before { content: "Major"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-transactions .table tbody tr td:nth-child(5)::before { content: "Minor"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #pane-transactions .table tbody tr td:nth-child(6) { /* Amount */
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  #pane-transactions .table tbody tr td:nth-child(6)::before { content: "Amount"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #pane-transactions .table tbody tr td:nth-child(7) { /* Actions */
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  /* Filter Inputs Sizing for Touch */
+  #pane-transactions .form-control-sm, 
+  #pane-transactions .form-select-sm, 
+  #pane-transactions .btn-sm {
+    min-height: 44px;
+    font-size: 16px; 
+  }
+}
