@@ -1093,4 +1093,422 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     border-top: 1px dashed rgba(0,0,0,0.06);
     gap: 0.5rem;
   }
+
+  /* Mobile Accounts Tab Adaptations */
+  #pane-accounts .table thead {
+    display: none;
+  }
+
+  #pane-accounts .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-accounts .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Account Name (Col 1) */
+  #accountsTbody tr td:nth-child(1) {
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Initial Balance (Col 2) */
+  #accountsTbody tr td:nth-child(2)::before { content: "Initial Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  
+  /* Current Balance (Col 3) */
+  #accountsTbody tr td:nth-child(3)::before { content: "Current Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #accountsTbody tr td:nth-child(3) { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+
+  /* Actions (Col 4) */
+  #accountsTbody tr td:nth-child(4) {
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Header Actions Layout */
+  #pane-accounts > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-accounts > .d-flex > .d-flex {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  #pane-accounts > .d-flex > .d-flex .btn {
+    width: 100%;
+  }
+
+  /* Mobile Rentals Tab Adaptations */
+  #pane-rentals .table thead {
+    display: none;
+  }
+
+  /* Properties List Table */
+  #rentalsTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalsTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #rentalsTbody tr td:nth-child(1) { /* Property Name */
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #rentalsTbody tr td:nth-child(2)::before { content: "Address"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(3)::before { content: "Tenant"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4)::before { content: "Monthly Rent"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4) { font-weight: 700; }
+
+  #rentalsTbody tr td:nth-child(5) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Rental Income Tracker Table - Grid Layout */
+  #rentalIncomeTbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalIncomeTbody tr td {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  /* Property Name (Col 1) - Full Width Header */
+  #rentalIncomeTbody tr td:nth-child(1) {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  /* Months (Col 2-13) - Grid Cells */
+  #rentalIncomeTbody tr td:nth-child(n+2):nth-child(-n+13) {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Month Labels */
+  #rentalIncomeTbody tr td:nth-child(2)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(3)::before { content: "Feb"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(4)::before { content: "Mar"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(5)::before { content: "Apr"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(6)::before { content: "May"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(7)::before { content: "Jun"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(8)::before { content: "Jul"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(9)::before { content: "Aug"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(10)::before { content: "Sep"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(11)::before { content: "Oct"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(12)::before { content: "Nov"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(13)::before { content: "Dec"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+
+  /* Total (Col 14) - Full Width Footer */
+  #rentalIncomeTbody tr td:nth-child(14) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-weight: 700;
+  }
+  #rentalIncomeTbody tr td:nth-child(14)::before { content: "Total Year Income"; font-weight: 500; color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Header Controls Stacking */
+  #pane-rentals > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-rentals > .d-flex .btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end .btn {
+    width: 100%;
+  }
+
+  /* Mobile Rentals Tab Adaptations */
+  #pane-rentals .table thead {
+    display: none;
+  }
+
+  /* Properties List Table */
+  #rentalsTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalsTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #rentalsTbody tr td:nth-child(1) { /* Property Name */
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #rentalsTbody tr td:nth-child(2)::before { content: "Address"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(3)::before { content: "Tenant"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4)::before { content: "Monthly Rent"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4) { font-weight: 700; }
+
+  #rentalsTbody tr td:nth-child(5) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Rental Income Tracker Table - Grid Layout */
+  #rentalIncomeTbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalIncomeTbody tr td {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  /* Property Name (Col 1) - Full Width Header */
+  #rentalIncomeTbody tr td:nth-child(1) {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  /* Months (Col 2-13) - Grid Cells */
+  #rentalIncomeTbody tr td:nth-child(n+2):nth-child(-n+13) {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Month Labels */
+  #rentalIncomeTbody tr td:nth-child(2)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(3)::before { content: "Feb"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(4)::before { content: "Mar"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(5)::before { content: "Apr"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(6)::before { content: "May"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(7)::before { content: "Jun"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(8)::before { content: "Jul"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(9)::before { content: "Aug"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(10)::before { content: "Sep"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(11)::before { content: "Oct"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(12)::before { content: "Nov"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(13)::before { content: "Dec"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+
+  /* Total (Col 14) - Full Width Footer */
+  #rentalIncomeTbody tr td:nth-child(14) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-weight: 700;
+  }
+  #rentalIncomeTbody tr td:nth-child(14)::before { content: "Total Year Income"; font-weight: 500; color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Header Controls Stacking */
+  #pane-rentals > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-rentals > .d-flex .btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end .btn {
+    width: 100%;
+  }
+
+  /* Mobile Debt Snowball Tab Adaptations */
+  #pane-debt .table thead {
+    display: none;
+  }
+
+  /* Debt List Table */
+  #debtTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #debtTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #debtTbody tr td:nth-child(1) { /* Debt Name */
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #debtTbody tr td:nth-child(2)::before { content: "Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtTbody tr td:nth-child(2) { font-weight: 700; color: var(--rose); }
+  #debtTbody tr td:nth-child(3)::before { content: "Min. Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtTbody tr td:nth-child(4)::before { content: "APR %"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtTbody tr td:nth-child(5) { justify-content: flex-end; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed rgba(0,0,0,0.06); gap: 0.5rem; }
+
+  /* Payoff Plan Table */
+  #debtPlanTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  #debtPlanTbody tr td { display: flex; justify-content: space-between; width: 100%; padding: 0.25rem 0; border: none; }
+  
+  #debtPlanTbody tr td:nth-child(1) { justify-content: flex-start; font-weight: 700; color: var(--plum); margin-bottom: 0.25rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; }
+  #debtPlanTbody tr td:nth-child(1)::before { content: "Month: "; margin-right: 0.5rem; font-weight: 500; color: var(--text-muted); }
+  
+  #debtPlanTbody tr td:nth-child(2)::before { content: "Target Debt"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtPlanTbody tr td:nth-child(3)::before { content: "Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtPlanTbody tr td:nth-child(3) { color: var(--sage); font-weight: 700; }
+  #debtPlanTbody tr td:nth-child(4)::before { content: "Remaining"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
 }
