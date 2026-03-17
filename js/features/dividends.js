@@ -1,61 +1,90 @@
 function initDividends() {
-  if (btnDivRefresh) btnDivRefresh.addEventListener("click", renderDividends);
-  if (divYear) divYear.addEventListener("change", renderDividends);
+  if (btnDivRefresh) {
+    btnDivRefresh.addEventListener("click", () => {
+      updateDivYearState();
+      renderDividends();
+    });
+  }
+  if (divYear) {
+    divYear.addEventListener("change", () => {
+      updateDivYearState();
+      renderDividends();
+    });
+  }
 }
 
 function renderDividends() {
+  if (!divTbody) return;
+  
   const year = parseInt(divYear.value) || new Date().getFullYear();
   
-  // 1. Aggregate shares per stock
-  const sharesByStock = {};
+  // 1. Group by Portfolio -> StockId -> Total Shares
+  const portfolioMap = {};
+
   state.holdings.forEach(h => {
-    sharesByStock[h.stockId] = (sharesByStock[h.stockId] || 0) + safeNumber(h.shares);
+    const p = h.portfolio || "Uncategorized";
+    if (!portfolioMap[p]) portfolioMap[p] = {};
+    portfolioMap[p][h.stockId] = (portfolioMap[p][h.stockId] || 0) + safeNumber(h.shares);
   });
 
-  const stockIds = Object.keys(sharesByStock);
+  const sortedPortfolios = Object.keys(portfolioMap).sort();
   let html = "";
   const monthlyIncomeTotals = Array(12).fill(0);
   let totalYearIncome = 0;
 
-  stockIds.forEach(stockId => {
-    const stock = state.stocksMaster.find(s => s.id === stockId);
-    if (!stock) return;
-    
-    const shares = sharesByStock[stockId];
-    if (shares <= 0) return;
+  sortedPortfolios.forEach(portfolioName => {
+    // Add Portfolio Header
+    html += `<tr class="table-group-header"><td colspan="15">${escapeHtml(portfolioName)}</td></tr>`;
 
-    if (!state.dividends[stockId]) state.dividends[stockId] = {};
-    if (!state.dividends[stockId][year]) state.dividends[stockId][year] = Array(12).fill(0);
-    
-    const divs = state.dividends[stockId][year];
-    
-    let rowHtml = `<tr>
-      <td>${escapeHtml(stock.ticker)}</td>
-      <td class="text-end">${formatMoney(shares)}</td>`;
+    const stocksInPortfolio = portfolioMap[portfolioName];
+    const stockIds = Object.keys(stocksInPortfolio).sort((a, b) => {
+      const sA = state.stocksMaster.find(s => s.id === a);
+      const sB = state.stocksMaster.find(s => s.id === b);
+      const tickerA = sA ? sA.ticker : "";
+      const tickerB = sB ? sB.ticker : "";
+      return tickerA.localeCompare(tickerB);
+    });
+
+    stockIds.forEach(stockId => {
+      const stock = state.stocksMaster.find(s => s.id === stockId);
+      if (!stock) return;
       
-    let stockYearTotal = 0;
-    
-    for (let m = 0; m < 12; m++) {
-      const dps = divs[m] || 0;
-      const income = dps * shares;
-      monthlyIncomeTotals[m] += income;
-      stockYearTotal += income;
+      const shares = stocksInPortfolio[stockId];
+      if (shares <= 0) return;
+
+      if (!state.dividends[stockId]) state.dividends[stockId] = {};
+      if (!state.dividends[stockId][year]) state.dividends[stockId][year] = Array(12).fill(0);
       
-      rowHtml += `
-        <td class="p-1">
-          <input type="number" class="form-control form-control-sm text-end border-0 bg-transparent" 
-            step="0.0001" value="${dps === 0 ? '' : dps}" 
-            onchange="updateDividend('${stockId}', ${year}, ${m}, this.value)"
-            placeholder="-">
-        </td>`;
-    }
-    
-    totalYearIncome += stockYearTotal;
-    rowHtml += `<td class="text-end fw-bold">${formatMoney(stockYearTotal)}</td></tr>`;
-    html += rowHtml;
+      const divs = state.dividends[stockId][year];
+      
+      let rowHtml = `<tr>
+        <td>${escapeHtml(stock.ticker)}</td>
+        <td class="text-end">${shares.toLocaleString()}</td>`;
+        
+      let stockYearTotal = 0;
+      
+      for (let m = 0; m < 12; m++) {
+        const dps = divs[m] || 0;
+        const income = dps * shares;
+        monthlyIncomeTotals[m] += income;
+        stockYearTotal += income;
+        
+        rowHtml += `
+          <td class="p-1">
+            <input type="number" class="form-control form-control-sm text-end border-0 bg-transparent" 
+              step="0.0001" value="${dps === 0 ? '' : dps}" 
+              onchange="updateDividend('${stockId}', ${year}, ${m}, this.value)"
+              placeholder="-">
+          </td>`;
+      }
+      
+      totalYearIncome += stockYearTotal;
+      rowHtml += `<td class="text-end fw-bold">${formatMoney(stockYearTotal)}</td></tr>`;
+      html += rowHtml;
+    });
   });
 
-  if (divTbody) divTbody.innerHTML = html || `<tr><td colspan="15" class="text-muted">No stocks with holdings found. Add holdings first.</td></tr>`;
+  divTbody.innerHTML = html || `<tr><td colspan="15" class="text-muted">No stocks with holdings found. Add holdings first.</td></tr>`;
 
   // Render Footer (Summary Row)
   const tfoot = document.getElementById("divTfoot");
@@ -85,6 +114,12 @@ function renderDividends() {
   }
 }
 
+function updateDivYearState() {
+  const y = parseInt(divYear.value) || new Date().getFullYear();
+  state.ui.divYear = y;
+  saveState();
+}
+
 window.updateDividend = function(stockId, year, month, val) {
   const amount = safeNumber(val);
   if (!state.dividends[stockId]) state.dividends[stockId] = {};
@@ -92,6 +127,7 @@ window.updateDividend = function(stockId, year, month, val) {
   state.dividends[stockId][year][month] = amount;
   saveState();
   renderDividends();
+  refreshTopInvestmentMetrics();
 }
 
 window.renderDividendsChart = function(monthlyTotals) {
@@ -114,9 +150,6 @@ function computeTrailing12MDividendIncome() {
 
 function computeDividendIncomeForMonth(year, monthIdx) {
   // monthIdx: 0-11
-  if (!state.dividends[year]) state.dividends[year] = {};
-
-  // shares per stock
   const sharesByStock = {};
   for (const h of state.holdings) {
     sharesByStock[h.stockId] = (sharesByStock[h.stockId] || 0) + safeNumber(h.shares);
@@ -125,8 +158,12 @@ function computeDividendIncomeForMonth(year, monthIdx) {
   let total = 0;
   for (const stockId of Object.keys(sharesByStock)) {
     const shares = sharesByStock[stockId] || 0;
-    const arr = state.dividends[year]?.[stockId] || [];
+    
+    // Data structure is dividends[stockId][year][month]
+    const stockDivs = state.dividends[stockId];
+    const arr = stockDivs ? stockDivs[year] : [];
     const perShare = safeNumber(arr[monthIdx] || 0);
+    
     total += perShare * shares;
   }
   return total;
