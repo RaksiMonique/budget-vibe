@@ -1,0 +1,2872 @@
+{
+  "ui": {
+    "selectedYear": 2025,
+    "selectedMonth": 4,
+    "avgStart": "2025-01-01",
+    "avgEnd": "2025-12-31",
+    "txFilterStart": "",
+    "txFilterEnd": "",
+    "divYear": 2026,
+    "theme": "light",
+    "rentalYear": 2026,
+    "pensionRate": 20,
+    "pensionRates": {},
+    "annualOverviewYear": 2025,
+    "annualOverviewGranularity": "minor"
+  },
+  "minorCategories": [
+    {
+      "id": "c-salary",
+      "majorKey": "income",
+      "name": "Salary",
+      "manualExpectedMonthly": 5000,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-freelance",
+      "majorKey": "income",
+      "name": "Freelance",
+      "manualExpectedMonthly": 500,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-rent",
+      "majorKey": "fixed",
+      "name": "Rent",
+      "manualExpectedMonthly": 1200,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-gym",
+      "majorKey": "fixed",
+      "name": "Gym Membership",
+      "manualExpectedMonthly": 40,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-groceries",
+      "majorKey": "variable",
+      "name": "Groceries",
+      "manualExpectedMonthly": 600,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-dining",
+      "majorKey": "variable",
+      "name": "Dining Out",
+      "manualExpectedMonthly": 200,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-fuel",
+      "majorKey": "variable",
+      "name": "Fuel / Transport",
+      "manualExpectedMonthly": 150,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-elec",
+      "majorKey": "bills",
+      "name": "Electricity",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-internet",
+      "majorKey": "bills",
+      "name": "Internet",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-netflix",
+      "majorKey": "bills",
+      "name": "Netflix",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-vacation",
+      "majorKey": "sinking",
+      "name": "Vacation Fund",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-laptop",
+      "majorKey": "sinking",
+      "name": "New Laptop",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-games",
+      "majorKey": "fun",
+      "name": "Video Games",
+      "manualExpectedMonthly": 60,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-brokerage",
+      "majorKey": "invest",
+      "name": "Brokerage Deposit",
+      "manualExpectedMonthly": 500,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "c-transfer",
+      "majorKey": "transfer",
+      "name": "Transfer",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "bfbde6e49f7ac-19cc2feeeab",
+      "majorKey": "income",
+      "name": "Rental Income",
+      "manualExpectedMonthly": 1120,
+      "createdAt": "2026-03-06T11:53:33.099Z"
+    },
+    {
+      "id": "3c5aa572c3278-19ccb5ca30e",
+      "majorKey": "bills",
+      "name": "Car Insurance",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2026-03-08T02:52:51.854Z"
+    },
+    {
+      "id": "64cf2b411ff5c-19ccb5e7790",
+      "majorKey": "sinking",
+      "name": "Car Insurance",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2026-03-08T02:54:51.792Z"
+    },
+    {
+      "id": "a808964655d92-19ccbbc5e94",
+      "majorKey": "income",
+      "name": "Coffee Shop",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2026-03-08T04:37:25.780Z"
+    },
+    {
+      "id": "836656adb409d-19ccbbd8b4b",
+      "majorKey": "variable",
+      "name": "Gas",
+      "manualExpectedMonthly": 0,
+      "createdAt": "2026-03-08T04:38:42.763Z"
+    }
+  ],
+  "accounts": [
+    {
+      "id": "a-save",
+      "name": "Ally Savings",
+      "type": "Savings",
+      "initialBalance": 10000,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "a-cc",
+      "name": "Amex Gold",
+      "type": "Credit Card",
+      "initialBalance": -450,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "a-check",
+      "name": "Chase Checking",
+      "type": "Checking",
+      "initialBalance": 2500,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "a-cash",
+      "name": "Wallet Cash",
+      "type": "Cash",
+      "initialBalance": 120,
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "t-0-1",
+      "date": "2025-01-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-01-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-0-fr",
+      "date": "2025-01-18",
+      "accountId": "a-check",
+      "minorCategoryId": "c-freelance",
+      "amount": 525,
+      "description": "Web Design Project",
+      "createdAt": "2025-01-18T14:00:00.000Z"
+    },
+    {
+      "id": "t-0-2",
+      "date": "2025-01-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-01-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-0-3",
+      "date": "2025-01-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-01-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-0-4",
+      "date": "2025-01-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-0-5",
+      "date": "2025-01-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 125,
+      "description": "Electricity Bill",
+      "createdAt": "2025-01-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-0-6",
+      "date": "2025-01-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-01-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-0-7",
+      "date": "2025-01-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 185,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-01-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-0-8",
+      "date": "2025-01-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 142,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-01-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-0-9",
+      "date": "2025-01-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 210,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-01-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-0-10",
+      "date": "2025-01-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 88,
+      "description": "Dinner Out",
+      "createdAt": "2025-01-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-0-11",
+      "date": "2025-01-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 41,
+      "description": "Lunch",
+      "createdAt": "2025-01-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-0-12",
+      "date": "2025-01-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 52,
+      "description": "Gas Station",
+      "createdAt": "2025-01-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-0-13",
+      "date": "2025-01-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 48,
+      "description": "Gas Station",
+      "createdAt": "2025-01-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-0-14",
+      "date": "2025-01-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-01-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-0-15",
+      "date": "2025-01-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-01-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-0-16",
+      "date": "2025-01-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-01-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-0-18a",
+      "transferId": "tr-0",
+      "date": "2025-01-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 650,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-01-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-0-18b",
+      "transferId": "tr-0",
+      "date": "2025-01-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 650,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-01-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-1-1",
+      "date": "2025-02-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-02-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-1-2",
+      "date": "2025-02-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-02-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-1-3",
+      "date": "2025-02-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-02-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-1-4",
+      "date": "2025-02-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-02-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-1-5",
+      "date": "2025-02-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 118,
+      "description": "Electricity Bill",
+      "createdAt": "2025-02-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-1-6",
+      "date": "2025-02-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-02-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-1-7",
+      "date": "2025-02-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 165,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-02-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-1-8",
+      "date": "2025-02-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 155,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-02-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-1-9",
+      "date": "2025-02-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 180,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-02-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-1-10",
+      "date": "2025-02-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 55,
+      "description": "Dinner Out",
+      "createdAt": "2025-02-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-1-11",
+      "date": "2025-02-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 35,
+      "description": "Lunch",
+      "createdAt": "2025-02-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-1-12",
+      "date": "2025-02-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 49,
+      "description": "Gas Station",
+      "createdAt": "2025-02-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-1-13",
+      "date": "2025-02-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 42,
+      "description": "Gas Station",
+      "createdAt": "2025-02-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-1-14",
+      "date": "2025-02-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-02-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-1-15",
+      "date": "2025-02-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-02-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-1-16",
+      "date": "2025-02-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-02-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-1-17",
+      "date": "2025-02-19",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-games",
+      "amount": 69.99,
+      "description": "New Video Game",
+      "createdAt": "2025-02-19T17:00:00.000Z"
+    },
+    {
+      "id": "t-1-18a",
+      "transferId": "tr-1",
+      "date": "2025-02-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 680,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-02-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-1-18b",
+      "transferId": "tr-1",
+      "date": "2025-02-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 680,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-02-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-2-1",
+      "date": "2025-03-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-03-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-2-2",
+      "date": "2025-03-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-03-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-2-3",
+      "date": "2025-03-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-03-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-2-4",
+      "date": "2025-03-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-03-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-2-5",
+      "date": "2025-03-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 105,
+      "description": "Electricity Bill",
+      "createdAt": "2025-03-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-2-6",
+      "date": "2025-03-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-03-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-2-7",
+      "date": "2025-03-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 140,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-03-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-2-8",
+      "date": "2025-03-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 160,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-03-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-2-9",
+      "date": "2025-03-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 150,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-03-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-2-10",
+      "date": "2025-03-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 75,
+      "description": "Dinner Out",
+      "createdAt": "2025-03-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-2-11",
+      "date": "2025-03-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 50,
+      "description": "Lunch",
+      "createdAt": "2025-03-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-2-12",
+      "date": "2025-03-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 45,
+      "description": "Gas Station",
+      "createdAt": "2025-03-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-2-13",
+      "date": "2025-03-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 47,
+      "description": "Gas Station",
+      "createdAt": "2025-03-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-2-14",
+      "date": "2025-03-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-03-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-2-15",
+      "date": "2025-03-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-03-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-2-16",
+      "date": "2025-03-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-03-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-2-18a",
+      "transferId": "tr-2",
+      "date": "2025-03-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 620,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-03-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-2-18b",
+      "transferId": "tr-2",
+      "date": "2025-03-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 620,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-03-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-3-1",
+      "date": "2025-04-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-04-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-3-fr",
+      "date": "2025-04-18",
+      "accountId": "a-check",
+      "minorCategoryId": "c-freelance",
+      "amount": 480,
+      "description": "Web Design Project",
+      "createdAt": "2025-04-18T14:00:00.000Z"
+    },
+    {
+      "id": "t-3-2",
+      "date": "2025-04-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-04-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-3-3",
+      "date": "2025-04-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-04-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-3-4",
+      "date": "2025-04-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-04-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-3-5",
+      "date": "2025-04-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 95,
+      "description": "Electricity Bill",
+      "createdAt": "2025-04-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-3-6",
+      "date": "2025-04-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-04-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-3-7",
+      "date": "2025-04-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 190,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-04-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-3-8",
+      "date": "2025-04-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 120,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-04-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-3-9",
+      "date": "2025-04-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 175,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-04-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-3-10",
+      "date": "2025-04-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 60,
+      "description": "Dinner Out",
+      "createdAt": "2025-04-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-3-11",
+      "date": "2025-04-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 25,
+      "description": "Lunch",
+      "createdAt": "2025-04-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-3-12",
+      "date": "2025-04-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 50,
+      "description": "Gas Station",
+      "createdAt": "2025-04-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-3-13",
+      "date": "2025-04-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 44,
+      "description": "Gas Station",
+      "createdAt": "2025-04-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-3-14",
+      "date": "2025-04-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-04-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-3-15",
+      "date": "2025-04-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-04-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-3-16",
+      "date": "2025-04-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-04-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-3-17",
+      "date": "2025-04-19",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-games",
+      "amount": 69.99,
+      "description": "New Video Game",
+      "createdAt": "2025-04-19T17:00:00.000Z"
+    },
+    {
+      "id": "t-3-18a",
+      "transferId": "tr-3",
+      "date": "2025-04-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 700,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-04-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-3-18b",
+      "transferId": "tr-3",
+      "date": "2025-04-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 700,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-04-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-4-1",
+      "date": "2025-05-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 10000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-05-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-4-2",
+      "date": "2025-05-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-05-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-4-3",
+      "date": "2025-05-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-05-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-4-4",
+      "date": "2025-05-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-05-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-4-5",
+      "date": "2025-05-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 90,
+      "description": "Electricity Bill",
+      "createdAt": "2025-05-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-4-6",
+      "date": "2025-05-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-4-7",
+      "date": "2025-05-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 155,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-05-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-4-8",
+      "date": "2025-05-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 135,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-05-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-4-9",
+      "date": "2025-05-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 195,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-05-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-4-10",
+      "date": "2025-05-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 45,
+      "description": "Dinner Out",
+      "createdAt": "2025-05-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-4-11",
+      "date": "2025-05-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 38,
+      "description": "Lunch",
+      "createdAt": "2025-05-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-4-12",
+      "date": "2025-05-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 46,
+      "description": "Gas Station",
+      "createdAt": "2025-05-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-4-13",
+      "date": "2025-05-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 41,
+      "description": "Gas Station",
+      "createdAt": "2025-05-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-4-14",
+      "date": "2025-05-26",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit 2",
+      "createdAt": "2025-05-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-4-15",
+      "date": "2025-05-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-05-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-4-16",
+      "date": "2025-05-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-05-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-4-18a",
+      "transferId": "tr-4",
+      "date": "2025-05-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 610,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-05-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-4-18b",
+      "transferId": "tr-4",
+      "date": "2025-05-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 610,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-05-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-5-1",
+      "date": "2025-06-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-06-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-5-fr",
+      "date": "2025-06-18",
+      "accountId": "a-check",
+      "minorCategoryId": "c-freelance",
+      "amount": 510,
+      "description": "Web Design Project",
+      "createdAt": "2025-06-18T14:00:00.000Z"
+    },
+    {
+      "id": "t-5-2",
+      "date": "2025-06-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-06-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-5-3",
+      "date": "2025-06-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-06-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-5-4",
+      "date": "2025-06-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-06-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-5-5",
+      "date": "2025-06-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 110,
+      "description": "Electricity Bill",
+      "createdAt": "2025-06-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-5-6",
+      "date": "2025-06-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-06-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-5-7",
+      "date": "2025-06-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 170,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-06-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-5-8",
+      "date": "2025-06-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 145,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-06-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-5-9",
+      "date": "2025-06-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 165,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-06-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-5-10",
+      "date": "2025-06-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 95,
+      "description": "Dinner Out",
+      "createdAt": "2025-06-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-5-11",
+      "date": "2025-06-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 42,
+      "description": "Lunch",
+      "createdAt": "2025-06-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-5-12",
+      "date": "2025-06-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 48,
+      "description": "Gas Station",
+      "createdAt": "2025-06-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-5-13",
+      "date": "2025-06-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 43,
+      "description": "Gas Station",
+      "createdAt": "2025-06-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-5-14",
+      "date": "2025-06-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-06-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-5-15",
+      "date": "2025-06-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-06-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-5-16",
+      "date": "2025-06-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-06-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-5-17",
+      "date": "2025-06-19",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-games",
+      "amount": 69.99,
+      "description": "New Video Game",
+      "createdAt": "2025-06-19T17:00:00.000Z"
+    },
+    {
+      "id": "t-5-18a",
+      "transferId": "tr-5",
+      "date": "2025-06-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 690,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-06-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-5-18b",
+      "transferId": "tr-5",
+      "date": "2025-06-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 690,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-06-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-6-1",
+      "date": "2025-07-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-07-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-6-2",
+      "date": "2025-07-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-07-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-6-3",
+      "date": "2025-07-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-07-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-6-4",
+      "date": "2025-07-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-6-5",
+      "date": "2025-07-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 128,
+      "description": "Electricity Bill",
+      "createdAt": "2025-07-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-6-6",
+      "date": "2025-07-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-07-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-6-7",
+      "date": "2025-07-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 180,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-07-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-6-8",
+      "date": "2025-07-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 150,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-07-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-6-9",
+      "date": "2025-07-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 170,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-07-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-6-10",
+      "date": "2025-07-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 120,
+      "description": "Dinner Out",
+      "createdAt": "2025-07-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-6-11",
+      "date": "2025-07-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 55,
+      "description": "Lunch",
+      "createdAt": "2025-07-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-6-12",
+      "date": "2025-07-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 51,
+      "description": "Gas Station",
+      "createdAt": "2025-07-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-6-13",
+      "date": "2025-07-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 46,
+      "description": "Gas Station",
+      "createdAt": "2025-07-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-6-14",
+      "date": "2025-07-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-07-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-6-15",
+      "date": "2025-07-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-07-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-6-16",
+      "date": "2025-07-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-laptop",
+      "amount": 300,
+      "description": "Savings for Laptop",
+      "createdAt": "2025-07-25T10:02:00.000Z"
+    },
+    {
+      "id": "t-6-18a",
+      "transferId": "tr-6",
+      "date": "2025-07-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 640,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-07-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-6-18b",
+      "transferId": "tr-6",
+      "date": "2025-07-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 640,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-07-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-7-1",
+      "date": "2025-08-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-08-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-7-2",
+      "date": "2025-08-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-08-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-7-3",
+      "date": "2025-08-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-08-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-7-4",
+      "date": "2025-08-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-7-5",
+      "date": "2025-08-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 130,
+      "description": "Electricity Bill",
+      "createdAt": "2025-08-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-7-6",
+      "date": "2025-08-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-08-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-7-7",
+      "date": "2025-08-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 160,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-08-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-7-8",
+      "date": "2025-08-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 140,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-08-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-7-9",
+      "date": "2025-08-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 185,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-08-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-7-10",
+      "date": "2025-08-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 80,
+      "description": "Dinner Out",
+      "createdAt": "2025-08-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-7-11",
+      "date": "2025-08-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 60,
+      "description": "Lunch",
+      "createdAt": "2025-08-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-7-12",
+      "date": "2025-08-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 49,
+      "description": "Gas Station",
+      "createdAt": "2025-08-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-7-13",
+      "date": "2025-08-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 45,
+      "description": "Gas Station",
+      "createdAt": "2025-08-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-7-14",
+      "date": "2025-08-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-08-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-7-15",
+      "date": "2025-08-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-08-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-7-17",
+      "date": "2025-08-19",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-games",
+      "amount": 69.99,
+      "description": "New Video Game",
+      "createdAt": "2025-08-19T17:00:00.000Z"
+    },
+    {
+      "id": "t-7-18a",
+      "transferId": "tr-7",
+      "date": "2025-08-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 660,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-08-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-7-18b",
+      "transferId": "tr-7",
+      "date": "2025-08-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 660,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-08-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-8-1",
+      "date": "2025-09-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-09-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-8-fr",
+      "date": "2025-09-18",
+      "accountId": "a-check",
+      "minorCategoryId": "c-freelance",
+      "amount": 550,
+      "description": "Web Design Project",
+      "createdAt": "2025-09-18T14:00:00.000Z"
+    },
+    {
+      "id": "t-8-2",
+      "date": "2025-09-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-09-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-8-3",
+      "date": "2025-09-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-09-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-8-4",
+      "date": "2025-09-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-09-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-8-5",
+      "date": "2025-09-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 115,
+      "description": "Electricity Bill",
+      "createdAt": "2025-09-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-8-6",
+      "date": "2025-09-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-09-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-8-7",
+      "date": "2025-09-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 175,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-09-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-8-8",
+      "date": "2025-09-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 130,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-09-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-8-9",
+      "date": "2025-09-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 160,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-09-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-8-10",
+      "date": "2025-09-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 70,
+      "description": "Dinner Out",
+      "createdAt": "2025-09-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-8-11",
+      "date": "2025-09-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 48,
+      "description": "Lunch",
+      "createdAt": "2025-09-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-8-12",
+      "date": "2025-09-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 47,
+      "description": "Gas Station",
+      "createdAt": "2025-09-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-8-13",
+      "date": "2025-09-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 43,
+      "description": "Gas Station",
+      "createdAt": "2025-09-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-8-14",
+      "date": "2025-09-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-09-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-8-15",
+      "date": "2025-09-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-09-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-8-18a",
+      "transferId": "tr-8",
+      "date": "2025-09-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 630,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-09-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-8-18b",
+      "transferId": "tr-8",
+      "date": "2025-09-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 630,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-09-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-9-1",
+      "date": "2025-10-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-10-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-9-2",
+      "date": "2025-10-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-10-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-9-3",
+      "date": "2025-10-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-9-4",
+      "date": "2025-10-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-10-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-9-5",
+      "date": "2025-10-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 100,
+      "description": "Electricity Bill",
+      "createdAt": "2025-10-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-9-6",
+      "date": "2025-10-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-10-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-9-7",
+      "date": "2025-10-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 180,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-10-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-9-8",
+      "date": "2025-10-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 125,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-10-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-9-9",
+      "date": "2025-10-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 155,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-10-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-9-10",
+      "date": "2025-10-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 65,
+      "description": "Dinner Out",
+      "createdAt": "2025-10-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-9-11",
+      "date": "2025-10-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 40,
+      "description": "Lunch",
+      "createdAt": "2025-10-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-9-12",
+      "date": "2025-10-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 48,
+      "description": "Gas Station",
+      "createdAt": "2025-10-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-9-13",
+      "date": "2025-10-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 42,
+      "description": "Gas Station",
+      "createdAt": "2025-10-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-9-14",
+      "date": "2025-10-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-10-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-9-15",
+      "date": "2025-10-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-10-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-9-17",
+      "date": "2025-10-19",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-games",
+      "amount": 69.99,
+      "description": "New Video Game",
+      "createdAt": "2025-10-19T17:00:00.000Z"
+    },
+    {
+      "id": "t-9-18a",
+      "transferId": "tr-9",
+      "date": "2025-10-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 600,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-10-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-9-18b",
+      "transferId": "tr-9",
+      "date": "2025-10-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 600,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-10-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-10-1",
+      "date": "2025-11-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-11-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-10-2",
+      "date": "2025-11-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-11-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-10-3",
+      "date": "2025-11-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-11-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-10-4",
+      "date": "2025-11-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-11-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-10-5",
+      "date": "2025-11-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 110,
+      "description": "Electricity Bill",
+      "createdAt": "2025-11-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-10-6",
+      "date": "2025-11-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-11-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-10-7",
+      "date": "2025-11-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 220,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-11-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-10-8",
+      "date": "2025-11-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 180,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-11-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-10-9",
+      "date": "2025-11-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 250,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-11-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-10-10",
+      "date": "2025-11-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 150,
+      "description": "Dinner Out",
+      "createdAt": "2025-11-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-10-11",
+      "date": "2025-11-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 70,
+      "description": "Lunch",
+      "createdAt": "2025-11-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-10-12",
+      "date": "2025-11-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 50,
+      "description": "Gas Station",
+      "createdAt": "2025-11-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-10-13",
+      "date": "2025-11-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 48,
+      "description": "Gas Station",
+      "createdAt": "2025-11-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-10-14",
+      "date": "2025-11-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-11-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-10-15",
+      "date": "2025-11-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-11-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-10-18a",
+      "transferId": "tr-10",
+      "date": "2025-11-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 750,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-11-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-10-18b",
+      "transferId": "tr-10",
+      "date": "2025-11-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 750,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-11-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-11-1",
+      "date": "2025-12-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-salary",
+      "amount": 5000,
+      "description": "Monthly Salary",
+      "createdAt": "2025-12-01T09:00:00.000Z"
+    },
+    {
+      "id": "t-11-fr",
+      "date": "2025-12-18",
+      "accountId": "a-check",
+      "minorCategoryId": "c-freelance",
+      "amount": 600,
+      "description": "Web Design Project",
+      "createdAt": "2025-12-18T14:00:00.000Z"
+    },
+    {
+      "id": "t-11-2",
+      "date": "2025-12-02",
+      "accountId": "a-check",
+      "minorCategoryId": "c-rent",
+      "amount": 1200,
+      "description": "Rent",
+      "createdAt": "2025-12-02T09:00:00.000Z"
+    },
+    {
+      "id": "t-11-3",
+      "date": "2025-12-05",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-gym",
+      "amount": 40,
+      "description": "Gym",
+      "createdAt": "2025-12-05T08:00:00.000Z"
+    },
+    {
+      "id": "t-11-4",
+      "date": "2025-12-01",
+      "accountId": "a-check",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "description": "Internet Bill",
+      "createdAt": "2025-12-01T10:00:00.000Z"
+    },
+    {
+      "id": "t-11-5",
+      "date": "2025-12-15",
+      "accountId": "a-check",
+      "minorCategoryId": "c-elec",
+      "amount": 140,
+      "description": "Electricity Bill",
+      "createdAt": "2025-12-15T10:00:00.000Z"
+    },
+    {
+      "id": "t-11-6",
+      "date": "2025-12-20",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "description": "Netflix",
+      "createdAt": "2025-12-20T10:00:00.000Z"
+    },
+    {
+      "id": "t-11-7",
+      "date": "2025-12-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 250,
+      "description": "Groceries - Week 1",
+      "createdAt": "2025-12-07T18:00:00.000Z"
+    },
+    {
+      "id": "t-11-8",
+      "date": "2025-12-14",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 200,
+      "description": "Groceries - Week 2",
+      "createdAt": "2025-12-14T18:00:00.000Z"
+    },
+    {
+      "id": "t-11-9",
+      "date": "2025-12-21",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-groceries",
+      "amount": 300,
+      "description": "Groceries - Week 3",
+      "createdAt": "2025-12-21T18:00:00.000Z"
+    },
+    {
+      "id": "t-11-10",
+      "date": "2025-12-12",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 200,
+      "description": "Dinner Out",
+      "createdAt": "2025-12-12T20:00:00.000Z"
+    },
+    {
+      "id": "t-11-11",
+      "date": "2025-12-26",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-dining",
+      "amount": 100,
+      "description": "Lunch",
+      "createdAt": "2025-12-26T13:00:00.000Z"
+    },
+    {
+      "id": "t-11-12",
+      "date": "2025-12-10",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 55,
+      "description": "Gas Station",
+      "createdAt": "2025-12-10T08:00:00.000Z"
+    },
+    {
+      "id": "t-11-13",
+      "date": "2025-12-24",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-fuel",
+      "amount": 50,
+      "description": "Gas Station",
+      "createdAt": "2025-12-24T08:00:00.000Z"
+    },
+    {
+      "id": "t-11-14",
+      "date": "2025-12-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-brokerage",
+      "amount": 500,
+      "description": "Investment Deposit",
+      "createdAt": "2025-12-25T10:00:00.000Z"
+    },
+    {
+      "id": "t-11-15",
+      "date": "2025-12-25",
+      "accountId": "a-check",
+      "minorCategoryId": "c-vacation",
+      "amount": 350,
+      "description": "Savings for Japan",
+      "createdAt": "2025-12-25T10:01:00.000Z"
+    },
+    {
+      "id": "t-11-17",
+      "date": "2025-12-19",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-games",
+      "amount": 69.99,
+      "description": "New Video Game",
+      "createdAt": "2025-12-19T17:00:00.000Z"
+    },
+    {
+      "id": "t-11-18a",
+      "transferId": "tr-11",
+      "date": "2025-12-28",
+      "accountId": "a-check",
+      "minorCategoryId": "c-transfer",
+      "amount": 800,
+      "transferType": "out",
+      "description": "CC Payment (to Amex Gold)",
+      "createdAt": "2025-12-28T10:00:00.000Z"
+    },
+    {
+      "id": "t-11-18b",
+      "transferId": "tr-11",
+      "date": "2025-12-28",
+      "accountId": "a-cc",
+      "minorCategoryId": "c-transfer",
+      "amount": 800,
+      "transferType": "in",
+      "description": "CC Payment (from Chase Checking)",
+      "createdAt": "2025-12-28T10:00:00.000Z"
+    },
+    {
+      "id": "0533b24e0019c-19ccb5e3ea5",
+      "date": "2025-05-07",
+      "accountId": "a-save",
+      "minorCategoryId": "3c5aa572c3278-19ccb5ca30e",
+      "amount": 1200,
+      "description": "ICWI",
+      "createdAt": "2026-03-08T02:54:37.221Z",
+      "sinkingFundId": "64cf2b411ff5c-19ccb5e7790"
+    },
+    {
+      "id": "a340936f6873f-19ccb8c7f37",
+      "date": "2026-03-07",
+      "accountId": "a-cc",
+      "minorCategoryId": "3c5aa572c3278-19ccb5ca30e",
+      "amount": 50,
+      "description": "ICWI",
+      "createdAt": "2026-03-08T03:45:08.407Z"
+    },
+    {
+      "id": "4af2a8c338fb7-19ccbbd960a",
+      "date": "2026-03-07",
+      "accountId": "a-check",
+      "minorCategoryId": "836656adb409d-19ccbbd8b4b",
+      "amount": 10,
+      "description": "ESSO",
+      "createdAt": "2026-03-08T04:38:45.515Z"
+    },
+    {
+      "id": "91855fba85851-19ccc348168",
+      "date": "2025-03-08",
+      "accountId": "a-save",
+      "minorCategoryId": "64cf2b411ff5c-19ccb5e7790",
+      "amount": 600,
+      "description": "",
+      "sinkingFundId": null,
+      "createdAt": "2026-03-08T06:48:39.016Z"
+    },
+    {
+      "id": "3093002a946f1-19ccc34d8e1",
+      "date": "2025-04-09",
+      "accountId": "a-save",
+      "minorCategoryId": "64cf2b411ff5c-19ccb5e7790",
+      "amount": 600,
+      "description": "",
+      "sinkingFundId": null,
+      "createdAt": "2026-03-08T06:49:01.409Z"
+    }
+  ],
+  "otherAssets": [
+    {
+      "id": "eb13ddaeab98e-19cca73bb5d",
+      "name": "Primary Residence",
+      "category": "Real Estate",
+      "value": 320000,
+      "notes": "",
+      "createdAt": "2026-03-07T22:38:28.189Z"
+    }
+  ],
+  "rentals": [],
+  "rentalIncome": {
+    "2026": {}
+  },
+  "debts": [
+    {
+      "id": "49668ddf8a18c-19cc149d39d",
+      "name": "Mortgage",
+      "balance": 234000,
+      "minPayment": 1386,
+      "interestRate": 5,
+      "createdAt": "2026-03-06T03:56:06.941Z"
+    },
+    {
+      "id": "c4675398c61f9-19cc30c5600",
+      "name": "Car Loan",
+      "balance": 20000,
+      "minPayment": 800,
+      "interestRate": 15,
+      "createdAt": "2026-03-06T12:08:11.520Z"
+    }
+  ],
+  "fire": {
+    "currentAge": 30,
+    "currentPortfolio": 0,
+    "annualInvestment": 12000,
+    "annualSpending": 50000,
+    "annualReturn": 7,
+    "withdrawalRate": 4
+  },
+  "goals": [
+    {
+      "id": "g-vacation",
+      "name": "Japan Trip",
+      "minorCategoryId": "c-vacation",
+      "totalAmount": 5000,
+      "deadlineISO": "2025-12-01",
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "accountId": "a-save"
+    },
+    {
+      "id": "g-laptop",
+      "name": "MacBook Pro",
+      "minorCategoryId": "c-laptop",
+      "totalAmount": 2500,
+      "deadlineISO": "2025-08-01",
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "accountId": "a-save"
+    },
+    {
+      "id": "2f47c09d76d2e-19ccb5ef808",
+      "name": "ICWI",
+      "minorCategoryId": "64cf2b411ff5c-19ccb5e7790",
+      "accountId": "a-save",
+      "totalAmount": 1200,
+      "deadlineISO": "2026-05-07",
+      "createdAt": "2026-03-08T02:55:24.680Z"
+    }
+  ],
+  "bills": [
+    {
+      "id": "b-elec",
+      "name": "Car Insurance",
+      "minorCategoryId": "3c5aa572c3278-19ccb5ca30e",
+      "amount": 1200,
+      "frequency": "yearly",
+      "nextDueISO": "2025-05-22",
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "sinkingFundLink": "64cf2b411ff5c-19ccb5e7790"
+    },
+    {
+      "id": "b-net",
+      "name": "Internet",
+      "minorCategoryId": "c-internet",
+      "amount": 80,
+      "frequency": "monthly",
+      "nextDueISO": "2025-01-01",
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "b-netflix",
+      "name": "Netflix",
+      "minorCategoryId": "c-netflix",
+      "amount": 15.99,
+      "frequency": "monthly",
+      "nextDueISO": "2025-01-20",
+      "createdAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "e38025b0ae1ff-19ccb8d2bfa",
+      "name": "Electricity",
+      "minorCategoryId": "c-elec",
+      "amount": 90,
+      "frequency": "monthly",
+      "nextDueISO": "2025-01-07",
+      "sinkingFundLink": null,
+      "createdAt": "2026-03-08T03:45:52.634Z"
+    }
+  ],
+  "billPayments": [],
+  "stocksMaster": [
+    {
+      "id": "s-aapl",
+      "ticker": "AAPL",
+      "market": "NASDAQ",
+      "currentPrice": 175.5,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-12-01T10:00:00.000Z",
+      "price": 150
+    },
+    {
+      "id": "s-msft",
+      "ticker": "MSFT",
+      "market": "NASDAQ",
+      "currentPrice": 320,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-12-01T10:00:00.000Z",
+      "price": 450
+    },
+    {
+      "id": "s-voo",
+      "ticker": "VOO",
+      "market": "NYSE",
+      "currentPrice": 410.2,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-12-01T10:00:00.000Z",
+      "price": 270
+    },
+    {
+      "id": "s-ko",
+      "ticker": "KO",
+      "market": "NYSE",
+      "currentPrice": 60.5,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-12-01T10:00:00.000Z",
+      "price": 320
+    }
+  ],
+  "holdings": [
+    {
+      "id": "h-1",
+      "stockId": "s-aapl",
+      "avgBuyPrice": 150,
+      "shares": 10,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z",
+      "portfolio": "General",
+      "avgPrice": 100
+    },
+    {
+      "id": "h-2",
+      "stockId": "s-msft",
+      "avgBuyPrice": 280,
+      "shares": 5,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z",
+      "portfolio": "General",
+      "avgPrice": 400
+    },
+    {
+      "id": "h-3",
+      "stockId": "s-voo",
+      "avgBuyPrice": 380,
+      "shares": 15,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z",
+      "portfolio": "General",
+      "avgPrice": 290
+    },
+    {
+      "id": "h-4",
+      "stockId": "s-ko",
+      "avgBuyPrice": 55,
+      "shares": 50,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z",
+      "portfolio": "General",
+      "avgPrice": 300
+    },
+    {
+      "id": "b32d57a5c9f3f-19ccbc5b0af",
+      "stockId": "s-aapl",
+      "portfolio": "Retirement",
+      "avgPrice": 150,
+      "shares": 5,
+      "createdAt": "2026-03-08T04:47:36.623Z"
+    },
+    {
+      "id": "ab5caff3d38e-19ccc160ed9",
+      "stockId": "s-voo",
+      "portfolio": "General",
+      "avgPrice": 260,
+      "shares": 10,
+      "createdAt": "2026-03-08T06:15:23.609Z"
+    }
+  ],
+  "dividends": {
+    "2024": {
+      "s-aapl": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "s-msft": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "s-voo": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "s-ko": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "2025": {
+      "s-aapl": [
+        0,
+        0.24,
+        0,
+        0,
+        0.24,
+        0,
+        0,
+        0.24,
+        0,
+        0,
+        0.24,
+        0
+      ],
+      "s-msft": [
+        0,
+        0.75,
+        0,
+        0,
+        0.75,
+        0,
+        0,
+        0.75,
+        0,
+        0,
+        0.75,
+        0
+      ],
+      "s-voo": [
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.6,
+        0,
+        0,
+        1.55,
+        0,
+        0,
+        1.65
+      ],
+      "s-ko": [
+        0,
+        0.46,
+        0,
+        0,
+        0.46,
+        0,
+        0,
+        0.46,
+        0,
+        0,
+        0.46,
+        0
+      ]
+    },
+    "2026": {
+      "s-aapl": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "s-ko": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "s-msft": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "s-voo": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "s-aapl": {
+      "2025": [
+        0,
+        2,
+        0,
+        0,
+        2,
+        0,
+        0,
+        2,
+        0,
+        0,
+        2,
+        0
+      ],
+      "2026": [
+        0,
+        2,
+        0,
+        0,
+        2,
+        0,
+        0,
+        2,
+        0,
+        0,
+        2,
+        0
+      ],
+      "2027": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "s-msft": {
+      "2025": [
+        0,
+        0,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        11,
+        0,
+        0,
+        0
+      ],
+      "2026": [
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      "2027": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "s-voo": {
+      "2025": [
+        0.5,
+        0,
+        0,
+        0.5,
+        0,
+        0,
+        0.5,
+        0,
+        0,
+        0.5,
+        0,
+        0
+      ],
+      "2026": [
+        0.2,
+        0,
+        0,
+        0.2,
+        0,
+        0,
+        0.2,
+        0,
+        0,
+        0.2,
+        0,
+        0
+      ],
+      "2027": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "s-ko": {
+      "2025": [
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.5
+      ],
+      "2026": [
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        1.5
+      ],
+      "2027": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "meta": {
+    "createdAt": "2025-12-31T12:00:00.000Z"
+  },
+  "pensionRates": {
+    "2025-5": 20,
+    "2025-4": 20
+  },
+  "stockPlan": {
+    "Retirement": {
+      "mode": "ratio",
+      "multiplier": 1,
+      "targetValue": 1000,
+      "ratios": {
+        "s-aapl": 100
+      }
+    },
+    "Uncategorized": {
+      "mode": "ratio",
+      "multiplier": 1,
+      "targetValue": 0,
+      "ratios": {}
+    },
+    "General": {
+      "mode": "dividend",
+      "multiplier": 500,
+      "targetValue": 0,
+      "ratios": {}
+    }
+  }
+}
