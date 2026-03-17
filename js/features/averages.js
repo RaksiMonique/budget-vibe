@@ -60,6 +60,30 @@ function initAverages() {
       });
     }
   }
+
+  if (avgThead) {
+    avgThead.addEventListener("click", (e) => {
+      const th = e.target.closest("th");
+      if (!th || !th.dataset.sort) return;
+      
+      const field = th.dataset.sort;
+      const currentSort = state.ui.avgSortField || 'actual';
+      const currentDir = state.ui.avgSortDir || 'desc';
+      
+      let newDir = 'desc';
+      if (field === currentSort) {
+        newDir = currentDir === 'desc' ? 'asc' : 'desc';
+      } else {
+        // Default sort direction: asc for text, desc for numbers
+        if (field === 'major' || field === 'minor') newDir = 'asc';
+      }
+      
+      state.ui.avgSortField = field;
+      state.ui.avgSortDir = newDir;
+      saveState();
+      renderAverages();
+    });
+  }
 }
 
 function renderAnnualOverview() {
@@ -286,8 +310,6 @@ function renderAnnualOverviewCharts(totals, totalsByMinor, monthlyStats) {
    Averages Tab (UPDATED % denominator)
    ========================= */
 function renderAverages() {
-  if (!avgTbody) return;
-
   const startISO = avgStart.value || state.ui.avgStart;
   const endISO = avgEnd.value || state.ui.avgEnd;
 
@@ -295,7 +317,9 @@ function renderAverages() {
     avgMonths.value = "—";
     avgIncomeValue.textContent = "—";
     avgExpenseValue.textContent = "—";
-    avgTbody.innerHTML = `<tr><td colspan="4" class="text-muted">Select a date range.</td></tr>`;
+    if (avgTbody) avgTbody.innerHTML = `<tr><td colspan="6" class="text-muted">Select a date range.</td></tr>`;
+    if (averagesBarChart) averagesBarChart.destroy();
+    averagesBarChart = null;
     return;
   }
 
@@ -305,14 +329,16 @@ function renderAverages() {
     avgMonths.value = "—";
     avgIncomeValue.textContent = "—";
     avgExpenseValue.textContent = "—";
-    avgTbody.innerHTML = `<tr><td colspan="4" class="text-muted">Invalid range. Start must be <= End.</td></tr>`;
+    if (avgTbody) avgTbody.innerHTML = `<tr><td colspan="6" class="text-muted">Invalid range. Start must be <= End.</td></tr>`;
+    if (averagesBarChart) averagesBarChart.destroy();
+    averagesBarChart = null;
     return;
   }
 
   const monthsCount = countMonthsInclusive(start, end);
   avgMonths.value = String(monthsCount);
 
-  // Sum by category for range
+  // 1. Sum actuals by category for the selected range
   const sumsByMinor = {};
   for (const t of state.transactions) {
     if (!t.date) continue;
@@ -320,105 +346,128 @@ function renderAverages() {
     sumsByMinor[t.minorCategoryId] = (sumsByMinor[t.minorCategoryId] || 0) + safeNumber(t.amount);
   }
 
-  // Avg monthly income
+  // 2. Get current expected values (which are already monthly)
+  const expectedByMinor = computeExpectedByMinor();
+
+  // 3. Calculate total average income and expenses
   let incomeTotal = 0;
-  for (const c of state.minorCategories) {
-    if (c.majorKey !== "income") continue;
-    incomeTotal += (sumsByMinor[c.id] || 0);
-  }
-  const avgIncome = monthsCount > 0 ? (incomeTotal / monthsCount) : 0;
-  avgIncomeValue.textContent = formatMoney(avgIncome);
+  let actualExpenseTotal = 0;
+  let expectedExpenseTotal = 0;
 
-  // Avg monthly total expenses (outflow categories only)
-  let expenseTotal = 0;
   for (const c of state.minorCategories) {
     const type = MAJOR_TYPES[c.majorKey];
-    if (type !== "outflow") continue;
-    expenseTotal += (sumsByMinor[c.id] || 0);
-  }
-  const avgTotalExpenses = monthsCount > 0 ? (expenseTotal / monthsCount) : 0;
-  avgExpenseValue.textContent = formatMoney(avgTotalExpenses);
-
-  const sortedCats = state.minorCategories
-    .slice()
-    .sort((a, b) => (a.majorKey + a.name).localeCompare(b.majorKey + b.name));
-
-  const rows = sortedCats.map(c => {
-    const total = sumsByMinor[c.id] || 0;
-    const avg = monthsCount > 0 ? (total / monthsCount) : 0;
-
-    const type = MAJOR_TYPES[c.majorKey];
-
-    let pctStr = "—";
-    // Only compute % for outflow categories against total outflow
-    if (type === "outflow") {
-      const pct = avgTotalExpenses > 0 ? (avg / avgTotalExpenses) * 100 : 0;
-      pctStr = avgTotalExpenses > 0 ? `${pct.toFixed(1)}%` : "—";
+    if (type === 'inflow') {
+      incomeTotal += (sumsByMinor[c.id] || 0);
+    } else if (type === 'outflow') {
+      actualExpenseTotal += (sumsByMinor[c.id] || 0);
+      expectedExpenseTotal += (expectedByMinor[c.id] || 0);
     }
+  }
 
-    return `
-      <tr>
-        <td>${escapeHtml(getMajorLabel(c.majorKey))}</td>
-        <td>${escapeHtml(c.name)}</td>
-        <td class="text-end">${formatMoney(avg)}</td>
-        <td class="text-end">${pctStr}</td>
-      </tr>
-    `;
-  }).join("");
+  const avgTotalActualIncome = monthsCount > 0 ? (incomeTotal / monthsCount) : 0;
+  const avgTotalActualExpenses = monthsCount > 0 ? (actualExpenseTotal / monthsCount) : 0;
+  const avgTotalExpectedExpenses = expectedExpenseTotal; // Expected is already monthly
 
-  avgTbody.innerHTML = rows || `<tr><td colspan="4" class="text-muted">No categories yet.</td></tr>`;
+  avgIncomeValue.textContent = formatMoney(avgTotalActualIncome);
+  avgExpenseValue.textContent = formatMoney(avgTotalActualExpenses);
 
-  renderAveragesBarChart(sortedCats, sumsByMinor, monthsCount);
+  // 4. Prepare data for table and chart (only expenses), then sort
+  const sortField = state.ui.avgSortField || 'actual';
+  const sortDir = state.ui.avgSortDir || 'desc';
+  const dirMult = sortDir === 'asc' ? 1 : -1;
+
+  const expenseCats = state.minorCategories
+    .filter(c => MAJOR_TYPES[c.majorKey] === 'outflow')
+    .map(c => ({
+      ...c,
+      avgActual: monthsCount > 0 ? (sumsByMinor[c.id] || 0) / monthsCount : 0,
+      avgExpected: expectedByMinor[c.id] || 0,
+    }))
+    .sort((a, b) => {
+      if (sortField === 'actual' || sortField === 'pctActual') {
+        return (a.avgActual - b.avgActual) * dirMult;
+      }
+      if (sortField === 'expected' || sortField === 'pctExpected') {
+        return (a.avgExpected - b.avgExpected) * dirMult;
+      }
+      if (sortField === 'major') {
+        const labelA = getMajorLabel(a.majorKey).toLowerCase();
+        const labelB = getMajorLabel(b.majorKey).toLowerCase();
+        return labelA.localeCompare(labelB) * dirMult;
+      }
+      if (sortField === 'minor') {
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase()) * dirMult;
+      }
+      return 0;
+    });
+
+  // 5. Render Table
+  if (avgTbody) {
+    const rows = expenseCats.map(c => {
+      const pctActual = avgTotalActualExpenses > 0 ? (c.avgActual / avgTotalActualExpenses * 100).toFixed(1) + "%" : "0.0%";
+      const pctExpected = avgTotalExpectedExpenses > 0 ? (c.avgExpected / avgTotalExpectedExpenses * 100).toFixed(1) + "%" : "0.0%";
+      return `
+        <tr>
+          <td>${escapeHtml(getMajorLabel(c.majorKey))}</td>
+          <td>${escapeHtml(c.name)}</td>
+          <td class="text-end">${formatMoney(c.avgActual)}</td>
+          <td class="text-end">${formatMoney(c.avgExpected)}</td>
+          <td class="text-end">${pctActual}</td>
+          <td class="text-end">${pctExpected}</td>
+        </tr>
+      `;
+    }).join("");
+    avgTbody.innerHTML = rows || `<tr><td colspan="6" class="text-muted">No expense categories with data in this range.</td></tr>`;
+  }
+
+  // 6. Render Chart
+  renderAveragesBarChart(expenseCats);
 }
 
-function renderAveragesBarChart(sortedCats, sumsByMinor, monthsCount) {
+function renderAveragesBarChart(expenseCats) {
   const ctx = document.getElementById("averagesBarChart")?.getContext("2d");
   if (!ctx) return;
 
-  const chartData = sortedCats
-    .map(c => {
-      const total = sumsByMinor[c.id] || 0;
-      const avg = monthsCount > 0 ? (total / monthsCount) : 0;
-      return {
-        label: c.name,
-        avg: avg,
-        majorKey: c.majorKey,
-        type: MAJOR_TYPES[c.majorKey]
-      };
-    })
-    .filter(d => d.type === "outflow" && d.avg > 0)
-    .sort((a, b) => b.avg - a.avg)
-    .slice(0, 15); // Top 15
+  const topCats = expenseCats.slice(0, 15).reverse(); // Reverse for horizontal bar chart
 
-  const labels = chartData.map(d => d.label);
-  const data = chartData.map(d => d.avg);
-  const colors = chartData.map(d => MAJOR_CATEGORIES.find(m => m.key === d.majorKey)?.color || "#cccccc");
+  const labels = topCats.map(c => c.name);
+  const actualData = topCats.map(c => c.avgActual);
+  const expectedData = topCats.map(c => c.avgExpected);
 
   if (averagesBarChart) {
-    averagesBarChart.data.labels = labels;
-    averagesBarChart.data.datasets[0].data = data;
-    averagesBarChart.data.datasets[0].backgroundColor = colors;
-    averagesBarChart.update();
-  } else {
-    averagesBarChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: labels,
-        datasets: [{
-          label: "Average Monthly Spend",
-          data: data,
-          backgroundColor: colors,
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { x: { beginAtZero: true } },
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
+    averagesBarChart.destroy();
   }
+
+  averagesBarChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Average Actual',
+          data: actualData,
+          backgroundColor: '#735557', // plum-soft
+          borderRadius: 4
+        },
+        {
+          label: 'Average Expected',
+          data: expectedData,
+          backgroundColor: '#D29F80', // sand
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { beginAtZero: true, ticks: { callback: (value) => formatMoney(value) } }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${formatMoney(context.parsed.x)}` } }
+      }
+    }
+  });
 }

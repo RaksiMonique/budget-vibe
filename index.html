@@ -571,12 +571,14 @@
 
             <div class="table-responsive mt-3">
               <table class="table table-sm align-middle table-soft">
-                <thead>
+                <thead id="avgThead">
                   <tr>
-                    <th>Major</th>
-                    <th>Minor</th>
-                    <th class="text-end">Monthly Avg (Actual)</th>
-                    <th class="text-end">% of Avg Total Expenses</th>
+                    <th data-sort="major" style="cursor: pointer;">Major ↕</th>
+                    <th data-sort="minor" style="cursor: pointer;">Minor ↕</th>
+                    <th class="text-end" data-sort="actual" style="cursor: pointer;">Avg Actual ↕</th>
+                    <th class="text-end" data-sort="expected" style="cursor: pointer;">Avg Expected ↕</th>
+                    <th class="text-end" data-sort="pctActual" style="cursor: pointer;">% of Actual Exp. ↕</th>
+                    <th class="text-end" data-sort="pctExpected" style="cursor: pointer;">% of Expected Exp. ↕</th>
                   </tr>
                 </thead>
                 <tbody id="avgTbody"></tbody>
