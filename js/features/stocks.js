@@ -137,6 +137,43 @@ function renderStocks() {
 
   sortedPortfolios.forEach(p => {
     const group = byPortfolio[p];
+    let portfolioTotalValue = 0;
+    let portfolioTotalCost = 0;
+
+    const tableBodyHtml = group.map(h => {
+      const stock = state.stocksMaster.find(s => s.id === h.stockId);
+      const ticker = stock ? stock.ticker : "???";
+      const currentPrice = stock ? safeNumber(stock.price) : 0;
+      const avgBuy = safeNumber(h.avgPrice);
+      const shares = safeNumber(h.shares);
+      const cost = avgBuy * shares;
+      const value = currentPrice * shares;
+      const gain = value - cost;
+      const gainClass = gain >= 0 ? "text-success" : "text-danger";
+
+      portfolioTotalValue += value;
+      portfolioTotalCost += cost;
+
+      return `
+        <tr>
+          <td>${escapeHtml(ticker)}</td>
+          <td class="text-end">${formatMoney(avgBuy)}</td>
+          <td class="text-end">${shares}</td>
+          <td class="text-end">${formatMoney(cost)}</td>
+          <td class="text-end fw-bold">${formatMoney(value)}</td>
+          <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    const portfolioTotalGain = portfolioTotalValue - portfolioTotalCost;
+    const portfolioGainClass = portfolioTotalGain >= 0 ? "text-success" : "text-danger";
     const chartId = `portfolio-chart-${p.replace(/[^a-zA-Z0-9]/g, '')}`;
 
     // 1. Create and append TABLE to holdingsContainer (right column)
@@ -157,35 +194,16 @@ function renderStocks() {
               <th style="width: 20%">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            ${group.map(h => {
-              const stock = state.stocksMaster.find(s => s.id === h.stockId);
-              const ticker = stock ? stock.ticker : "???";
-              const currentPrice = stock ? safeNumber(stock.price) : 0;
-              const avgBuy = safeNumber(h.avgPrice);
-              const shares = safeNumber(h.shares);
-              const cost = avgBuy * shares;
-              const value = currentPrice * shares;
-              const gain = value - cost;
-              const gainClass = gain >= 0 ? "text-success" : "text-danger";
-              return `
-                <tr>
-                  <td>${escapeHtml(ticker)}</td>
-                  <td class="text-end">${formatMoney(avgBuy)}</td>
-                  <td class="text-end">${shares}</td>
-                  <td class="text-end">${formatMoney(cost)}</td>
-                  <td class="text-end fw-bold">${formatMoney(value)}</td>
-                  <td class="text-end ${gainClass}">${formatMoney(gain)}</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary" onclick="editHolding('${h.id}')">Edit</button>
-                      <button class="btn btn-sm btn-outline-danger" onclick="deleteHolding('${h.id}')">Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              `;
-            }).join("")}
-          </tbody>
+          <tbody>${tableBodyHtml}</tbody>
+          <tfoot>
+            <tr class="fw-bold">
+              <td colspan="3" class="text-end border-top">Portfolio Totals:</td>
+              <td class="text-end border-top">${formatMoney(portfolioTotalCost)}</td>
+              <td class="text-end border-top">${formatMoney(portfolioTotalValue)}</td>
+              <td class="text-end border-top ${portfolioGainClass}">${formatMoney(portfolioTotalGain)}</td>
+              <td class="border-top"></td>
+            </tr>
+          </tfoot>
         </table>
       </div>`;
     if (holdingsContainer) holdingsContainer.appendChild(tableWrapper);
