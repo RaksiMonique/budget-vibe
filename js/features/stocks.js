@@ -20,7 +20,64 @@ function initStocks() {
   stockMasterCancel.addEventListener("click", () => { stockMasterForm.reset(); stockMasterId.value = ""; });
 
   holdingForm.addEventListener("submit", (e) => { e.preventDefault(); upsertHolding(); });
-  holdingCancel.addEventListener("click", () => { holdingForm.reset(); holdingId.value = ""; });
+  holdingCancel.addEventListener("click", () => {
+    holdingForm.reset();
+    holdingId.value = "";
+    holdingNewPortfolioWrap.style.display = 'none';
+    holdingNewPortfolioName.value = '';
+  });
+
+  holdingPortfolio.addEventListener("change", toggleNewPortfolioInput);
+  btnSaveNewHoldingPortfolio.addEventListener("click", saveNewPortfolio);
+}
+
+function repopulatePortfolioOptions() {
+  const portfolios = new Set((state.holdings || []).map(h => h.portfolio).filter(p => p));
+  const sortedPortfolios = Array.from(portfolios).sort((a,b) => a.localeCompare(b));
+
+  const optionsHtml = sortedPortfolios.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+  const addNewOption = `<option value="--new--">-- Add New Portfolio --</option>`;
+  
+  let finalOptions = optionsHtml;
+  if (!portfolios.has("General")) {
+    finalOptions = `<option value="General">General</option>` + finalOptions;
+  }
+
+  holdingPortfolio.innerHTML = addNewOption + finalOptions;
+}
+
+function toggleNewPortfolioInput() {
+  if (holdingPortfolio.value === '--new--') {
+    holdingNewPortfolioWrap.style.display = 'block';
+    holdingNewPortfolioName.focus();
+  } else {
+    holdingNewPortfolioWrap.style.display = 'none';
+  }
+}
+
+function saveNewPortfolio() {
+  const newName = holdingNewPortfolioName.value.trim();
+  if (!newName) {
+    showToast("Please enter a portfolio name.");
+    return;
+  }
+
+  const existingOptions = Array.from(holdingPortfolio.options).map(opt => opt.value);
+  if (existingOptions.some(opt => opt.toLowerCase() === newName.toLowerCase() && opt !== '--new--')) {
+    showToast("That portfolio already exists in the list.");
+    const existingValue = existingOptions.find(opt => opt.toLowerCase() === newName.toLowerCase());
+    holdingPortfolio.value = existingValue;
+    toggleNewPortfolioInput();
+    return;
+  }
+
+  const newOption = new Option(escapeHtml(newName), newName, false, true);
+  holdingPortfolio.add(newOption);
+  holdingPortfolio.value = newName;
+
+  holdingNewPortfolioName.value = '';
+  toggleNewPortfolioInput();
+  showToast("New portfolio selected. It will be saved with the holding.");
 }
 
 function renderStocks() {
@@ -44,6 +101,8 @@ function renderStocks() {
   if (holdingStockId) {
     holdingStockId.innerHTML = masterList.map(s => `<option value="${s.id}">${escapeHtml(s.ticker)}</option>`).join("") || `<option value="" disabled>Add a stock to master list first</option>`;
   }
+
+  repopulatePortfolioOptions();
 
   // 2. Render Holdings (Grouped by Portfolio)
 
@@ -69,14 +128,6 @@ function renderStocks() {
     byPortfolio[p].push(h);
     portfolios.add(p);
   });
-
-  // Update datalist for portfolio input
-  if (document.getElementById('portfolioList')) {
-    document.getElementById('portfolioList').innerHTML = Array.from(portfolios)
-      .sort()
-      .map(p => `<option value="${escapeHtml(p)}">`)
-      .join("");
-  }
 
   const sortedPortfolios = Array.from(portfolios).sort();
 
@@ -219,11 +270,17 @@ window.deleteStockMaster = function(id) {
 window.upsertHolding = function() {
   const id = holdingId.value?.trim();
   const stockId = holdingStockId.value;
-  const portfolio = holdingPortfolio.value?.trim() || "General";
+  let portfolio = holdingPortfolio.value?.trim();
   const avg = safeNumber(holdingAvgPrice.value);
   const shares = safeNumber(holdingShares.value);
 
-  if (!stockId || shares <= 0) return;
+  if (portfolio === '--new--') {
+    showToast("Please save the new portfolio name first.");
+    return;
+  }
+  if (!portfolio) portfolio = "General";
+
+  if (!stockId || !isFinite(shares) || shares <= 0) return;
 
   if (id) {
     const h = state.holdings.find(x => x.id === id);
@@ -249,6 +306,8 @@ window.upsertHolding = function() {
   saveState();
   holdingForm.reset();
   holdingId.value = "";
+  holdingNewPortfolioWrap.style.display = 'none';
+  holdingNewPortfolioName.value = '';
   refreshAll();
 }
 
@@ -257,7 +316,9 @@ window.editHolding = function(id) {
   if (!h) return;
   holdingId.value = h.id;
   holdingStockId.value = h.stockId;
-  holdingPortfolio.value = h.portfolio || "";
+  repopulatePortfolioOptions();
+  holdingPortfolio.value = h.portfolio || "General";
+  toggleNewPortfolioInput();
   holdingAvgPrice.value = h.avgPrice;
   holdingShares.value = h.shares;
 };

@@ -122,11 +122,13 @@ const holdingForm = document.getElementById("holdingForm");
 const holdingId = document.getElementById("holdingId");
 const holdingStockId = document.getElementById("holdingStockId");
 const holdingPortfolio = document.getElementById("holdingPortfolio");
-const portfolioList = document.getElementById("portfolioList");
 const holdingAvgPrice = document.getElementById("holdingAvgPrice");
 const holdingShares = document.getElementById("holdingShares");
 const holdingCancel = document.getElementById("holdingCancel");
 const holdingsContainer = document.getElementById("holdingsContainer");
+const holdingNewPortfolioWrap = document.getElementById("holdingNewPortfolioWrap");
+const holdingNewPortfolioName = document.getElementById("holdingNewPortfolioName");
+const btnSaveNewHoldingPortfolio = document.getElementById("btnSaveNewHoldingPortfolio");
 
 /* Dividends tab */
 const divYear = document.getElementById("divYear");
