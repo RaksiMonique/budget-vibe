@@ -295,6 +295,62 @@ body{
   display: inline-block;
 }
 
+/* Sinking/Savings Goal Cards */
+.goal-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.goal-card-title {
+  font-weight: 700;
+  color: var(--plum);
+  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+}
+
+.goal-card-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.goal-card-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.goal-card-progress-info strong {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.goal-card-footer {
+  margin-top: auto; /* Pushes footer to the bottom */
+  padding-top: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.goal-card-req .label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.goal-card-req .value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--sage);
+}
+
+.goal-card-actions .btn {
+  margin-left: 0.25rem;
+}
+
 /* Improve wide tables with sticky columns */
 #pane-dividends .table-responsive {
   overflow-x: auto;
@@ -404,6 +460,19 @@ body{
   .tabs-vertical-shell .tab-content.tab-shell{
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     border-top: 0;
+  }
+
+  /* Dashboard Mobile Adaptations */
+  #pane-dashboard .metric {
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #pane-dashboard .metric-value {
+    font-size: 2rem;
+    margin-top: 4px;
   }
 
   /* Adjust sticky header in dividends table for mobile */
@@ -1511,4 +1580,145 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   #debtPlanTbody tr td:nth-child(3)::before { content: "Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
   #debtPlanTbody tr td:nth-child(3) { color: var(--sage); font-weight: 700; }
   #debtPlanTbody tr td:nth-child(4)::before { content: "Remaining"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  /* Mobile Averages Tab Adaptations */
+  #pane-averages .nav-pills .nav-link {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  #pane-averages .nav-pills .nav-link.active {
+    background: var(--rose);
+    color: #fff;
+    border-color: var(--rose);
+  }
+
+  /* Annual Overview Header */
+  #pane-averages #avg-view-annual .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-averages #avg-view-annual .d-flex.gap-2.align-items-end {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 0.5rem;
+    align-items: stretch !important;
+  }
+  
+  #pane-averages #avg-view-annual .btn-group {
+    display: flex;
+    width: 100%;
+  }
+  
+  #pane-averages #avg-view-annual .btn-group .btn {
+    flex: 1;
+    padding: 10px;
+  }
+  
+  /* Average Actuals Header & Inputs */
+  #pane-averages #avg-view-actuals .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-averages #btnAvgRefresh {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 12px;
+  }
+
+  /* Average Actuals Table to Cards */
+  #pane-averages #avg-view-actuals .table thead {
+    display: none;
+  }
+
+  #pane-averages #avg-view-actuals .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-averages #avg-view-actuals .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #avgTbody tr td:nth-child(1) { /* Major */
+    justify-content: flex-start;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding-bottom: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  #avgTbody tr td:nth-child(2) { /* Minor */
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0;
+  }
+
+  #avgTbody tr td:nth-child(3)::before { content: "Avg Actual"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #avgTbody tr td:nth-child(3) { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+  
+  #avgTbody tr td:nth-child(4)::before { content: "Avg Expected"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #avgTbody tr td:nth-child(5)::before { content: "% of Actual Exp."; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #avgTbody tr td:nth-child(6)::before { content: "% of Expected Exp."; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  /* Mobile Net Worth Tab Adaptations */
+  #pane-networth .table thead {
+    display: none;
+  }
+
+  #pane-networth #nwTbody tr {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-networth #nwTbody tr td {
+    border: none;
+    padding: 0;
+    width: auto;
+    text-align: left;
+  }
+
+  #pane-networth #nwTbody tr td:nth-child(1) { /* Category */
+    font-weight: 600;
+    color: var(--plum);
+  }
+
+  #pane-networth #nwTbody tr td:nth-child(2) { /* Value */
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: right;
+  }
 }
