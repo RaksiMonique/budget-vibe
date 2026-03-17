@@ -6,6 +6,7 @@ function initSavings() {
 
     if (!goalId.value) {
       goalModalTitle.textContent = "Add Savings Goal";
+      goalSaved.value = "0";
     } else {
       goalModalTitle.textContent = "Edit Savings Goal";
     }
@@ -77,6 +78,7 @@ function upsertGoal() {
   const name = goalName.value.trim();
   const accId = goalAccount.value;
   const total = safeNumber(goalTotal.value);
+  const saved = safeNumber(goalSaved.value);
   let deadDate = goalDeadlineDate.value;
   const deadDur = safeNumber(goalDurationMonths.value);
 
@@ -121,6 +123,7 @@ function upsertGoal() {
     g.accountId = accId;
     g.totalAmount = total;
     g.deadlineISO = deadDate || null;
+    cat.initialBalance = saved;
     cat.name = name; // Sync name
     showToast("Savings Goal updated.");
   } else {
@@ -139,6 +142,7 @@ function upsertGoal() {
       id: uid(),
       majorKey: "sinking",
       name: name,
+      initialBalance: saved,
       manualExpectedMonthly: 0,
       createdAt: new Date().toISOString()
     };
@@ -229,10 +233,13 @@ function handleGoalAction(e) {} // Not strictly needed if using onclick handlers
 window.editGoal = function(id) {
   const g = state.goals.find(x => x.id === id);
   if (!g) return;
+
+  const cat = getCategory(g.minorCategoryId);
   
   goalId.value = g.id;
   goalName.value = g.name;
   goalTotal.value = g.totalAmount;
+  goalSaved.value = String(cat?.initialBalance || 0);
   goalDeadlineDate.value = g.deadlineISO || "";
 
   openModal("modalGoal");

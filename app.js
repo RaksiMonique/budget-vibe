@@ -1240,7 +1240,9 @@ function seedStarterCategories() {
 }
 
 function computeSinkingFundBalance(minorId) {
-  let balance = 0;
+  const cat = state.minorCategories.find(c => c.id === minorId);
+  let balance = cat?.initialBalance || 0;
+
   for (const t of state.transactions) {
     const amt = safeNumber(t.amount);
     // Add contributions (direct transactions to the sinking fund)

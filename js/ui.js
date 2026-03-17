@@ -205,6 +205,7 @@ const goalNewAccountWrap = document.getElementById("goalNewAccountWrap");
 const goalNewAccountName = document.getElementById("goalNewAccountName");
 const btnSaveNewGoalAccount = document.getElementById("btnSaveNewGoalAccount");
 const goalTotal = document.getElementById("goalTotal");
+const goalSaved = document.getElementById("goalSaved");
 const goalDeadlineDate = document.getElementById("goalDeadlineDate");
 const goalDurationMonths = document.getElementById("goalDurationMonths");
 
