@@ -14,6 +14,7 @@ function initTransactions() {
       repopulateTxMinorOptions(txMajor.value, true);
       repopulateTxAccountOptions(true);
     }
+    updateTxDescDatalist();
     toggleNewMinorInput();
     toggleNewAccountInput();
 
@@ -215,6 +216,12 @@ function upsertTransaction(keepOpen = false) {
     showToast("Transaction added.");
   }
 
+  // Save description for reuse if new
+  if (desc && !state.savedDescriptions.includes(desc)) {
+    state.savedDescriptions.push(desc);
+    state.savedDescriptions.sort();
+  }
+
   saveState();
   refreshAll();
 
@@ -336,6 +343,15 @@ function saveNewTxAccount() {
   txAccount.value = newAccount.id;
   toggleNewAccountInput();
   updateTxAccountBalance();
+}
+
+function updateTxDescDatalist() {
+  if (!txDescList) return;
+  // Filter out empty strings just in case
+  txDescList.innerHTML = state.savedDescriptions
+    .filter(d => d)
+    .map(d => `<option value="${escapeHtml(d)}"></option>`)
+    .join("");
 }
 
 function repopulateTxMinorOptions(majorKey, forceSelectFirst) {

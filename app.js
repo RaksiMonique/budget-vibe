@@ -85,6 +85,12 @@ function init() {
   if (!Array.isArray(state.otherAssets)) state.otherAssets = [];
   if (!Array.isArray(state.rentals)) state.rentals = [];
   if (!Array.isArray(state.goals)) state.goals = [];
+  
+  // Init Saved Descriptions (and backfill from existing transactions if empty)
+  if (!Array.isArray(state.savedDescriptions)) {
+    const existing = new Set((state.transactions || []).map(t => t.description).filter(d => d && d.trim().length > 0));
+    state.savedDescriptions = Array.from(existing).sort();
+  }
 
   if (!Array.isArray(state.billPayments)) state.billPayments = [];
   if (!Array.isArray(state.stocksMaster)) state.stocksMaster = [];
@@ -1207,6 +1213,7 @@ function importJSON(e) {
         holdings: Array.isArray(parsed.holdings) ? parsed.holdings : [],
         dividends: (parsed.dividends && typeof parsed.dividends === "object") ? parsed.dividends : {},
         stockPlan: (parsed.stockPlan && typeof parsed.stockPlan === "object") ? parsed.stockPlan : {},
+        savedDescriptions: Array.isArray(parsed.savedDescriptions) ? parsed.savedDescriptions : [],
       };
 
       saveState();

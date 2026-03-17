@@ -193,6 +193,7 @@ const txNewMinorWrap = document.getElementById("txNewMinorWrap");
 const txNewMinorName = document.getElementById("txNewMinorName");
 const btnSaveNewTxMinor = document.getElementById("btnSaveNewTxMinor");
 const txDesc = document.getElementById("txDesc");
+const txDescList = document.getElementById("txDescList");
 const txAmount = document.getElementById("txAmount");
 const txBillFundWrap = document.getElementById("txBillFundWrap");
 const txUseBillFund = document.getElementById("txUseBillFund");
