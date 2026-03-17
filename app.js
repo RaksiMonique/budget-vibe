@@ -96,6 +96,18 @@ function init() {
   rentalYear.value = String(state.ui.rentalYear);
   if (!state.rentalIncome || typeof state.rentalIncome !== "object") state.rentalIncome = {};
 
+  // Init Currency
+  if (!state.ui.currency) state.ui.currency = 'USD';
+  currencySelect.value = state.ui.currency;
+
+  // Override global formatMoney to use selected currency
+  window.formatMoney = function(amount) {
+    const val = parseFloat(amount);
+    if (isNaN(val)) return "-";
+    // Using en-US locale for number formatting (1,000.00) but applying the selected currency symbol/code
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: state.ui.currency }).format(val);
+  };
+
   wireEvents();
   refreshAll();
 }
@@ -125,6 +137,12 @@ function wireEvents() {
     const key = `${sel.year}-${sel.month}`;
     if (!state.pensionRates) state.pensionRates = {};
     state.pensionRates[key] = safeNumber(pensionInput.value);
+    saveState();
+    refreshAll();
+  });
+
+  currencySelect.addEventListener("change", () => {
+    state.ui.currency = currencySelect.value;
     saveState();
     refreshAll();
   });

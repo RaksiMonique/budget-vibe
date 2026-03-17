@@ -2,6 +2,8 @@ function initTransactions() {
   modalTransactionEl.addEventListener("show.bs.modal", () => {
     txNewMinorWrap.style.display = 'none';
     txNewMinorName.value = '';
+    txNewAccountWrap.style.display = 'none';
+    txNewAccountName.value = '';
 
     if (!txId.value) {
       setTxModalMode("add");
@@ -10,18 +12,10 @@ function initTransactions() {
       txAmount.value = "";
       if (!txMajor.value) txMajor.value = "variable";
       repopulateTxMinorOptions(txMajor.value, true);
-      toggleNewMinorInput();
+      repopulateTxAccountOptions(true);
     }
-    // Populate accounts dropdown
-    const currentAccId = txAccount.value;
-    const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
-    txAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
-    
-    if (currentAccId && accs.some(a => a.id === currentAccId)) {
-      txAccount.value = currentAccId;
-    } else if (!txId.value && accs.length) {
-      txAccount.value = accs[0].id;
-    }
+    toggleNewMinorInput();
+    toggleNewAccountInput();
 
     // After everything, check for the link
     checkBillSinkingLink();
@@ -34,7 +28,10 @@ function initTransactions() {
     checkBillSinkingLink();
   });
 
-  txAccount.addEventListener("change", updateTxAccountBalance);
+  txAccount.addEventListener("change", () => {
+    updateTxAccountBalance();
+    toggleNewAccountInput();
+  });
 
   txMinor.addEventListener("change", () => {
     toggleNewMinorInput();
@@ -42,6 +39,7 @@ function initTransactions() {
   });
 
   btnSaveNewTxMinor.addEventListener('click', saveNewTxMinorCategory);
+  btnSaveNewTxAccount.addEventListener('click', saveNewTxAccount);
 
   txForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransaction(false); });
   txSubmitAddAnotherBtn.addEventListener("click", () => upsertTransaction(true));
@@ -168,6 +166,11 @@ function upsertTransaction(keepOpen = false) {
     return;
   }
 
+  if (accId === '--new--') {
+    showToast("Please save the new account before adding the transaction.");
+    return;
+  }
+
   let sinkingFundId = null;
 
   // Sinking fund logic override
@@ -245,9 +248,7 @@ function editTransaction(id) {
   txDate.value = t.date;
 
   // Populate accounts
-  const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
-  txAccount.innerHTML = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
-  txAccount.value = t.accountId || "";
+  repopulateTxAccountOptions(false);
   txMajor.value = majorKey;
 
   repopulateTxMinorOptions(majorKey, false);
@@ -262,6 +263,7 @@ function editTransaction(id) {
 
   txDesc.value = t.description || "";
   txAmount.value = String(t.amount);
+  txAccount.value = t.accountId || "";
 
   // Hide "Add Another" button when editing
   txSubmitAddAnotherBtn.style.display = "none";
@@ -287,6 +289,53 @@ function deleteTransaction(id) {
 
   const message = t.transferId ? "This will delete both sides of the transfer. Continue?" : "Delete this transaction?";
   showConfirmationModal(message, onConfirm);
+}
+
+function repopulateTxAccountOptions(forceSelectFirst) {
+  const accs = state.accounts.sort((a, b) => a.name.localeCompare(b.name));
+  const optionsHtml = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  const addNewOption = `<option value="--new--">-- Add New Account --</option>`;
+  txAccount.innerHTML = addNewOption + optionsHtml;
+
+  if (forceSelectFirst && accs.length) {
+    txAccount.value = accs[0].id;
+  } else if (!accs.length) {
+    txAccount.value = "--new--";
+  }
+}
+
+function toggleNewAccountInput() {
+  if (txAccount.value === '--new--') {
+    txNewAccountWrap.style.display = 'block';
+    txNewAccountName.focus();
+  } else {
+    txNewAccountWrap.style.display = 'none';
+  }
+}
+
+function saveNewTxAccount() {
+  const newName = txNewAccountName.value.trim();
+  if (!newName) {
+    showToast("Please enter an account name.");
+    return;
+  }
+
+  const dupe = state.accounts.find(a => a.name.toLowerCase() === newName.toLowerCase());
+  if (dupe) {
+    showToast("An account with that name already exists.");
+    return;
+  }
+
+  const newAccount = { id: uid(), name: newName, initialBalance: 0, type: 'Checking', createdAt: new Date().toISOString() };
+  state.accounts.push(newAccount);
+  saveState();
+  showToast("Account added.");
+
+  txNewAccountName.value = '';
+  repopulateTxAccountOptions(false);
+  txAccount.value = newAccount.id;
+  toggleNewAccountInput();
+  updateTxAccountBalance();
 }
 
 function repopulateTxMinorOptions(majorKey, forceSelectFirst) {

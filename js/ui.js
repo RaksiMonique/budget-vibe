@@ -4,6 +4,7 @@ const monthSelect = document.getElementById("monthSelect");
 const btnThisMonth = document.getElementById("btnThisMonth");
 const displayMonthYear = document.getElementById("displayMonthYear");
 const pensionInput = document.getElementById("pensionInput");
+const currencySelect = document.getElementById("currencySelect");
 const themeToggle = document.getElementById("theme-toggle");
 const btnRecalc = document.getElementById("btnRecalc");
 
@@ -183,6 +184,9 @@ const txId = document.getElementById("txId");
 const txDate = document.getElementById("txDate");
 const txAccount = document.getElementById("txAccount");
 const txAccountBalance = document.getElementById("txAccountBalance");
+const txNewAccountWrap = document.getElementById("txNewAccountWrap");
+const txNewAccountName = document.getElementById("txNewAccountName");
+const btnSaveNewTxAccount = document.getElementById("btnSaveNewTxAccount");
 const txMajor = document.getElementById("txMajor");
 const txMinor = document.getElementById("txMinor");
 const txNewMinorWrap = document.getElementById("txNewMinorWrap");
