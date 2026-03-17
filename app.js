@@ -263,7 +263,6 @@ function refreshAll() {
   renderAccounts();
   renderTransactionsTable();
   renderGoals(expectedByMinor);
-  renderSinkingCategories(expectedByMinor, actualByMinor);
   renderBillsCategories(expectedByMinor);
   renderBills(sel.year, sel.month); // FIXED: show ALL bills
   renderDebts();
@@ -1124,6 +1123,11 @@ function computeGoalMonthlyRequired(goal) {
   const total = safeNumber(goal.totalAmount);
   if (total <= 0) return 0;
 
+  const saved = computeSinkingFundBalance(goal.minorCategoryId);
+  if (saved >= total) return 0;
+
+  const remaining = total - saved;
+
   const now = new Date();
   const deadline = goal.deadlineISO ? new Date(goal.deadlineISO + "T00:00:00") : null;
   if (!deadline || isNaN(deadline.getTime())) return 0;
@@ -1131,7 +1135,7 @@ function computeGoalMonthlyRequired(goal) {
   let months = monthsBetweenInclusive(now, deadline);
   months = Math.max(1, months);
 
-  return total / months;
+  return remaining / months;
 }
 
 function computeBillMonthlyEquivalent(bill) {

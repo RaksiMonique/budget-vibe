@@ -26,7 +26,6 @@ const accountsTbody = document.getElementById("accountsTbody");
 const goalsWrap = document.getElementById("goalsWrap");
 const billsTbody = document.getElementById("billsTbody");
 const catTbody = document.getElementById("catTbody");
-const sinkingCatTbody = document.getElementById("sinkingCatTbody");
 const billsCatTbody = document.getElementById("billsCatTbody");
 
 const btnExport = document.getElementById("btnExport");
@@ -162,12 +161,6 @@ const categoryMajor = document.getElementById("categoryMajor");
 const categoryName = document.getElementById("categoryName");
 const categoryExpected = document.getElementById("categoryExpected");
 
-/* Sinking category modal */
-const sinkingCategoryForm = document.getElementById("sinkingCategoryForm");
-const sinkingCategoryModalTitle = document.getElementById("sinkingCategoryModalTitle");
-const sinkingCategoryId = document.getElementById("sinkingCategoryId");
-const sinkingCategoryName = document.getElementById("sinkingCategoryName");
-
 /* Bills category modal */
 const billsCategoryForm = document.getElementById("billsCategoryForm");
 const billsCategoryModalTitle = document.getElementById("billsCategoryModalTitle");
@@ -206,10 +199,10 @@ const modalGoalEl = document.getElementById("modalGoal");
 const goalModalTitle = document.getElementById("goalModalTitle");
 const goalId = document.getElementById("goalId");
 const goalName = document.getElementById("goalName");
-const goalMinor = document.getElementById("goalMinor");
-const goalNewMinorWrap = document.getElementById("goalNewMinorWrap");
-const goalNewMinorName = document.getElementById("goalNewMinorName");
 const goalAccount = document.getElementById("goalAccount");
+const goalNewAccountWrap = document.getElementById("goalNewAccountWrap");
+const goalNewAccountName = document.getElementById("goalNewAccountName");
+const btnSaveNewGoalAccount = document.getElementById("btnSaveNewGoalAccount");
 const goalTotal = document.getElementById("goalTotal");
 const goalDeadlineDate = document.getElementById("goalDeadlineDate");
 const goalDurationMonths = document.getElementById("goalDurationMonths");

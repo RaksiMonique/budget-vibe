@@ -364,34 +364,11 @@
 
         <div class="row g-3">
           <!-- Goals -->
-          <div class="col-lg-7">
+          <div class="col-lg-12">
             <h6 class="mb-2">Savings Goals</h6>
             <div id="goalsWrap" class="row g-3"></div>
           </div>
 
-          <!-- Sinking categories -->
-          <div class="col-lg-5">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-              <div>
-                <h6 class="mb-0">Sinking Fund Categories</h6>
-                <div class="small text-muted">Expected is auto-calculated from linked goals.</div>
-              </div>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table table-sm align-middle table-soft">
-                <thead>
-                  <tr>
-                    <th>Minor</th>
-                    <th class="text-end">Expected (Auto)</th>
-                    <th class="text-end">Actual (Selected Month)</th>
-                    <th style="width: 18%">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="sinkingCatTbody"></tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1498,34 +1475,6 @@
     </div>
   </div>
 
-  <!-- Sinking Fund Category -->
-  <div class="modal fade" id="modalSinkingCategory" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <form id="sinkingCategoryForm" class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="sinkingCategoryModalTitle">Add Sinking Fund</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body">
-          <input type="hidden" id="sinkingCategoryId" />
-          <div class="mb-3">
-            <label class="form-label">Sinking Fund Name</label>
-            <input id="sinkingCategoryName" class="form-control" required maxlength="50" placeholder="e.g., Mac Mini">
-          </div>
-          <div class="alert alert-secondary small mb-0">
-            Expected amounts are auto-calculated from linked savings goals.
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary" type="submit">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Bills Category -->
   <div class="modal fade" id="modalBillsCategory" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -1661,21 +1610,18 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Link to Sinking Fund Category</label>
-            <select id="goalMinor" class="form-select" required></select>
-            <div class="form-text">Each sinking fund can only be linked to one goal.</div>
-          </div>
-
-          <!-- New Sinking Fund Input -->
-          <div id="goalNewMinorWrap" class="mb-3 p-3 rounded" style="display: none; background-color: var(--bg-soft);">
-            <label class="form-label small fw-bold">New Sinking Fund Name</label>
-            <input id="goalNewMinorName" type="text" class="form-control" placeholder="e.g., New Roof">
-          </div>
-
-          <div class="mb-3">
             <label class="form-label">Link to Account</label>
             <select id="goalAccount" class="form-select" required></select>
             <div class="form-text">Where is this money being saved?</div>
+          </div>
+
+          <!-- New account input -->
+          <div id="goalNewAccountWrap" class="mb-3 p-3 rounded" style="display: none; background-color: var(--bg-soft);">
+            <label class="form-label small fw-bold">New Account Name</label>
+            <div class="input-group input-group-sm">
+              <input id="goalNewAccountName" type="text" class="form-control" placeholder="e.g., High Yield Savings">
+              <button id="btnSaveNewGoalAccount" class="btn btn-outline-primary" type="button">Save</button>
+            </div>
           </div>
 
           <div class="mb-3">
