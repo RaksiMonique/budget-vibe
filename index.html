@@ -1006,11 +1006,12 @@
               <table class="table table-sm align-middle table-soft">
                 <thead>
                   <tr>
-                    <th>Property Name</th>
-                    <th>Address</th>
+                    <th>Property</th>
                     <th>Tenant</th>
                     <th class="text-end">Monthly Rent</th>
-                    <th style="width: 18%">Actions</th>
+                    <th class="text-end">Monthly Expenses</th>
+                    <th class="text-end">Est. Profit/Loss</th>
+                    <th style="width: 25%">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="rentalsTbody"></tbody>
@@ -1677,6 +1678,77 @@
           <button class="btn btn-warning" type="submit">Save</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Rental Expenses Modal -->
+  <div class="modal fade" id="modalRentalExpenses" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rentalExpensesModalTitle">Manage Expenses</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-4">
+            <div class="col-md-5">
+              <h6 id="rentalExpenseFormTitle" class="mb-3">Add Expense</h6>
+              <form id="rentalExpensesForm">
+                <input type="hidden" id="rentalForExpenseId" />
+                <input type="hidden" id="rentalExpenseId" />
+                <div class="mb-3">
+                  <label class="form-label">Expense Name</label>
+                  <input id="rentalExpenseName" class="form-control" required placeholder="e.g., Mortgage">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Amount per payment</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input id="rentalExpenseAmount" type="number" step="0.01" class="form-control" required>
+                  </div>
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-sm-6">
+                    <label class="form-label">Frequency</label>
+                    <select id="rentalExpenseFrequency" class="form-select" required>
+                      <option value="weekly">Weekly</option>
+                      <option value="biweekly">Biweekly</option>
+                      <option value="monthly" selected>Monthly</option>
+                      <option value="quarterly">Quarterly</option>
+                      <option value="yearly">Yearly</option>
+                    </select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label">Next due date</label>
+                    <input id="rentalExpenseNextDue" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary" type="submit">Save Expense</button>
+                  <button id="btnCancelRentalExpense" class="btn btn-outline-secondary" type="button">Cancel</button>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-7">
+              <h6 class="mb-3">Existing Expenses</h6>
+              <div class="table-responsive" style="max-height: 400px;">
+                <table class="table table-sm table-soft">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th class="text-end">Amount</th>
+                      <th>Freq.</th>
+                      <th class="text-end">Monthly Eq.</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rentalExpensesTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

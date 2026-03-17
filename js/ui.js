@@ -59,6 +59,18 @@ const rentalsTbody = document.getElementById("rentalsTbody");
 const rentalIncomeTbody = document.getElementById("rentalIncomeTbody");
 const rentalYear = document.getElementById("rentalYear");
 const btnRentalRefresh = document.getElementById("btnRentalRefresh");
+const modalRentalExpensesEl = document.getElementById("modalRentalExpenses");
+const rentalExpensesModalTitle = document.getElementById("rentalExpensesModalTitle");
+const rentalExpensesForm = document.getElementById("rentalExpensesForm");
+const rentalExpenseFormTitle = document.getElementById("rentalExpenseFormTitle");
+const rentalForExpenseId = document.getElementById("rentalForExpenseId");
+const rentalExpenseId = document.getElementById("rentalExpenseId");
+const rentalExpenseName = document.getElementById("rentalExpenseName");
+const rentalExpenseAmount = document.getElementById("rentalExpenseAmount");
+const rentalExpenseFrequency = document.getElementById("rentalExpenseFrequency");
+const rentalExpenseNextDue = document.getElementById("rentalExpenseNextDue");
+const btnCancelRentalExpense = document.getElementById("btnCancelRentalExpense");
+const rentalExpensesTbody = document.getElementById("rentalExpensesTbody");
 
 /* Assets tab */
 const assetForm = document.getElementById("assetForm");

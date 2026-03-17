@@ -85,6 +85,9 @@ function init() {
   if (!Array.isArray(state.otherAssets)) state.otherAssets = [];
   if (!Array.isArray(state.rentals)) state.rentals = [];
   if (!Array.isArray(state.goals)) state.goals = [];
+  state.rentals.forEach(r => {
+    if (!Array.isArray(r.expenses)) r.expenses = [];
+  });
   
   // Init Saved Descriptions (and backfill from existing transactions if empty)
   if (!Array.isArray(state.savedDescriptions)) {
@@ -1205,6 +1208,9 @@ function importJSON(e) {
         stockPlan: (parsed.stockPlan && typeof parsed.stockPlan === "object") ? parsed.stockPlan : {},
         savedDescriptions: Array.isArray(parsed.savedDescriptions) ? parsed.savedDescriptions : [],
       };
+      state.rentals.forEach(r => {
+        if (!Array.isArray(r.expenses)) r.expenses = [];
+      });
 
       saveState();
       showToast("Imported JSON.");
