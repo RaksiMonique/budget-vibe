@@ -175,6 +175,7 @@ function wireEvents() {
   });
 
   transferForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransfer(); });
+  transferFromAccount.addEventListener("change", updateTransferToOptions);
   modalTransferEl.addEventListener("show.bs.modal", (event) => {
     const button = event.relatedTarget;
     const fromAccountId = button ? button.dataset.fromAccountId : null;
@@ -198,7 +199,6 @@ function wireEvents() {
       transferToAccount.value = accs[1].id;
     }
     updateTransferToOptions();
-    updateTransferFromOptions();
   });
 
   categoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertGeneralMinorCategory(); });
@@ -1077,20 +1077,6 @@ function updateTransferToOptions() {
     const firstAvailable = Array.from(transferToAccount.options).find(opt => !opt.disabled);
     if (firstAvailable) {
       transferToAccount.value = firstAvailable.value;
-    }
-  }
-}
-
-function updateTransferFromOptions() {
-  const toId = transferToAccount.value;
-  for (const option of transferFromAccount.options) {
-    option.disabled = (option.value === toId);
-  }
-  // If the current 'from' is now disabled, find a new one
-  if (transferFromAccount.options[transferFromAccount.selectedIndex]?.disabled) {
-    const firstAvailable = Array.from(transferFromAccount.options).find(opt => !opt.disabled);
-    if (firstAvailable) {
-      transferFromAccount.value = firstAvailable.value;
     }
   }
 }

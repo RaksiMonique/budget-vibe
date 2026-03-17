@@ -176,6 +176,7 @@ const txSubmitAddAnotherBtn = document.getElementById("txSubmitAddAnotherBtn");
 const txId = document.getElementById("txId");
 const txDate = document.getElementById("txDate");
 const txAccount = document.getElementById("txAccount");
+const txAccountLabel = document.getElementById("txAccountLabel");
 const txAccountBalance = document.getElementById("txAccountBalance");
 const txNewAccountWrap = document.getElementById("txNewAccountWrap");
 const txNewAccountName = document.getElementById("txNewAccountName");

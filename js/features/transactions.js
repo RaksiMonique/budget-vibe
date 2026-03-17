@@ -14,6 +14,7 @@ function initTransactions() {
       repopulateTxMinorOptions(txMajor.value, true);
       repopulateTxAccountOptions(true);
     }
+    updateTxAccountLabel();
     updateTxDescDatalist();
     toggleNewMinorInput();
     toggleNewAccountInput();
@@ -27,6 +28,7 @@ function initTransactions() {
     repopulateTxMinorOptions(txMajor.value, true);
     toggleNewMinorInput();
     checkBillSinkingLink();
+    updateTxAccountLabel();
   });
 
   txAccount.addEventListener("change", () => {
@@ -258,6 +260,7 @@ function editTransaction(id) {
   repopulateTxAccountOptions(false);
   txMajor.value = majorKey;
 
+  updateTxAccountLabel();
   repopulateTxMinorOptions(majorKey, false);
   txMinor.value = t.minorCategoryId;
 
@@ -343,6 +346,16 @@ function saveNewTxAccount() {
   txAccount.value = newAccount.id;
   toggleNewAccountInput();
   updateTxAccountBalance();
+}
+
+function updateTxAccountLabel() {
+  if (!txAccountLabel) return;
+  const type = MAJOR_TYPES[txMajor.value];
+  if (type === 'inflow') {
+    txAccountLabel.textContent = "Deposit to Account";
+  } else {
+    txAccountLabel.textContent = "Paid from Account";
+  }
 }
 
 function updateTxDescDatalist() {
