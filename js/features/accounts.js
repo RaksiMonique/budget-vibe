@@ -188,6 +188,14 @@ function computeAccountBalances() {
     const type = MAJOR_TYPES[cat.majorKey];
     if (type === 'inflow') balances[t.accountId] += amt;
     else if (type === 'outflow') balances[t.accountId] -= amt;
+
+    // Sinking Fund: Add to linked goal account
+    if (cat.majorKey === 'sinking') {
+      const goal = state.goals.find(g => g.minorCategoryId === cat.id);
+      if (goal && goal.accountId && balances[goal.accountId] !== undefined) {
+        balances[goal.accountId] += amt;
+      }
+    }
   });
 
   return balances;
