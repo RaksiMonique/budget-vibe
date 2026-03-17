@@ -798,7 +798,9 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     display: none;
   }
 
-  #pane-stocks .table tbody tr {
+  #pane-stocks .table tbody tr,
+  #stocksMasterTbody tr,
+  #holdingsContainer tr {
     display: flex;
     flex-direction: column;
     background: var(--card-bg);
@@ -809,7 +811,9 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     border: 1px solid rgba(0,0,0,0.05);
   }
 
-  #pane-stocks .table tbody tr td {
+  #pane-stocks .table tbody tr td,
+  #stocksMasterTbody tr td,
+  #holdingsContainer tr td {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1633,11 +1637,11 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   }
 
   /* Average Actuals Table to Cards */
-  #pane-averages #avg-view-actuals .table thead {
+  #avgThead {
     display: none;
   }
 
-  #pane-averages #avg-view-actuals .table tbody tr {
+  #avgTbody tr {
     display: flex;
     flex-direction: column;
     background: var(--card-bg);
@@ -1648,7 +1652,7 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     border: 1px solid rgba(0,0,0,0.05);
   }
 
-  #pane-averages #avg-view-actuals .table tbody tr td {
+  #avgTbody tr td {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1721,4 +1725,41 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     font-size: 1.1rem;
     text-align: right;
   }
+
+  /* Mobile Stock Portfolio Footer (Totals) */
+  #holdingsContainer .table tfoot {
+    display: block;
+    border: none;
+  }
+
+  #holdingsContainer .table tfoot tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  #holdingsContainer .table tfoot tr td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.25rem 0;
+    border: none !important;
+  }
+
+  #holdingsContainer .table tfoot tr td:nth-child(1) { /* Label */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    color: var(--plum);
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  }
+
+  #holdingsContainer .table tfoot tr td:nth-child(2)::before { content: "Total Cost"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tfoot tr td:nth-child(3)::before { content: "Total Value"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tfoot tr td:nth-child(4)::before { content: "Total Gain/Loss"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tfoot tr td:nth-child(5) { display: none; } /* Empty cell */
 }
