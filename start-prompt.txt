@@ -17,6 +17,92 @@ Use html, css and vanilla js
 
 Errors:
 
-Sinking Fund and Bills minor category expected amounts cannot be updated from the add category section.
-When adding transactions, set today as the default date.
-When adding a transaction have a separate drop down for major category and minor category selection  
+The code you gave me allows the users to update all minor categories. Please change the sinking funds and bills minor categories so that the expected amounts cannot be updated by the user from the add category section. The website should limit addition and editing of bills within the bill interface. The website should also only allow addition and editing of sinking funds within the sinking fund interface. 
+I also realized that you left the date blank when initially entering new transactions. Please update the script so that when the user is adding new transactions the date is set to today's date and the user can update it to another date if necessary.
+Additionally, when adding a transaction you created a single drop down with the major and minor category as one item. Please update the script to have a separate drop down for major category and minor category selection.  
+
+
+Errors 2:
+
+Currently on the Website after creating the bill minor category I have to create the recurring bill. While adding/updating the recurring bill a bill name is needed separate from the bill minor category name. Please update the website so that the bill name and bill minor category name are considered to be the same thing. 
+Please add a tracker showing how many bills are paid vs unpaid for the month in the top section of the website. 
+Currently Sinking Fund tab is for adding minor categories but the Savings goal tab is for making the actual goal outline. The word sinking and savings should be interchangeable so please group the two tabs so adding sinking fund minor categories happen on the same page as the creating savings goals tab. Also name the heading sinking(savings).
+
+
+Updates 3: 
+
+Add a tab to track average actual values on all minor category to give an overview of the average spending for a month. The user should be able to select a specific date range to track and the monthly average for that period should be displayed for each minor category.
+
+Add a tab to track stocks. Have a main table to where the user can input the stock ticker, the current price and the relevant stock market. Have a secondary table on the same tab where the user can add their current holdings. For the second table they should be able to enter/select and edit the ticker (as an option from the first table), the average price the stock was bought at and the number of stocks they bought. The Website should then calculate and display the amount of money spent (average cost times number of stocks), the stocks total current value (current price times the number of stocks) and the gain/loss (current value minus money spent).
+
+Add a tab to track dividend income. For each stock owned in the stock tab create a table headed as the stock owned, the number of stocks and the months from january to december for the year selected and the total dividend earned for that stock for the year. Fill in the stocks owned and number of stocks from the stocks tab. Allow the user to manually enter the dividend for each stock for each month. Calculate the total income for the stock by multiplying the total dividends for the stock by the number of stocks owned. Also calculate and display the monthly dividend income based on the values in the table.
+
+
+
+Updates 4:
+
+On the bill tab, new bills are not showing up when I add them to the recurring bill section. Only two bills are listed but I've added more than two recurring bills. Please fix the website so I can see all the recurring bills added by the user.
+
+Currently the bills have to manually be marked as paid. The bill should be considered to be paid when there is a transaction linked to the minor category of the bill for that month. 
+
+On the averages tab the average expenses are calculated as a percentage of the average income. Please change this to calculate the column as a percentage of the average total expenses.
+
+Add a segment in the top main section showing the trailing 12 months dividend income. Also add the total current value of the users stocks in the top main segment.
+
+
+Update 5?:
+
+Track Investment rate and savings rate in relation to income(allow the user to add their pension contribution percentage)
+
+Make a debt snowball tab
+
+Make a fire (financial independence retire early) movement/retirement tab 
+
+For the account section add a tag for each account so they can be grouped together asbased on type of account (eg. investments/savings/spending etc). Make a fixed amount of types the user can choose from in a drop down menu
+
+
+Error 6:
+
+The savings rate is the monthly savings (from the major category) as a percentage of the monthly income. The investment rate is the monthly investment (from the investment major category) as a percentage of the monthly income plus the pension percentage which the user should be able to manually input for each month. 
+
+
+Update 7:
+
+Networth tab
+
+Update the website to track assets other than money in accounts
+
+Change the website so that the month you are working in is more visible/obvious to the user
+
+Add house rental income tab
+
+
+Update 8:
+
+link savings goal to a specific account (chosen by the user). update the website so the user can see where the savings goals are saved and they can see what savings goal are saved in th accounts on the account tab. also allow them to see the value/progress of each the savings goal related to each account
+
+add a stock purchase plan tab that will use the information already entered on the stocks and dividends page to recommend next purchase. For each portfolio you can switch between the dividend or ratio plan. The dividend plan recommends you the number of stocks to buy based on a formula (twelve trailing month dividend yeild multiplied by 100, divided by the stocks current value and multiplied by a number chosen by the user called a multiplier). The number of stocks being recommended to by will always be a whole number. The ratio plan requires the user to put in percentages for each stock, and a target total value of portfolio then calculates the recommended amounts of stocks to buy or sell based on a formula (total value times percentage divided by current value of the stock). Each recommended number of stocks to buy is a whole number 
+
+Error 9:
+
+When I added a new bill on disappear and only three were visible. Please ensure that new bills only add to the list of bills and dont overwrite any previously existing bills or remove them from the display
+
+when scrolling down allow the tabs to be seen as we move to the lower part of the page
+
+ensure that only bills that are due this month are counted in the bills paid for the month
+
+move the rentals tab below the networth tab, move the averages tab above stocks, and move the accounts tab below categories
+
+calculate and display the totals of each portfolios table in the stock tab
+
+
+
+
+
+
+
+
+--Maybe change back transaction date to not be filled before.
+--The add minor category button seems to overwrite each time I add a new category using it.
+--(I could do this) Change the button title from add sinking fund to add sinking fund category
+--The sinking fund should also have a specific value based on the month chosen for the overall budget overview

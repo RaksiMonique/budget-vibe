@@ -1,48 +1,1765 @@
 :root{
-  --bg: #f5f6f8;
+  --bg-main: #F4EFEA;
+  --bg-soft: #E9E2DB;
+  --card-bg: #FFFFFF;
+
+  --ice: #D3E3EB;
+  --sage-light: #B6C1B1;
+  --sage: #69856D;
+  --tan: #97866A;
+
+  --sand: #D29F80;
+  --sand-soft: rgba(210,159,128,0.45);
+  --clay: #C27250;
+  --rose: #B25C5A;
+  --mauve: #A4747D;
+
+  --plum: #604653;
+  --plum-soft: #735557;
+
+  --text-dark: #2E2A27;
+  --text-muted: #7C746E;
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
 }
 
 body{
-  background: var(--bg);
+  background: var(--bg-main);
+  color: var(--text-dark);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.navbar{
+  background: var(--plum);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.card{
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+}
+
+.shadow-soft{
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
+
+.tab-shell{
+  background: var(--card-bg);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.04);
 }
 
 .metric{
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,.08);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: var(--radius-md);
+  padding: 18px;
+  height: 100%;
 }
 
 .metric-label{
-  font-size: 0.85rem;
-  color: #6c757d;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+
+.metric-subtext{
+  color: rgba(255,255,255,0.85);
 }
 
 .metric-value{
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.65rem;
+  font-weight: 800;
 }
 
-.badge-soft{
-  background: rgba(13,110,253,.12);
-  color: #0d6efd;
-  border: 1px solid rgba(13,110,253,.18);
+.metric-income{
+  background: var(--mauve);
+  color: #fff;
+}
+
+.metric-expenses{
+  background: var(--clay);
+  color: #fff;
+}
+
+.metric-savings{
+  background: var(--sage);
+  color: #fff;
+}
+
+.metric-net{
+  background: var(--sand);
+  color: var(--text-dark);
+}
+
+.metric-bills{
+  background: var(--plum-soft);
+  color: #fff;
+}
+
+.metric-stocks{
+  background: var(--ice);
+  color: var(--plum);
+}
+
+.metric-dividends{
+  background: var(--sand-soft);
+  color: var(--plum);
+}
+
+.nav-tabs{
+  border-bottom: none;
+  gap: 8px;
+}
+
+.nav-tabs .nav-link{
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 10px 14px;
+}
+
+.nav-tabs .nav-link:hover{
+  background: rgba(255,255,255,0.45);
+}
+
+.nav-tabs .nav-link.active{
+  background: var(--card-bg);
+  color: var(--plum);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.table-soft{
+  border-radius: var(--radius-md);
+  /*overflow: hidden;*/
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-soft thead tr:first-child th:first-child { border-top-left-radius: var(--radius-md); }
+.table-soft thead tr:first-child th:last-child { border-top-right-radius: var(--radius-md); }
+.table-soft tbody tr:last-child td:first-child { border-bottom-left-radius: var(--radius-md); }
+.table-soft tbody tr:last-child td:last-child { border-bottom-right-radius: var(--radius-md); }
+ 
+.table-soft thead{
+  background: var(--bg-soft);
+  overflow-x: auto;
+}
+
+.table-soft th{
+  font-weight: 700;
+  color: var(--plum);
+  border: none;
+}
+
+.table-soft td, .table-soft th{
+  padding: 14px 16px;
+  border: none;
+  vertical-align: middle;
+}
+
+.table-soft tbody tr{
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.table-soft tbody tr:last-child{
+  border-bottom: none;
 }
 
 .progress{
   height: 10px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
 }
 
-.card-goal{
-  border: 1px solid rgba(0,0,0,.08);
+.progress-bar{
+  background: var(--sage);
+}
+
+.progress-xs{
+  height: 6px;
+  border-radius: 6px;
+}
+
+.btn{
+  border-radius: 12px;
+}
+
+.btn-primary{
+  background: var(--rose);
+  border: none;
+}
+
+.btn-primary:hover{
+  background: var(--plum);
+}
+
+.btn-success{
+  background: var(--sage);
+  border: none;
+}
+
+.btn-success:hover{
+  filter: brightness(0.95);
+}
+
+.btn-warning{
+  background: var(--clay);
+  border: none;
+  color: #fff;
+}
+
+.btn-warning:hover{
+  filter: brightness(0.95);
+  color: #fff;
+}
+
+.btn-info{
+  background: var(--mauve);
+  border: none;
+  color: #fff;
+}
+
+.btn-info:hover{
+  filter: brightness(0.95);
+  color: #fff;
+}
+
+.btn-secondary{
+  background: var(--tan);
+  border: none;
+}
+
+.btn-outline-primary{
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+.btn-outline-primary:hover{
+  background: var(--rose);
+  border-color: var(--rose);
+}
+
+.btn-outline-secondary{
+  border-color: var(--plum-soft);
+  color: var(--plum-soft);
+}
+
+.btn-outline-danger{
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+.text-success{
+  color: var(--sage) !important;
+}
+
+.text-danger{
+  color: var(--rose) !important;
+}
+
+.form-control, .form-select{
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.9);
+}
+
+.form-control:focus, .form-select:focus{
+  border-color: var(--mauve);
+  box-shadow: 0 0 0 0.2rem rgba(164,116,125,0.20);
+}
+
+.modal-content{
+  border-radius: var(--radius-lg);
+  border: none;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.toast{
   border-radius: 14px;
+  border: none;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
 
-.small-muted{
+.badge-soft{
+  background: var(--bg-soft);
+  color: var(--plum);
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Sinking/Savings Goal Cards */
+.goal-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.goal-card-title {
+  font-weight: 700;
+  color: var(--plum);
+  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+}
+
+.goal-card-meta {
   font-size: 0.85rem;
-  color: #6c757d;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
 }
 
-.table td, .table th{
-  vertical-align: middle;
+.goal-card-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.goal-card-progress-info strong {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.goal-card-footer {
+  margin-top: auto; /* Pushes footer to the bottom */
+  padding-top: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.goal-card-req .label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.goal-card-req .value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--sage);
+}
+
+.goal-card-actions .btn {
+  margin-left: 0.25rem;
+}
+
+/* Improve wide tables with sticky columns */
+#pane-dividends .table-responsive {
+  overflow-x: auto;
+}
+
+/* Sticky Header (Vertical Scroll) */
+#pane-dividends thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--bg-soft);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+}
+
+#pane-dividends tbody td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background-color: var(--card-bg);
+  border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Sticky Top-Left Corner (Intersection) */
+#pane-dividends thead th:first-child {
+  position: sticky;
+  left: 0;
+  top: 0;
+  z-index: 20; /* Highest z-index to stay on top of both scrolls */
+  background-color: var(--bg-soft);
+}
+
+/* Custom style for grouped table rows */
+.table-group-header td {
+  border-bottom: none !important;
+  padding-top: 1.5rem !important;
+  padding-bottom: 0.5rem !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Vertical Tabs Layout */
+.tabs-vertical-shell{
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.tabs-vertical-shell .nav-tabs{
+  flex-direction: column;
+  border-bottom: 0;
+  padding-right: .5rem;
+  margin-top: 0 !important;
+  gap: 0;
+  position: sticky;
+  top: 20px;
+  z-index: 5;
+}
+
+.tabs-vertical-shell .nav-tabs .nav-item{
+  width: 100%;
+}
+
+.tabs-vertical-shell .nav-tabs .nav-link{
+  width: 100%;
+  text-align: left;
+  margin-bottom: .25rem;
+  border-radius: 10px;
+}
+
+.tabs-vertical-shell .nav-tabs .nav-link.active{
+  border-right-color: transparent;
+}
+
+.tabs-vertical-shell .tab-content.tab-shell{
+  border-radius: var(--radius-lg);
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Mobile: revert to horizontal tabs */
+@media (max-width: 991.98px){
+  .tabs-vertical-shell{
+    grid-template-columns: 1fr;
+  }
+  .tabs-vertical-shell .nav-tabs{
+    flex-direction: row;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-right: 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-main);
+    padding: 10px 0;
+  }
+  .tabs-vertical-shell .nav-tabs .nav-link{
+    white-space: nowrap;
+    text-align: center;
+    width: auto;
+    margin-bottom: 0;
+  }
+  .tabs-vertical-shell .tab-content.tab-shell{
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-top: 0;
+  }
+
+  /* Dashboard Mobile Adaptations */
+  #pane-dashboard .metric {
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #pane-dashboard .metric-value {
+    font-size: 2rem;
+    margin-top: 4px;
+  }
+
+  /* Adjust sticky header in dividends table for mobile */
+  #pane-dividends thead th {
+    top: 56px; /* Approx height of sticky nav tabs */
+  }
+
+  #pane-dividends thead th:first-child {
+    top: 56px; /* Approx height of sticky nav tabs */
+  }
+}
+
+/* Theme Toggle Icons */
+#theme-toggle svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+  transition: transform 0.3s ease;
+}
+
+/* Light mode (default): show sun, hide moon */
+html:not([data-theme="dark"]) #theme-icon-dark {
+  display: none;
+}
+
+/* Dark mode: show moon, hide sun */
+[data-theme="dark"] #theme-icon-light {
+  display: none;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-main: #2E2A27;
+  --bg-soft: #423c37;
+  --card-bg: #38322e;
+
+  --text-dark: #F4EFEA;
+  --text-muted: #a09891;
+
+  /* Brighter accents for contrast on dark background */
+  --sage: #7EAD86;
+  --rose: #D47C7A;
+  --mauve: #B98A94;
+  --clay: #D98A69;
+  --sand: #E0B193;
+  --sand-soft: rgba(224, 177, 147, 0.2);
+  --ice: #A8C7D4;
+}
+
+[data-theme="dark"] .navbar {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .shadow-soft {
+  box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .tab-shell {
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover {
+  background: rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .table-soft tbody tr {
+  border-bottom-color: rgba(255,255,255,0.07);
+}
+
+[data-theme="dark"] .progress {
+  background: rgba(0,0,0,0.25);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.2);
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+[data-theme="dark"] .input-group-text {
+  background-color: var(--bg-soft);
+  border-color: rgba(255,255,255,0.15);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] #pane-dividends thead th {
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] #pane-dividends tbody td:first-child {
+  border-right-color: rgba(255,255,255,0.08);
+}
+
+/* Mobile Budget Tab Adaptations */
+@media (max-width: 768px) {
+  /* Stack the Budget table rows as cards */
+  #pane-budget .table thead {
+    display: none;
+  }
+
+  #pane-budget .table tbody tr.table-group-header {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #pane-budget .table tbody tr.table-group-header td {
+    padding: 0 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: none;
+    display: block;
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.5rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(1) {
+    text-align: left;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(2)::before { content: "Expected"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(3)::before { content: "Actual"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(4)::before { content: "Variance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(5)::before { content: "Group Total"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #pane-budget .table tbody tr:not(.table-group-header) td:nth-child(5):empty {
+    display: none;
+  }
+
+  #pane-budget #btnRecalc {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Mobile Transactions Tab Adaptations */
+  #pane-transactions .table thead {
+    display: none;
+  }
+
+  #pane-transactions .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-transactions .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-transactions .table tbody tr td:nth-child(1) { /* Date */
+    justify-content: flex-start;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding-bottom: 0;
+  }
+
+  #pane-transactions .table tbody tr td:nth-child(2) { /* Description */
+    display: block;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0.25rem;
+  }
+
+  #pane-transactions .table tbody tr td:nth-child(3)::before { content: "Account"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-transactions .table tbody tr td:nth-child(4)::before { content: "Major"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #pane-transactions .table tbody tr td:nth-child(5)::before { content: "Minor"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #pane-transactions .table tbody tr td:nth-child(6) { /* Amount */
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  #pane-transactions .table tbody tr td:nth-child(6)::before { content: "Amount"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #pane-transactions .table tbody tr td:nth-child(7) { /* Actions */
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  /* Filter Inputs Sizing for Touch */
+  #pane-transactions .form-control-sm, 
+  #pane-transactions .form-select-sm, 
+  #pane-transactions .btn-sm {
+    min-height: 44px;
+    font-size: 16px; 
+  }
+
+  /* Mobile Bills Tab Adaptations */
+  #pane-bills .table thead {
+    display: none;
+  }
+
+  #pane-bills .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-bills .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Recurring Bills Table Specifics */
+  #billsTbody tr td:nth-child(1) { /* Bill Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #billsTbody tr td:nth-child(2) { font-weight: 700; font-size: 1.1rem; }
+  #billsTbody tr td:nth-child(2)::before { content: "Amount"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(3)::before { content: "Frequency"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(4)::before { content: "Next Due"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(5)::before { content: "Due in Month"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(6)::before { content: "Monthly Eq."; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #billsTbody tr td:nth-child(7)::before { content: "Status"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #billsTbody tr td:nth-child(8) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Bills Minor Categories Table Specifics */
+  #billsCatTbody tr td:nth-child(1) { /* Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #billsCatTbody tr td:nth-child(2)::before { content: "Expected (Auto)"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #billsCatTbody tr td:nth-child(3) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+  }
+
+  /* Mobile Stocks Tab Adaptations */
+  #pane-stocks .table thead {
+    display: none;
+  }
+
+  #pane-stocks .table tbody tr,
+  #stocksMasterTbody tr,
+  #holdingsContainer tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-stocks .table tbody tr td,
+  #stocksMasterTbody tr td,
+  #holdingsContainer tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-stocks .table tbody tr td:first-child {
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Master List Table */
+  #stocksMasterTbody tr td:nth-child(2)::before { content: "Market"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #stocksMasterTbody tr td:nth-child(3)::before { content: "Current Price"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #stocksMasterTbody tr td:nth-child(4) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Holdings Tables */
+  #holdingsContainer .table tbody tr td:nth-child(2)::before { content: "Avg Buy"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(3)::before { content: "Shares"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(4)::before { content: "Cost"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(5)::before { content: "Value"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(6)::before { content: "Gain/Loss"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tbody tr td:nth-child(5) { font-weight: 700; } /* Value */
+  #holdingsContainer .table tbody tr td:nth-child(7) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Forms */
+  #pane-stocks form .btn {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  #pane-stocks form .col-12 .btn {
+    flex-grow: 1;
+  }
+
+  /* Mobile Stock Plan Adaptations */
+  #pane-stock-plan .table thead {
+    display: none;
+  }
+
+  #pane-stock-plan .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-stock-plan .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #pane-stock-plan .table tbody tr td:first-child {
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #pane-stock-plan .table input.form-control-sm {
+    min-height: 44px;
+    font-size: 16px;
+    max-width: 50%;
+  }
+
+  /* Force columns to stack if they aren't already */
+  #stockPlanContainer .row > [class*="col-"] {
+    width: 100% !important;
+  }
+
+  /* Mobile Dividends Tab Adaptations */
+  #pane-dividends .table thead {
+    display: none;
+  }
+  
+  /* Reset sticky positioning for mobile */
+  #pane-dividends thead th,
+  #pane-dividends tbody td:first-child,
+  #pane-dividends thead th:first-child {
+    position: static;
+    box-shadow: none;
+    border: none;
+    z-index: auto;
+  }
+
+  #pane-dividends #divTbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-dividends #divTbody tr td {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  /* Stock Name (Col 1) - Full Width */
+  #pane-dividends #divTbody tr td:nth-child(1) {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Shares (Col 2) - Full Width with Label */
+  #pane-dividends #divTbody tr td:nth-child(2) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+  }
+  #pane-dividends #divTbody tr td:nth-child(2)::before { content: "Shares Held"; color: var(--text-muted); font-weight: 500; }
+
+  /* Months (Col 3-14) - 3 Columns Grid */
+  #pane-dividends #divTbody tr td:nth-child(n+3):nth-child(-n+14) {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  /* Labels for Months */
+  #pane-dividends #divTbody tr td:nth-child(3)::before { content: "Jan"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(4)::before { content: "Feb"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(5)::before { content: "Mar"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(6)::before { content: "Apr"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(7)::before { content: "May"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(8)::before { content: "Jun"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(9)::before { content: "Jul"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(10)::before { content: "Aug"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(11)::before { content: "Sep"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(12)::before { content: "Oct"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(13)::before { content: "Nov"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+  #pane-dividends #divTbody tr td:nth-child(14)::before { content: "Dec"; display:block; font-size:0.7rem; color:var(--text-muted); margin-bottom:2px; }
+
+  /* Input styling inside cells */
+  #pane-dividends #divTbody input { width: 100%; text-align: center; padding: 0.25rem; background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; }
+
+  /* Total (Col 15) - Full Width Footer */
+  #pane-dividends #divTbody tr td:nth-child(15) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  #pane-dividends #divTbody tr td:nth-child(15)::before { content: "Total Income"; font-weight: 500; font-size: 0.9rem; color: var(--text-muted); }
+
+  /* Header Controls Adaptation */
+  #pane-dividends .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2.mb-2 { flex-direction: column; align-items: stretch !important; }
+  #pane-dividends .d-flex.gap-2.align-items-end { display: grid !important; grid-template-columns: 1fr 1fr; gap: 1rem !important; width: 100%; margin-top: 0.5rem; }
+  #pane-dividends #btnDivRefresh { width: 100%; }
+
+  /* Summary Table Grid Layout */
+  #divMonthlyTotalsRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  #divMonthlyTotalsRow td { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-soft); padding: 0.75rem; border-radius: 8px; border: none; }
+  
+  #divMonthlyTotalsRow td:nth-child(1)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); }
+  #divMonthlyTotalsRow td:nth-child(2)::before { content: "Feb"; font-size: 0.75rem; color: var(--text-muted); }
+  /* (Labels for 3-12 are implied by position but can be explicit if needed, keeping CSS concise here) */
+  
+  #divMonthlyTotalsRow td:nth-child(13) { grid-column: 1 / -1; background: var(--sage); color: #fff; flex-direction: row; justify-content: space-between; padding: 1rem; font-weight: 700; }
+  #divMonthlyTotalsRow td:nth-child(13)::before { content: "Total Year Income"; font-weight: 500; color: rgba(255,255,255,0.9); }
+
+  /* Mobile Assets Tab Adaptations */
+  #pane-assets .table thead {
+    display: none;
+  }
+
+  #pane-assets .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-assets .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Assets Table Specifics */
+  #assetsTbody tr td:nth-child(1) { /* Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  #assetsTbody tr td:nth-child(2)::before { content: "Category"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsTbody tr td:nth-child(3)::before { content: "Value"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsTbody tr td:nth-child(3) { font-weight: 700; color: var(--sage); }
+  
+  #assetsTbody tr td:nth-child(4) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Liabilities Table Specifics */
+  #assetsDebtsTbody tr td:nth-child(1) { /* Debt Name */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  #assetsDebtsTbody tr td:nth-child(2)::before { content: "Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsDebtsTbody tr td:nth-child(2) { font-weight: 700; color: var(--rose); }
+
+  #assetsDebtsTbody tr td:nth-child(3)::before { content: "Min. Pmt"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #assetsDebtsTbody tr td:nth-child(4)::before { content: "APR %"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  #assetsDebtsTbody tr td:nth-child(5) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Mobile Categories Tab Adaptations */
+  #pane-categories .table thead {
+    display: none;
+  }
+
+  #pane-categories .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-categories .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Header adjustments for Add Button */
+  #pane-categories > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  #pane-categories > .d-flex .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Table Content Styling */
+  #catTbody tr td:nth-child(1) { /* Major */
+    justify-content: flex-start;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding-bottom: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  #catTbody tr td:nth-child(2) { /* Minor */
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0.25rem;
+  }
+
+  #catTbody tr td:nth-child(3)::before { content: "Expected"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #catTbody tr td:nth-child(3) { font-weight: 700; font-size: 1.1rem; }
+
+  #catTbody tr td:nth-child(4) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Mobile Accounts Tab Adaptations */
+  #pane-accounts .table thead {
+    display: none;
+  }
+
+  #pane-accounts .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-accounts .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* Account Name (Col 1) */
+  #accountsTbody tr td:nth-child(1) {
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Initial Balance (Col 2) */
+  #accountsTbody tr td:nth-child(2)::before { content: "Initial Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  
+  /* Current Balance (Col 3) */
+  #accountsTbody tr td:nth-child(3)::before { content: "Current Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #accountsTbody tr td:nth-child(3) { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+
+  /* Actions (Col 4) */
+  #accountsTbody tr td:nth-child(4) {
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Header Actions Layout */
+  #pane-accounts > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-accounts > .d-flex > .d-flex {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  #pane-accounts > .d-flex > .d-flex .btn {
+    width: 100%;
+  }
+
+  /* Mobile Rentals Tab Adaptations */
+  #pane-rentals .table thead {
+    display: none;
+  }
+
+  /* Properties List Table */
+  #rentalsTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalsTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #rentalsTbody tr td:nth-child(1) { /* Property Name */
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #rentalsTbody tr td:nth-child(2)::before { content: "Address"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(3)::before { content: "Tenant"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4)::before { content: "Monthly Rent"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4) { font-weight: 700; }
+
+  #rentalsTbody tr td:nth-child(5) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Rental Income Tracker Table - Grid Layout */
+  #rentalIncomeTbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalIncomeTbody tr td {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  /* Property Name (Col 1) - Full Width Header */
+  #rentalIncomeTbody tr td:nth-child(1) {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  /* Months (Col 2-13) - Grid Cells */
+  #rentalIncomeTbody tr td:nth-child(n+2):nth-child(-n+13) {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Month Labels */
+  #rentalIncomeTbody tr td:nth-child(2)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(3)::before { content: "Feb"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(4)::before { content: "Mar"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(5)::before { content: "Apr"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(6)::before { content: "May"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(7)::before { content: "Jun"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(8)::before { content: "Jul"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(9)::before { content: "Aug"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(10)::before { content: "Sep"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(11)::before { content: "Oct"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(12)::before { content: "Nov"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(13)::before { content: "Dec"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+
+  /* Total (Col 14) - Full Width Footer */
+  #rentalIncomeTbody tr td:nth-child(14) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-weight: 700;
+  }
+  #rentalIncomeTbody tr td:nth-child(14)::before { content: "Total Year Income"; font-weight: 500; color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Header Controls Stacking */
+  #pane-rentals > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-rentals > .d-flex .btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end .btn {
+    width: 100%;
+  }
+
+  /* Mobile Rentals Tab Adaptations */
+  #pane-rentals .table thead {
+    display: none;
+  }
+
+  /* Properties List Table */
+  #rentalsTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalsTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #rentalsTbody tr td:nth-child(1) { /* Property Name */
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #rentalsTbody tr td:nth-child(2)::before { content: "Address"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(3)::before { content: "Tenant"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4)::before { content: "Monthly Rent"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #rentalsTbody tr td:nth-child(4) { font-weight: 700; }
+
+  #rentalsTbody tr td:nth-child(5) { /* Actions */
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.5rem;
+  }
+
+  /* Rental Income Tracker Table - Grid Layout */
+  #rentalIncomeTbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #rentalIncomeTbody tr td {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  /* Property Name (Col 1) - Full Width Header */
+  #rentalIncomeTbody tr td:nth-child(1) {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  /* Months (Col 2-13) - Grid Cells */
+  #rentalIncomeTbody tr td:nth-child(n+2):nth-child(-n+13) {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Month Labels */
+  #rentalIncomeTbody tr td:nth-child(2)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(3)::before { content: "Feb"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(4)::before { content: "Mar"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(5)::before { content: "Apr"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(6)::before { content: "May"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(7)::before { content: "Jun"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(8)::before { content: "Jul"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(9)::before { content: "Aug"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(10)::before { content: "Sep"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(11)::before { content: "Oct"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(12)::before { content: "Nov"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+  #rentalIncomeTbody tr td:nth-child(13)::before { content: "Dec"; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+
+  /* Total (Col 14) - Full Width Footer */
+  #rentalIncomeTbody tr td:nth-child(14) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-weight: 700;
+  }
+  #rentalIncomeTbody tr td:nth-child(14)::before { content: "Total Year Income"; font-weight: 500; color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Header Controls Stacking */
+  #pane-rentals > .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-rentals > .d-flex .btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  #pane-rentals .d-flex.gap-2.align-items-end .btn {
+    width: 100%;
+  }
+
+  /* Mobile Debt Snowball Tab Adaptations */
+  #pane-debt .table thead {
+    display: none;
+  }
+
+  /* Debt List Table */
+  #debtTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #debtTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #debtTbody tr td:nth-child(1) { /* Debt Name */
+    justify-content: flex-start;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #debtTbody tr td:nth-child(2)::before { content: "Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtTbody tr td:nth-child(2) { font-weight: 700; color: var(--rose); }
+  #debtTbody tr td:nth-child(3)::before { content: "Min. Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtTbody tr td:nth-child(4)::before { content: "APR %"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtTbody tr td:nth-child(5) { justify-content: flex-end; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed rgba(0,0,0,0.06); gap: 0.5rem; }
+
+  /* Payoff Plan Table */
+  #debtPlanTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  #debtPlanTbody tr td { display: flex; justify-content: space-between; width: 100%; padding: 0.25rem 0; border: none; }
+  
+  #debtPlanTbody tr td:nth-child(1) { justify-content: flex-start; font-weight: 700; color: var(--plum); margin-bottom: 0.25rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; }
+  #debtPlanTbody tr td:nth-child(1)::before { content: "Month: "; margin-right: 0.5rem; font-weight: 500; color: var(--text-muted); }
+  
+  #debtPlanTbody tr td:nth-child(2)::before { content: "Target Debt"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtPlanTbody tr td:nth-child(3)::before { content: "Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #debtPlanTbody tr td:nth-child(3) { color: var(--sage); font-weight: 700; }
+  #debtPlanTbody tr td:nth-child(4)::before { content: "Remaining"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  /* Mobile Averages Tab Adaptations */
+  #pane-averages .nav-pills .nav-link {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  #pane-averages .nav-pills .nav-link.active {
+    background: var(--rose);
+    color: #fff;
+    border-color: var(--rose);
+  }
+
+  /* Annual Overview Header */
+  #pane-averages #avg-view-annual .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-averages #avg-view-annual .d-flex.gap-2.align-items-end {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 0.5rem;
+    align-items: stretch !important;
+  }
+  
+  #pane-averages #avg-view-annual .btn-group {
+    display: flex;
+    width: 100%;
+  }
+  
+  #pane-averages #avg-view-annual .btn-group .btn {
+    flex: 1;
+    padding: 10px;
+  }
+  
+  /* Average Actuals Header & Inputs */
+  #pane-averages #avg-view-actuals .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  #pane-averages #btnAvgRefresh {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 12px;
+  }
+
+  /* Average Actuals Table to Cards */
+  #avgThead {
+    display: none;
+  }
+
+  #avgTbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #avgTbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0.25rem 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  #avgTbody tr td:nth-child(1) { /* Major */
+    justify-content: flex-start;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding-bottom: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  #avgTbody tr td:nth-child(2) { /* Minor */
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--plum);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0;
+  }
+
+  #avgTbody tr td:nth-child(3)::before { content: "Avg Actual"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #avgTbody tr td:nth-child(3) { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+  
+  #avgTbody tr td:nth-child(4)::before { content: "Avg Expected"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #avgTbody tr td:nth-child(5)::before { content: "% of Actual Exp."; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #avgTbody tr td:nth-child(6)::before { content: "% of Expected Exp."; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+  /* Mobile Net Worth Tab Adaptations */
+  #pane-networth .table thead {
+    display: none;
+  }
+
+  #pane-networth #nwTbody tr {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  #pane-networth #nwTbody tr td {
+    border: none;
+    padding: 0;
+    width: auto;
+    text-align: left;
+  }
+
+  #pane-networth #nwTbody tr td:nth-child(1) { /* Category */
+    font-weight: 600;
+    color: var(--plum);
+  }
+
+  #pane-networth #nwTbody tr td:nth-child(2) { /* Value */
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: right;
+  }
+
+  /* Mobile Stock Portfolio Footer (Totals) */
+  #holdingsContainer .table tfoot {
+    display: block;
+    border: none;
+  }
+
+  #holdingsContainer .table tfoot tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  #holdingsContainer .table tfoot tr td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.25rem 0;
+    border: none !important;
+  }
+
+  #holdingsContainer .table tfoot tr td:nth-child(1) { /* Label */
+    justify-content: flex-start;
+    font-size: 1.1rem;
+    color: var(--plum);
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  }
+
+  #holdingsContainer .table tfoot tr td:nth-child(2)::before { content: "Total Cost"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tfoot tr td:nth-child(3)::before { content: "Total Value"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tfoot tr td:nth-child(4)::before { content: "Total Gain/Loss"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #holdingsContainer .table tfoot tr td:nth-child(5) { display: none; } /* Empty cell */
 }
