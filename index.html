@@ -999,6 +999,50 @@
           <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalRental">Add Property</button>
         </div>
 
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="metric metric-income">
+              <div class="metric-label">Total Monthly Rent</div>
+              <div id="rentalTotalIncome" class="metric-value">—</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="metric metric-expenses">
+              <div class="metric-label">Total Monthly Expenses</div>
+              <div id="rentalTotalExpenses" class="metric-value">—</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="metric metric-net">
+              <div class="metric-label">Est. Monthly Net</div>
+              <div id="rentalTotalProfit" class="metric-value">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-lg-8">
+            <div class="card shadow-soft h-100">
+              <div class="card-body">
+                <h6 class="card-title">Financials by Property</h6>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="rentalFinancialsChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card shadow-soft h-100">
+              <div class="card-body">
+                <h6 class="card-title">Income Distribution</h6>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="rentalAllocationChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="card shadow-soft mb-4">
           <div class="card-body">
             <h6 class="mb-2">Properties</h6>

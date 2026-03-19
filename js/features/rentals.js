@@ -1,3 +1,6 @@
+let rentalFinancialsChart = null;
+let rentalAllocationChart = null;
+
 function initRentals() {
   // Main rental property modal
   rentalForm.addEventListener("submit", (e) => { e.preventDefault(); upsertRental(); });
@@ -64,9 +67,15 @@ function initRentals() {
 function renderRentals() {
   if (!rentalsTbody) return;
   const list = state.rentals.slice().sort((a, b) => a.name.localeCompare(b.name));
+  
+  // Metrics calculation
+  let totalRent = 0;
+  let totalExp = 0;
 
   if (!list.length) {
     rentalsTbody.innerHTML = `<tr><td colspan="6" class="text-muted">No rental properties added yet.</td></tr>`;
+    updateRentalMetrics(0, 0);
+    renderRentalCharts([]);
     return;
   }
 
@@ -80,6 +89,9 @@ function renderRentals() {
         totalMonthlyExpenses += computeBillMonthlyEquivalent(exp);
       });
     }
+    
+    totalRent += monthlyRent;
+    totalExp += totalMonthlyExpenses;
 
     const profit = monthlyRent - totalMonthlyExpenses;
     const profitClass = profit >= 0 ? 'text-success' : 'text-danger';
@@ -141,6 +153,8 @@ function renderRentals() {
   });
 
   rentalsTbody.innerHTML = html;
+  updateRentalMetrics(totalRent, totalExp);
+  renderRentalCharts(list);
 }
 
 function upsertRental() {
@@ -361,4 +375,83 @@ function updateRentalIncome(key, value) {
 
   saveState();
   renderRentalIncome(); // Re-render to update totals
+}
+
+// --- Charts & Metrics ---
+
+function updateRentalMetrics(income, expenses) {
+  const profit = income - expenses;
+  
+  const elIncome = document.getElementById("rentalTotalIncome");
+  const elExp = document.getElementById("rentalTotalExpenses");
+  const elProfit = document.getElementById("rentalTotalProfit");
+
+  if (elIncome) elIncome.textContent = formatMoney(income);
+  if (elExp) elExp.textContent = formatMoney(expenses);
+  if (elProfit) {
+    elProfit.textContent = formatMoney(profit);
+    // Toggle color class based on profit
+    elProfit.className = `metric-value ${profit >= 0 ? 'text-success' : 'text-danger'}`;
+  }
+}
+
+function renderRentalCharts(rentals) {
+  const labels = rentals.map(r => r.name);
+  const incomes = rentals.map(r => safeNumber(r.monthlyRent));
+  const expenses = rentals.map(r => {
+    return (r.expenses || []).reduce((sum, exp) => sum + computeBillMonthlyEquivalent(exp), 0);
+  });
+  const profits = incomes.map((inc, i) => inc - expenses[i]);
+
+  // Financials Chart (Bar)
+  const ctxFin = document.getElementById("rentalFinancialsChart");
+  if (ctxFin) {
+    if (rentalFinancialsChart) rentalFinancialsChart.destroy();
+    rentalFinancialsChart = new Chart(ctxFin, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Income', data: incomes, backgroundColor: '#69856D', borderRadius: 4 }, // Sage
+          { label: 'Expenses', data: expenses, backgroundColor: '#C27250', borderRadius: 4 }, // Clay
+          { label: 'Net Profit', data: profits, backgroundColor: '#D29F80', borderRadius: 4 } // Sand
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${formatMoney(c.raw)}` } }
+        },
+        scales: { y: { beginAtZero: true, ticks: { callback: (v) => formatMoney(v) } } }
+      }
+    });
+  }
+
+  // Allocation Chart (Doughnut - Income share)
+  const ctxAlloc = document.getElementById("rentalAllocationChart");
+  if (ctxAlloc) {
+    if (rentalAllocationChart) rentalAllocationChart.destroy();
+    const colors = ["#69856D", "#D29F80", "#C27250", "#A4747D", "#735557", "#97866A", "#B6C1B1"];
+    rentalAllocationChart = new Chart(ctxAlloc, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: incomes,
+          backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: (c) => `${c.label}: ${formatMoney(c.raw)}` } }
+        }
+      }
+    });
+  }
 }
