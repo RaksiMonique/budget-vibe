@@ -50,6 +50,12 @@ function repopulatePortfolioOptions() {
   }
 
   holdingPortfolio.innerHTML = addNewOption + finalOptions;
+
+  // If adding a new holding, default to "Add New Portfolio"
+  if (!holdingId.value) {
+    holdingPortfolio.value = "--new--";
+    toggleNewPortfolioInput();
+  }
 }
 
 function toggleNewPortfolioInput() {
