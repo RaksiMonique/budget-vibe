@@ -32,8 +32,10 @@ body{
 
 .navbar{
   background: var(--plum);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  z-index: 1050;
 }
 
 .card{
@@ -440,23 +442,50 @@ body{
   }
   .tabs-vertical-shell .nav-tabs{
     flex-direction: row;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 2px solid var(--bg-soft);
     padding-right: 0;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     flex-wrap: nowrap;
     gap: 8px;
     position: sticky;
-    top: 0;
+    top: -1px;
     z-index: 100;
-    background: var(--bg-main);
-    padding: 10px 0;
+    background: rgba(244, 239, 234, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 10px;
+    box-shadow: 0 12px 20px -10px rgba(0,0,0,0.1);
+    margin-bottom: 0.75rem;
   }
+
+  /* Custom thin scrollbar to indicate horizontal scrollability */
+  .tabs-vertical-shell .nav-tabs::-webkit-scrollbar {
+    height: 3px;
+  }
+  .tabs-vertical-shell .nav-tabs::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .tabs-vertical-shell .nav-tabs::-webkit-scrollbar-thumb {
+    background: var(--plum-soft);
+    border-radius: 10px;
+    opacity: 0.5;
+  }
+
   .tabs-vertical-shell .nav-tabs .nav-link{
     white-space: nowrap;
     text-align: center;
     width: auto;
     margin-bottom: 0;
   }
+
+  .tabs-vertical-shell .nav-tabs .nav-link.active {
+    border-bottom: 3px solid var(--rose) !important;
+    border-radius: 12px 12px 0 0;
+    background: var(--card-bg);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+  }
+
   .tabs-vertical-shell .tab-content.tab-shell{
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     border-top: 0;
