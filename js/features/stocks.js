@@ -1,4 +1,6 @@
 const STOCK_THEME_COLORS = [
+  // Existing colors
+
   "#69856D", // Sage
   "#D29F80", // Sand
   "#C27250", // Clay
@@ -9,6 +11,10 @@ const STOCK_THEME_COLORS = [
   "#604653", // Plum
   "#B25C5A", // Rose
   "#D3E3EB", // Ice
+];
+
+const STOCK_MARKETS = [
+  "NASDAQ", "NYSE", "LSE", "TSE", "ASX", "XETRA", "SIX", "HKEX", "SGX", "BSE", "NSE"
 ];
 
 if (!window.portfolioChartInstances) {
@@ -100,6 +106,12 @@ function renderStocks() {
   // Also populate the holdings dropdown
   if (holdingStockId) {
     holdingStockId.innerHTML = masterList.map(s => `<option value="${s.id}">${escapeHtml(s.ticker)}</option>`).join("") || `<option value="" disabled>Add a stock to master list first</option>`;
+  }
+
+  // Populate the stockMarket dropdown
+  const stockMarketSelect = document.getElementById('stockMarket');
+  if (stockMarketSelect) {
+    stockMarketSelect.innerHTML = `<option value="">Select Market</option>` + STOCK_MARKETS.map(market => `<option value="${escapeHtml(market)}">${escapeHtml(market)}</option>`).join("");
   }
 
   repopulatePortfolioOptions();
@@ -230,7 +242,7 @@ function renderStocks() {
 function upsertStockMaster() {
   const id = stockMasterId.value?.trim();
   const ticker = stockTicker.value.trim().toUpperCase();
-  const market = stockMarket.value.trim();
+  const market = stockMarket.value; // Get value from select dropdown
   const price = safeNumber(stockPrice.value);
 
   if (!ticker || !market || !isFinite(price) || price < 0) {
