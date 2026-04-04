@@ -445,6 +445,7 @@ body{
     border-bottom: 2px solid var(--bg-soft);
     padding-right: 0;
     overflow-x: auto;
+    max-width: 100%;
     -webkit-overflow-scrolling: touch;
     flex-wrap: nowrap;
     gap: 8px;
@@ -454,6 +455,7 @@ body{
     background: rgba(244, 239, 234, 0.9);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    width: 100%;
     padding: 12px 10px;
     box-shadow: 0 12px 20px -10px rgba(0,0,0,0.1);
     margin-bottom: 0.75rem;
@@ -489,6 +491,8 @@ body{
   .tabs-vertical-shell .tab-content.tab-shell{
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     border-top: 0;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   /* Dashboard Mobile Adaptations */
@@ -506,11 +510,11 @@ body{
 
   /* Adjust sticky header in dividends table for mobile */
   #pane-dividends thead th {
-    top: 56px; /* Approx height of sticky nav tabs */
+    top: 64px; /* Slightly increased to prevent overlap on rotation */
   }
 
   #pane-dividends thead th:first-child {
-    top: 56px; /* Approx height of sticky nav tabs */
+    top: 64px;
   }
 }
 
