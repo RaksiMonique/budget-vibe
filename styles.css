@@ -994,6 +994,20 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   /* Input styling inside cells */
   #pane-dividends #divTbody input { width: 100%; text-align: center; padding: 0.25rem; background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; }
 
+  /* Touch targets for dividend inputs and responsive canvas */
+  #pane-dividends #divTbody input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  #pane-dividends canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 350px;
+  }
+
+  #pane-dividends { padding-bottom: 5rem; }
+
   /* Total (Col 15) - Full Width Footer */
   #pane-dividends #divTbody tr td:nth-child(15) {
     grid-column: 1 / -1;
@@ -1010,11 +1024,23 @@ html:not([data-theme="dark"]) #theme-icon-dark {
 
   /* Header Controls Adaptation */
   #pane-dividends .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2.mb-2 { flex-direction: column; align-items: stretch !important; }
-  #pane-dividends .d-flex.gap-2.align-items-end { display: grid !important; grid-template-columns: 1fr 1fr; gap: 1rem !important; width: 100%; margin-top: 0.5rem; }
-  #pane-dividends #btnDivRefresh { width: 100%; }
+  #pane-dividends .d-flex.gap-2.align-items-end { 
+    display: flex !important; 
+    flex-direction: column; 
+    gap: 0.75rem !important; 
+    width: 100%; 
+    margin-top: 1rem;
+  }
+  #pane-dividends #divYear { height: 48px; font-size: 1rem; }
+  #pane-dividends #btnDivRefresh { width: 100%; padding: 12px; font-weight: 600; }
 
   /* Summary Table Grid Layout */
-  #divMonthlyTotalsRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  #divMonthlyTotalsRow { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 0.5rem; 
+    margin-top: 2rem;
+  }
   #divMonthlyTotalsRow td { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-soft); padding: 0.75rem; border-radius: 8px; border: none; }
   
   #divMonthlyTotalsRow td:nth-child(1)::before { content: "Jan"; font-size: 0.75rem; color: var(--text-muted); }
