@@ -28,6 +28,10 @@ body{
   background: var(--bg-main);
   color: var(--text-dark);
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  /* Better font rendering for Safari/Chrome */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .navbar{
@@ -201,6 +205,8 @@ body{
 
 .btn{
   border-radius: 12px;
+  /* Remove gray tap highlight on iOS */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-primary{
@@ -280,6 +286,9 @@ body{
   border-radius: 12px;
   border: 1px solid rgba(0,0,0,0.08);
   background: rgba(255,255,255,0.9);
+  /* Fix Safari default inner shadows and styling */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .form-control:focus, .form-select:focus{
@@ -420,9 +429,11 @@ body{
   padding-right: .5rem;
   margin-top: 0 !important;
   gap: 0;
+  position: -webkit-sticky;
   position: sticky;
   top: 20px;
   z-index: 5;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabs-vertical-shell .nav-tabs .nav-item{
@@ -448,8 +459,9 @@ body{
 /* Floating Action Button */
 .fab-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  /* Offset by safe area for iOS notch/home indicator */
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  right: calc(24px + env(safe-area-inset-right));
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -475,10 +487,11 @@ body{
     border-bottom: 2px solid var(--bg-soft);
     padding-right: 0;
     overflow-x: auto;
-    max-width: 100%;
     -webkit-overflow-scrolling: touch;
+    max-width: 100%;
     flex-wrap: nowrap;
     gap: 8px;
+    position: -webkit-sticky;
     position: sticky;
     top: -1px;
     z-index: 100;
@@ -486,7 +499,8 @@ body{
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     width: 100%;
-    padding: 12px 10px;
+    /* Account for safe area on side-scrolling tabs */
+    padding: 12px calc(10px + env(safe-area-inset-right)) 12px calc(10px + env(safe-area-inset-left));
     box-shadow: 0 12px 20px -10px rgba(0,0,0,0.1);
     margin-bottom: 0.75rem;
   }
@@ -540,10 +554,12 @@ body{
 
   /* Adjust sticky header in dividends table for mobile */
   #pane-dividends thead th {
+    position: -webkit-sticky;
     top: 64px; /* Slightly increased to prevent overlap on rotation */
   }
 
   #pane-dividends thead th:first-child {
+    position: -webkit-sticky;
     top: 64px;
   }
 }
