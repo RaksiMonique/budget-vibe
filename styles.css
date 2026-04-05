@@ -1583,12 +1583,12 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   }
 
   /* Mobile Debt Snowball Tab Adaptations */
-  #pane-debt .table thead {
+  #subpane-snowball .table thead {
     display: none;
   }
 
   /* Debt List Table */
-  #debtTbody tr {
+  #subpane-snowball #debtTbody tr {
     display: flex;
     flex-direction: column;
     background: var(--card-bg);
@@ -1599,7 +1599,7 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     border: 1px solid rgba(0,0,0,0.05);
   }
 
-  #debtTbody tr td {
+  #subpane-snowball #debtTbody tr td {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1609,7 +1609,7 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     text-align: right;
   }
 
-  #debtTbody tr td:nth-child(1) { /* Debt Name */
+  #subpane-snowball #debtTbody tr td:nth-child(1) { /* Debt Name */
     justify-content: flex-start;
     font-size: 1.15rem;
     font-weight: 700;
@@ -1619,14 +1619,14 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     margin-bottom: 0.5rem;
   }
 
-  #debtTbody tr td:nth-child(2)::before { content: "Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-  #debtTbody tr td:nth-child(2) { font-weight: 700; color: var(--rose); }
-  #debtTbody tr td:nth-child(3)::before { content: "Min. Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-  #debtTbody tr td:nth-child(4)::before { content: "APR %"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-  #debtTbody tr td:nth-child(5) { justify-content: flex-end; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed rgba(0,0,0,0.06); gap: 0.5rem; }
+  #subpane-snowball #debtTbody tr td:nth-child(2)::before { content: "Balance"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #subpane-snowball #debtTbody tr td:nth-child(2) { font-weight: 700; color: var(--rose); }
+  #subpane-snowball #debtTbody tr td:nth-child(3)::before { content: "Min. Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #subpane-snowball #debtTbody tr td:nth-child(4)::before { content: "APR %"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #subpane-snowball #debtTbody tr td:nth-child(5) { justify-content: flex-end; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed rgba(0,0,0,0.06); gap: 0.5rem; }
 
   /* Payoff Plan Table */
-  #debtPlanTbody tr {
+  #subpane-snowball #debtPlanTbody tr {
     display: flex;
     flex-direction: column;
     background: var(--bg-soft);
@@ -1634,15 +1634,15 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     padding: 0.75rem;
     margin-bottom: 0.75rem;
   }
-  #debtPlanTbody tr td { display: flex; justify-content: space-between; width: 100%; padding: 0.25rem 0; border: none; }
+  #subpane-snowball #debtPlanTbody tr td { display: flex; justify-content: space-between; width: 100%; padding: 0.25rem 0; border: none; }
   
-  #debtPlanTbody tr td:nth-child(1) { justify-content: flex-start; font-weight: 700; color: var(--plum); margin-bottom: 0.25rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; }
-  #debtPlanTbody tr td:nth-child(1)::before { content: "Month: "; margin-right: 0.5rem; font-weight: 500; color: var(--text-muted); }
+  #subpane-snowball #debtPlanTbody tr td:nth-child(1) { justify-content: flex-start; font-weight: 700; color: var(--plum); margin-bottom: 0.25rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; }
+  #subpane-snowball #debtPlanTbody tr td:nth-child(1)::before { content: "Month: "; margin-right: 0.5rem; font-weight: 500; color: var(--text-muted); }
   
-  #debtPlanTbody tr td:nth-child(2)::before { content: "Target Debt"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-  #debtPlanTbody tr td:nth-child(3)::before { content: "Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-  #debtPlanTbody tr td:nth-child(3) { color: var(--sage); font-weight: 700; }
-  #debtPlanTbody tr td:nth-child(4)::before { content: "Remaining"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #subpane-snowball #debtPlanTbody tr td:nth-child(2)::before { content: "Target Debt"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #subpane-snowball #debtPlanTbody tr td:nth-child(3)::before { content: "Payment"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+  #subpane-snowball #debtPlanTbody tr td:nth-child(3) { color: var(--sage); font-weight: 700; }
+  #subpane-snowball #debtPlanTbody tr td:nth-child(4)::before { content: "Remaining"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
 
   /* Mobile Averages Tab Adaptations */
   #pane-averages .nav-pills .nav-link,

@@ -74,9 +74,6 @@
           <button class="nav-link" id="tab-rentals" data-bs-toggle="tab" data-bs-target="#pane-rentals" type="button" role="tab">Rentals</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-debt" data-bs-toggle="tab" data-bs-target="#pane-debt" type="button" role="tab">Debt Snowball</button>
-        </li>
-        <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-fire" data-bs-toggle="tab" data-bs-target="#pane-fire" type="button" role="tab">FIRE Calculator</button>
         </li>
       </ul>
@@ -748,6 +745,9 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="subtab-liabilities" data-bs-toggle="pill" data-bs-target="#subpane-liabilities" type="button" role="tab">Liabilities</button>
           </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subtab-snowball" data-bs-toggle="pill" data-bs-target="#subpane-snowball" type="button" role="tab">Debt Snowball</button>
+          </li>
         </ul>
 
         <div class="tab-content" id="finances-view-content">
@@ -838,6 +838,78 @@
                       <tr><th>Debt Name</th><th class="text-end">Balance</th><th class="text-end">Min. Pmt</th><th class="text-end">APR %</th><th style="width: 18%">Actions</th></tr>
                     </thead>
                     <tbody id="assetsDebtsTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Debt Snowball Sub-pane -->
+          <div class="tab-pane fade" id="subpane-snowball" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <div>
+                <h5 class="mb-0">Debt Snowball</h5>
+                <div class="small text-muted">List your debts and create a payoff plan.</div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-lg-5">
+                <div class="card shadow-soft mb-3">
+                  <div class="card-body">
+                    <h6 class="mb-2">Step 1: Add Your Debts</h6>
+                    <div class="small text-muted mb-3">List all debts you want to pay off, from smallest balance to largest.</div>
+                    <div class="d-grid">
+                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalDebt">Add a Debt</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle table-soft">
+                    <thead>
+                      <tr>
+                        <th>Debt Name</th>
+                        <th class="text-end">Balance</th>
+                        <th class="text-end">Min. Pmt</th>
+                        <th class="text-end">APR %</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="debtTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="col-lg-7">
+                <div class="card shadow-soft mb-3">
+                  <div class="card-body">
+                    <h6 class="mb-2">Step 2: Create Your Plan</h6>
+                    <div class="mb-3">
+                      <label class="form-label">Total Monthly Debt Payment</label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input id="totalDebtPayment" type="number" step="10" class="form-control" placeholder="e.g., 800">
+                      </div>
+                      <div class="form-text">Enter the total amount you can pay towards all debts each month. This must be at least the sum of your minimum payments.</div>
+                    </div>
+                    <button id="btnGenerateDebtPlan" class="btn btn-success">Generate Payoff Plan</button>
+                  </div>
+                </div>
+
+                <h6 class="mb-2">Step 3: Your Payoff Plan</h6>
+                <div id="debtPlanSummary" class="small text-muted mb-2">Enter your debts and total monthly payment to generate a plan.</div>
+                <div class="table-responsive" style="max-height: 600px;">
+                  <table class="table table-sm table-soft">
+                    <thead>
+                      <tr>
+                        <th>Month</th>
+                        <th>Debt</th>
+                        <th class="text-end">Payment</th>
+                        <th class="text-end">Remaining Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody id="debtPlanTbody"></tbody>
                   </table>
                 </div>
               </div>
@@ -977,78 +1049,6 @@
             </thead>
             <tbody id="rentalIncomeTbody"></tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- Debt Snowball -->
-      <div class="tab-pane fade" id="pane-debt" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Debt Snowball</h5>
-            <div class="small text-muted">List your debts and create a payoff plan.</div>
-          </div>
-        </div>
-
-        <div class="row g-3">
-          <div class="col-lg-5">
-            <div class="card shadow-soft mb-3">
-              <div class="card-body">
-                <h6 class="mb-2">Step 1: Add Your Debts</h6>
-                <div class="small text-muted mb-3">List all debts you want to pay off, from smallest balance to largest.</div>
-                <div class="d-grid">
-                  <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalDebt">Add a Debt</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table table-sm align-middle table-soft">
-                <thead>
-                  <tr>
-                    <th>Debt Name</th>
-                    <th class="text-end">Balance</th>
-                    <th class="text-end">Min. Pmt</th>
-                    <th class="text-end">APR %</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="debtTbody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="col-lg-7">
-            <div class="card shadow-soft mb-3">
-              <div class="card-body">
-                <h6 class="mb-2">Step 2: Create Your Plan</h6>
-                <div class="mb-3">
-                  <label class="form-label">Total Monthly Debt Payment</label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input id="totalDebtPayment" type="number" step="10" class="form-control" placeholder="e.g., 800">
-                  </div>
-                  <div class="form-text">Enter the total amount you can pay towards all debts each month. This must be at least the sum of your minimum payments.</div>
-                </div>
-                <button id="btnGenerateDebtPlan" class="btn btn-success">Generate Payoff Plan</button>
-              </div>
-            </div>
-
-            <h6 class="mb-2">Step 3: Your Payoff Plan</h6>
-            <div id="debtPlanSummary" class="small text-muted mb-2">Enter your debts and total monthly payment to generate a plan.</div>
-            <div class="table-responsive" style="max-height: 600px;">
-              <table class="table table-sm table-soft">
-                <thead>
-                  <tr>
-                    <th>Month</th>
-                    <th>Debt</th>
-                    <th class="text-end">Payment</th>
-                    <th class="text-end">Remaining Balance</th>
-                  </tr>
-                </thead>
-                <tbody id="debtPlanTbody"></tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </div>
 
