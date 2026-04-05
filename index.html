@@ -65,10 +65,7 @@
           <button class="nav-link" id="tab-investments" data-bs-toggle="tab" data-bs-target="#pane-investments" type="button" role="tab">Investments</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-assets" data-bs-toggle="tab" data-bs-target="#pane-assets" type="button" role="tab">Assets & Liabilities</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-networth" data-bs-toggle="tab" data-bs-target="#pane-networth" type="button" role="tab">Net Worth</button>
+          <button class="nav-link" id="tab-finances" data-bs-toggle="tab" data-bs-target="#pane-finances" type="button" role="tab">Financial Health</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-categories" data-bs-toggle="tab" data-bs-target="#pane-categories" type="button" role="tab">Categories</button>
@@ -719,130 +716,110 @@
         </div>
       </div>
 
-      <!-- Assets -->
-      <div class="tab-pane fade" id="pane-assets" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Assets & Liabilities</h5>
-            <div class="small text-muted">Track physical assets and outstanding debts.</div>
-          </div>
-        </div>
+      <!-- Financial Health Consolidated -->
+      <div class="tab-pane fade" id="pane-finances" role="tabpanel">
+        <!-- Sub-navigation Pills -->
+        <ul class="nav nav-pills mb-3" id="finances-view-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="subtab-networth" data-bs-toggle="pill" data-bs-target="#subpane-networth" type="button" role="tab">Net Worth</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subtab-assets" data-bs-toggle="pill" data-bs-target="#subpane-assets" type="button" role="tab">Assets</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subtab-liabilities" data-bs-toggle="pill" data-bs-target="#subpane-liabilities" type="button" role="tab">Liabilities</button>
+          </li>
+        </ul>
 
-        <div class="card shadow-soft mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0">Assets</h6>
-              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAsset">Add Asset</button>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-sm align-middle table-soft">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th class="text-end">Value</th>
-                    <th style="width: 18%">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="assetsTbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="card shadow-soft">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0">Liabilities (Debts)</h6>
-              <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalDebt">Add Debt</button>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-sm align-middle table-soft">
-                <thead>
-                  <tr>
-                    <th>Debt Name</th>
-                    <th class="text-end">Balance</th>
-                    <th class="text-end">Min. Pmt</th>
-                    <th class="text-end">APR %</th>
-                    <th style="width: 18%">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="assetsDebtsTbody"></tbody>
-              </table>
-            </div>
-            <div class="small text-muted mt-2">
-              These debts populate the Debt Snowball tab automatically.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Net Worth -->
-      <div class="tab-pane fade" id="pane-networth" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Net Worth</h5>
-            <div class="small text-muted">Snapshot of your financial health (Assets - Liabilities).</div>
-          </div>
-        </div>
-
-        <div class="row g-3">
-          <div class="col-lg-7">
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <div class="metric metric-savings">
-                  <div class="metric-label">Total Assets</div>
-                  <div id="nwAssets" class="metric-value">—</div>
+        <div class="tab-content" id="finances-view-content">
+          <!-- Net Worth Sub-pane -->
+          <div class="tab-pane fade show active" id="subpane-networth" role="tabpanel">
+            <div class="row g-3">
+              <div class="col-lg-7">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-4">
+                    <div class="metric metric-savings">
+                      <div class="metric-label">Total Assets</div>
+                      <div id="nwAssets" class="metric-value">—</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="metric metric-expenses">
+                      <div class="metric-label">Total Liabilities</div>
+                      <div id="nwLiabilities" class="metric-value">—</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="metric metric-net">
+                      <div class="metric-label">Net Worth</div>
+                      <div id="nwTotal" class="metric-value">—</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card shadow-soft">
+                  <div class="card-body">
+                    <h6 class="mb-3">Breakdown</h6>
+                    <div class="table-responsive">
+                      <table class="table table-sm align-middle table-soft">
+                        <thead><tr><th>Category</th><th class="text-end">Value</th></tr></thead>
+                        <tbody id="nwTbody"></tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="metric metric-expenses">
-                  <div class="metric-label">Total Liabilities</div>
-                  <div id="nwLiabilities" class="metric-value">—</div>
+              <div class="col-lg-5">
+                <div class="card shadow-soft mb-3">
+                  <div class="card-body">
+                    <h6 class="text-center mb-3">Asset Allocation</h6>
+                    <div style="height: 250px; position: relative;"><canvas id="netWorthAssetsChart"></canvas></div>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-4">
-                <div class="metric metric-net">
-                  <div class="metric-label">Net Worth</div>
-                  <div id="nwTotal" class="metric-value">—</div>
+                <div class="card shadow-soft">
+                  <div class="card-body">
+                    <h6 class="text-center mb-3">Liability Allocation</h6>
+                    <div style="height: 250px; position: relative;"><canvas id="netWorthLiabilitiesChart"></canvas></div>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
+          <!-- Assets Sub-pane -->
+          <div class="tab-pane fade" id="subpane-assets" role="tabpanel">
             <div class="card shadow-soft">
               <div class="card-body">
-                <h6 class="mb-3">Breakdown</h6>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">Assets</h6>
+                  <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAsset">Add Asset</button>
+                </div>
                 <div class="table-responsive">
                   <table class="table table-sm align-middle table-soft">
                     <thead>
-                      <tr>
-                        <th>Category</th>
-                        <th class="text-end">Value</th>
-                      </tr>
+                      <tr><th>Name</th><th>Category</th><th class="text-end">Value</th><th style="width: 18%">Actions</th></tr>
                     </thead>
-                    <tbody id="nwTbody"></tbody>
+                    <tbody id="assetsTbody"></tbody>
                   </table>
-                </div>
-                <div class="small text-muted mt-2">
-                  Note: Liabilities include negative account balances and entries from the Debt Snowball tab. Ensure you don't duplicate debts.
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-lg-5">
-            <div class="card shadow-soft mb-3">
-              <div class="card-body">
-                <h6 class="card-title text-center mb-3">Asset Allocation</h6>
-                <div style="height: 250px; position: relative;">
-                  <canvas id="netWorthAssetsChart"></canvas>
-                </div>
-              </div>
-            </div>
+
+          <!-- Liabilities Sub-pane -->
+          <div class="tab-pane fade" id="subpane-liabilities" role="tabpanel">
             <div class="card shadow-soft">
               <div class="card-body">
-                <h6 class="card-title text-center mb-3">Liability Allocation</h6>
-                <div style="height: 250px; position: relative;">
-                  <canvas id="netWorthLiabilitiesChart"></canvas>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">Liabilities (Debts)</h6>
+                  <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalDebt">Add Debt</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle table-soft">
+                    <thead>
+                      <tr><th>Debt Name</th><th class="text-end">Balance</th><th class="text-end">Min. Pmt</th><th class="text-end">APR %</th><th style="width: 18%">Actions</th></tr>
+                    </thead>
+                    <tbody id="assetsDebtsTbody"></tbody>
+                  </table>
                 </div>
               </div>
             </div>
