@@ -1645,7 +1645,10 @@ html:not([data-theme="dark"]) #theme-icon-dark {
   #debtPlanTbody tr td:nth-child(4)::before { content: "Remaining"; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
 
   /* Mobile Averages Tab Adaptations */
-  #pane-averages .nav-pills .nav-link {
+  #pane-averages .nav-pills .nav-link,
+  #pane-investments .nav-pills .nav-link,
+  #pane-finances .nav-pills .nav-link,
+  #pane-transactions .nav-pills .nav-link {
     width: 100%;
     text-align: center;
     margin-bottom: 0.5rem;

@@ -68,9 +68,6 @@
           <button class="nav-link" id="tab-finances" data-bs-toggle="tab" data-bs-target="#pane-finances" type="button" role="tab">Financial Health</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-categories" data-bs-toggle="tab" data-bs-target="#pane-categories" type="button" role="tab">Categories</button>
-        </li>
-        <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-accounts" data-bs-toggle="tab" data-bs-target="#pane-accounts" type="button" role="tab">Accounts</button>
         </li>
         <li class="nav-item" role="presentation">
@@ -292,52 +289,74 @@
 
       <!-- Transactions -->
       <div class="tab-pane fade" id="pane-transactions" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <h5 class="mb-0">Transactions (Selected Month)</h5>
-          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
-        </div>
+        <ul class="nav nav-pills mb-3" id="transactions-view-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="subtab-tx-list" data-bs-toggle="pill" data-bs-target="#subpane-tx-list" type="button" role="tab">Transaction List</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subtab-tx-categories" data-bs-toggle="pill" data-bs-target="#subpane-tx-categories" type="button" role="tab">Manage Categories</button>
+          </li>
+        </ul>
 
-        <div class="row g-3 mb-3 align-items-end">
-          <div class="col-lg-4 col-md-6">
-            <label class="form-label small">Filter by description</label>
-            <input id="txFilterDesc" type="text" class="form-control form-control-sm" placeholder="e.g., Supermarket">
-          </div>
-          <div class="col-lg-3 col-md-6">
-            <label class="form-label small">Filter by category</label>
-            <select id="txFilterCategory" class="form-select form-select-sm">
-              <option value="">All Categories</option>
-              <!-- Options populated by JS -->
-            </select>
-          </div>
-          <div class="col-lg-2 col-md-4">
-            <label class="form-label small">Start Date</label>
-            <input id="txFilterStart" type="date" class="form-control form-control-sm">
-          </div>
-          <div class="col-lg-2 col-md-4">
-            <label class="form-label small">End Date</label>
-            <input id="txFilterEnd" type="date" class="form-control form-control-sm">
-          </div>
-          <div class="col-lg-1 col-md-4">
-            <label class="form-label small d-block">&nbsp;</label>
-            <button id="txFilterClear" class="btn btn-sm btn-outline-secondary w-100">Clear</button>
-          </div>
-        </div>
+        <div class="tab-content" id="transactions-view-content">
+          <div class="tab-pane fade show active" id="subpane-tx-list" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <h5 class="mb-0">Transactions (Selected Month)</h5>
+              <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
+            </div>
 
-        <div class="table-responsive">
-          <table class="table table-sm align-middle table-soft">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Account</th>
-                <th>Major</th>
-                <th>Minor</th>
-                <th class="text-end">Amount</th>
-                <th style="width: 18%">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="txTbody"></tbody>
-          </table>
+            <div class="row g-3 mb-3 align-items-end">
+              <div class="col-lg-4 col-md-6">
+                <label class="form-label small">Filter by description</label>
+                <input id="txFilterDesc" type="text" class="form-control form-control-sm" placeholder="e.g., Supermarket">
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label small">Filter by category</label>
+                <select id="txFilterCategory" class="form-select form-select-sm">
+                  <option value="">All Categories</option>
+                </select>
+              </div>
+              <div class="col-lg-2 col-md-4">
+                <label class="form-label small">Start Date</label>
+                <input id="txFilterStart" type="date" class="form-control form-control-sm">
+              </div>
+              <div class="col-lg-2 col-md-4">
+                <label class="form-label small">End Date</label>
+                <input id="txFilterEnd" type="date" class="form-control form-control-sm">
+              </div>
+              <div class="col-lg-1 col-md-4">
+                <label class="form-label small d-block">&nbsp;</label>
+                <button id="txFilterClear" class="btn btn-sm btn-outline-secondary w-100">Clear</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-sm align-middle table-soft">
+                <thead>
+                  <tr><th>Date</th><th>Description</th><th>Account</th><th>Major</th><th>Minor</th><th class="text-end">Amount</th><th style="width: 18%">Actions</th></tr>
+                </thead>
+                <tbody id="txTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="subpane-tx-categories" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <div>
+                <h5 class="mb-0">Minor Categories (General)</h5>
+                <div class="small text-muted">Bills + Sinking Funds are managed in their own tabs.</div>
+              </div>
+              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategory">Add Minor Category</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle table-soft">
+                <thead>
+                  <tr><th>Major</th><th>Minor</th><th class="text-end">Manual Expected</th><th style="width: 18%">Actions</th></tr>
+                </thead>
+                <tbody id="catTbody"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -824,31 +843,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- General Categories -->
-      <div class="tab-pane fade" id="pane-categories" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Minor Categories (General)</h5>
-            <div class="small text-muted">Bills + Sinking Funds are managed in their own tabs.</div>
-          </div>
-          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategory">Add Minor Category</button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-sm align-middle table-soft">
-            <thead>
-              <tr>
-                <th>Major</th>
-                <th>Minor</th>
-                <th class="text-end">Manual Expected</th>
-                <th style="width: 18%">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="catTbody"></tbody>
-          </table>
         </div>
       </div>
 
