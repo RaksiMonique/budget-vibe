@@ -233,10 +233,7 @@ function wireEvents() {
   // Init all features, passing refreshAll
   initCategories(refreshAll);
   initAverages(refreshAll);
-  initStocks(refreshAll);
   initTransactions(refreshAll);
-  initStockPlan(refreshAll);
-  initDividends(refreshAll);
   initFIRE(refreshAll);
   initAccounts(refreshAll);
   initDebts(refreshAll);
@@ -246,6 +243,11 @@ function wireEvents() {
   initSavings(refreshAll);
   initBudget(refreshAll);
   initBills(refreshAll);
+
+  // Grouped Investment Features
+  initStocks(refreshAll);
+  initStockPlan(refreshAll);
+  initDividends(refreshAll);
 
   document.getElementById('billsCategoryForm').addEventListener("submit", (e) => { e.preventDefault(); upsertBillsCategory(refreshAll); });
   document.getElementById('billForm').addEventListener("submit", (e) => { e.preventDefault(); upsertBill(refreshAll); });

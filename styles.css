@@ -1653,7 +1653,8 @@ html:not([data-theme="dark"]) #theme-icon-dark {
     border: 1px solid rgba(0,0,0,0.05);
   }
   
-  #pane-averages .nav-pills .nav-link.active {
+  #pane-averages .nav-pills .nav-link.active,
+  #pane-investments .nav-pills .nav-link.active {
     background: var(--rose);
     color: #fff;
     border-color: var(--rose);

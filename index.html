@@ -62,13 +62,7 @@
           <button class="nav-link" id="tab-averages" data-bs-toggle="tab" data-bs-target="#pane-averages" type="button" role="tab">Averages</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-stocks" data-bs-toggle="tab" data-bs-target="#pane-stocks" type="button" role="tab">Stocks</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-stock-plan" data-bs-toggle="tab" data-bs-target="#pane-stock-plan" type="button" role="tab">Stock Plan</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-dividends" data-bs-toggle="tab" data-bs-target="#pane-dividends" type="button" role="tab">Dividends</button>
+          <button class="nav-link" id="tab-investments" data-bs-toggle="tab" data-bs-target="#pane-investments" type="button" role="tab">Investments</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-assets" data-bs-toggle="tab" data-bs-target="#pane-assets" type="button" role="tab">Assets & Liabilities</button>
@@ -588,218 +582,141 @@
         </div>
       </div>
 
-      <!-- Stocks -->
-      <div class="tab-pane fade" id="pane-stocks" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Stocks</h5>
-            <div class="small text-muted">Maintain a master list of tickers and add holdings linked to that list.</div>
-          </div>
-        </div>
+      <!-- Investments Consolidated -->
+      <div class="tab-pane fade" id="pane-investments" role="tabpanel">
+        <!-- Sub-navigation Pills -->
+        <ul class="nav nav-pills mb-3" id="investments-view-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="subtab-stocks" data-bs-toggle="pill" data-bs-target="#subpane-stocks" type="button" role="tab">Portfolio</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subtab-stock-plan" data-bs-toggle="pill" data-bs-target="#subpane-stock-plan" type="button" role="tab">Purchase Plan</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subtab-dividends" data-bs-toggle="pill" data-bs-target="#subpane-dividends" type="button" role="tab">Dividends</button>
+          </li>
+        </ul>
 
-        <div class="row g-4">
-          <!-- Left Column -->
-          <div class="col-lg-5">
-            <!-- Master List Card -->
-            <div class="card shadow-soft mb-4">
-              <div class="card-body">
-                <h6 class="mb-2">Stock Master List</h6>
-                <form id="stockMasterForm" class="row g-2 align-items-end">
-                  <input type="hidden" id="stockMasterId" />
-                  <div class="col-12 col-md-4">
-                    <label class="form-label">Ticker</label>
-                    <input id="stockTicker" class="form-control" maxlength="15" placeholder="e.g., AAPL" required>
-                  </div>
-                  <div class="col-12 col-md-4">
-                    <label class="form-label">Market</label>
-                    <input id="stockMarket" class="form-control" maxlength="25" placeholder="e.g., USA / JSE" required>
-                  </div>
-                  <div class="col-12 col-md-4">
-                    <label class="form-label">Current Price</label>
-                    <div class="input-group">
-                      <span class="input-group-text">$</span>
-                      <input id="stockPrice" type="number" step="0.0001" class="form-control" required>
-                    </div>
-                  </div>
-                  <div class="col-12 d-flex gap-2">
-                    <button class="btn btn-sm btn-primary" type="submit">Save</button>
-                    <button id="stockMasterCancel" class="btn btn-sm btn-outline-secondary" type="button">Cancel</button>
-                  </div>
-                </form>
-                <hr class="my-3">
-                <div class="table-responsive">
-                  <table class="table table-sm align-middle table-soft">
-                    <thead>
-                      <tr>
-                        <th>Ticker</th>
-                        <th>Market</th>
-                        <th class="text-end">Current Price</th>
-                        <th style="width: 20%">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody id="stocksMasterTbody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- Graphs Section -->
-            <div id="stocksGraphsContainer">
-              <!-- Main Chart -->
-              <div class="card shadow-soft mb-4">
-                <div class="card-body">
-                  <h6 class="mb-3 text-center">Portfolio Allocation (Current Value)</h6>
-                  <div style="height: 300px; position: relative;">
-                    <canvas id="stocksChart"></canvas>
-                  </div>
-                </div>
-              </div>
-              <!-- JS will append portfolio-specific charts here -->
-              <div id="portfolioChartsContainer"></div>
-            </div>
-          </div>
-
-          <!-- Right Column -->
-          <div class="col-lg-7">
-            <div class="card shadow-soft">
-              <div class="card-body">
-                <h6 class="mb-2">Holdings</h6>
-                <form id="holdingForm">
-                  <input type="hidden" id="holdingId" />
-                  <div class="row g-2 align-items-end">
-                    <div class="col-12 col-md-3">
-                      <label class="form-label">Ticker</label>
-                      <select id="holdingStockId" class="form-select" required></select>
-                    </div>
-                    <div class="col-12 col-md-3">
-                      <label class="form-label">Portfolio</label>
-                      <select id="holdingPortfolio" class="form-select" required></select>
-                    </div>
-                    <div class="col-12 col-md-3">
-                      <label class="form-label">Avg Buy Price</label>
-                      <div class="input-group">
-                        <span class="input-group-text">$</span>
-                        <input id="holdingAvgPrice" type="number" step="0.0001" class="form-control" required>
+        <div class="tab-content" id="investments-view-content">
+          <!-- Stocks Sub-pane -->
+          <div class="tab-pane fade show active" id="subpane-stocks" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <div class="card shadow-soft mb-4">
+                  <div class="card-body">
+                    <h6 class="mb-2">Stock Master List</h6>
+                    <form id="stockMasterForm" class="row g-2 align-items-end">
+                      <input type="hidden" id="stockMasterId" />
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Ticker</label>
+                        <input id="stockTicker" class="form-control" maxlength="15" placeholder="e.g., AAPL" required>
                       </div>
-                    </div>
-                    <div class="col-12 col-md-3">
-                      <label class="form-label">Shares</label>
-                      <input id="holdingShares" type="number" step="0.0001" class="form-control" required>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Market</label>
+                        <input id="stockMarket" class="form-control" maxlength="25" placeholder="e.g., USA / JSE" required>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Current Price</label>
+                        <div class="input-group">
+                          <span class="input-group-text">$</span>
+                          <input id="stockPrice" type="number" step="0.0001" class="form-control" required>
+                        </div>
+                      </div>
+                      <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                        <button id="stockMasterCancel" class="btn btn-sm btn-outline-secondary" type="button">Cancel</button>
+                      </div>
+                    </form>
+                    <hr class="my-3">
+                    <div class="table-responsive">
+                      <table class="table table-sm align-middle table-soft">
+                        <thead>
+                          <tr><th>Ticker</th><th>Market</th><th class="text-end">Current Price</th><th style="width: 20%">Actions</th></tr>
+                        </thead>
+                        <tbody id="stocksMasterTbody"></tbody>
+                      </table>
                     </div>
                   </div>
-                  <div id="holdingNewPortfolioWrap" class="p-3 rounded mt-2" style="display: none; background-color: var(--bg-soft);">
-                    <label class="form-label small fw-bold">New Portfolio Name</label>
-                    <div class="input-group input-group-sm">
-                      <input id="holdingNewPortfolioName" type="text" class="form-control" placeholder="e.g., Taxable Brokerage">
-                      <button id="btnSaveNewHoldingPortfolio" class="btn btn-outline-primary" type="button">Save</button>
+                </div>
+                <div id="stocksGraphsContainer">
+                  <div class="card shadow-soft mb-4">
+                    <div class="card-body">
+                      <h6 class="mb-3 text-center">Portfolio Allocation (Current Value)</h6>
+                      <div style="height: 300px; position: relative;"><canvas id="stocksChart"></canvas></div>
                     </div>
                   </div>
-                  <div class="d-flex gap-2 mt-3">
-                    <button class="btn btn-sm btn-success" type="submit">Save</button>
-                    <button id="holdingCancel" class="btn btn-sm btn-outline-secondary" type="button">Cancel</button>
+                  <div id="portfolioChartsContainer"></div>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="card shadow-soft">
+                  <div class="card-body">
+                    <h6 class="mb-2">Holdings</h6>
+                    <form id="holdingForm">
+                      <input type="hidden" id="holdingId" />
+                      <div class="row g-2 align-items-end">
+                        <div class="col-12 col-md-3"><label class="form-label">Ticker</label><select id="holdingStockId" class="form-select" required></select></div>
+                        <div class="col-12 col-md-3"><label class="form-label">Portfolio</label><select id="holdingPortfolio" class="form-select" required></select></div>
+                        <div class="col-12 col-md-3"><label class="form-label">Avg Buy Price</label><div class="input-group"><span class="input-group-text">$</span><input id="holdingAvgPrice" type="number" step="0.0001" class="form-control" required></div></div>
+                        <div class="col-12 col-md-3"><label class="form-label">Shares</label><input id="holdingShares" type="number" step="0.0001" class="form-control" required></div>
+                      </div>
+                      <div id="holdingNewPortfolioWrap" class="p-3 rounded mt-2" style="display: none; background-color: var(--bg-soft);">
+                        <label class="form-label small fw-bold">New Portfolio Name</label>
+                        <div class="input-group input-group-sm">
+                          <input id="holdingNewPortfolioName" type="text" class="form-control" placeholder="e.g., Taxable Brokerage">
+                          <button id="btnSaveNewHoldingPortfolio" class="btn btn-outline-primary" type="button">Save</button>
+                        </div>
+                      </div>
+                      <div class="d-flex gap-2 mt-3"><button class="btn btn-sm btn-success" type="submit">Save</button><button id="holdingCancel" class="btn btn-sm btn-outline-secondary" type="button">Cancel</button></div>
+                    </form>
+                    <hr class="my-3"><div id="holdingsContainer"></div>
                   </div>
-                </form>
-                <hr class="my-3">
-                <div id="holdingsContainer"></div>
-                <div class="small text-muted mt-2">
-                  Dividends tab auto-populates from current holdings.
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Stock Purchase Plan -->
-      <div class="tab-pane fade" id="pane-stock-plan" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Stock Purchase Plan</h5>
-            <div class="small text-muted">Recommendations based on your holdings and strategy.</div>
-          </div>
-        </div>
-        <div id="stockPlanContainer"></div>
-      </div>
-
-      <!-- Dividends -->
-      <div class="tab-pane fade" id="pane-dividends" role="tabpanel">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-          <div>
-            <h5 class="mb-0">Dividend Income</h5>
-            <div class="small text-muted">Enter dividends per share by month. Totals multiply by shares from holdings.</div>
+          <!-- Stock Purchase Plan Sub-pane -->
+          <div class="tab-pane fade" id="subpane-stock-plan" role="tabpanel">
+            <div id="stockPlanContainer"></div>
           </div>
 
-          <div class="d-flex gap-2 align-items-end">
-            <div>
-              <label class="form-label mb-1">Year</label>
-              <input id="divYear" type="number" class="form-control" min="2000" max="2100">
+          <!-- Dividends Sub-pane -->
+          <div class="tab-pane fade" id="subpane-dividends" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+              <div><h6 class="mb-0 fw-bold">Dividend Income Tracker</h6></div>
+              <div class="d-flex gap-2 align-items-end">
+                <div><label class="form-label mb-1 small">Year</label><input id="divYear" type="number" class="form-control form-control-sm" min="2000" max="2100"></div>
+                <button id="btnDivRefresh" class="btn btn-sm btn-secondary">Recalculate</button>
+              </div>
             </div>
-            <button id="btnDivRefresh" class="btn btn-sm btn-secondary">Recalculate</button>
-          </div>
-        </div>
-
-        <!-- Dividends Chart -->
-        <div class="card shadow-soft mb-3">
-          <div class="card-body">
-            <h6 class="mb-3">Monthly Dividend Income</h6>
-            <div style="height: 300px; position: relative;">
-              <canvas id="dividendsChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-sm align-middle table-soft">
-            <thead>
-              <tr>
-                <th style="min-width:120px;">Stock</th>
-                <th class="text-end">Shares</th>
-                <th class="text-end">Jan</th>
-                <th class="text-end">Feb</th>
-                <th class="text-end">Mar</th>
-                <th class="text-end">Apr</th>
-                <th class="text-end">May</th>
-                <th class="text-end">Jun</th>
-                <th class="text-end">Jul</th>
-                <th class="text-end">Aug</th>
-                <th class="text-end">Sep</th>
-                <th class="text-end">Oct</th>
-                <th class="text-end">Nov</th>
-                <th class="text-end">Dec</th>
-                <th class="text-end">Year Total</th>
-              </tr>
-            </thead>
-            <tbody id="divTbody"></tbody>
-          </table>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-12">
-            <div class="card shadow-soft">
+            <div class="card shadow-soft mb-3">
               <div class="card-body">
-                <h6 class="mb-2">Monthly Dividend Income Totals (All Holdings)</h6>
+                <h6 class="mb-3">Monthly Dividend Income</h6>
+                <div style="height: 300px; position: relative;"><canvas id="dividendsChart"></canvas></div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle table-soft">
+                <thead>
+                  <tr><th style="min-width:120px;">Stock</th><th class="text-end">Shares</th><th class="text-end">Jan</th><th class="text-end">Feb</th><th class="text-end">Mar</th><th class="text-end">Apr</th><th class="text-end">May</th><th class="text-end">Jun</th><th class="text-end">Jul</th><th class="text-end">Aug</th><th class="text-end">Sep</th><th class="text-end">Oct</th><th class="text-end">Nov</th><th class="text-end">Dec</th><th class="text-end">Year Total</th></tr>
+                </thead>
+                <tbody id="divTbody"></tbody>
+              </table>
+            </div>
+            <div class="card shadow-soft mt-3">
+              <div class="card-body">
+                <h6 class="mb-2">Monthly Totals</h6>
                 <div class="table-responsive">
                   <table class="table table-sm align-middle table-soft mb-0">
-                    <thead>
-                      <tr>
-                        <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th>
-                        <th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th>
-                        <th class="text-end">Year Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr id="divMonthlyTotalsRow"></tr>
-                    </tbody>
+                    <thead><tr><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th class="text-end">Year Total</th></tr></thead>
+                    <tbody><tr id="divMonthlyTotalsRow"></tr></tbody>
                   </table>
-                </div>
-                <div class="small text-muted mt-2">
-                  Values shown are dividend income (per-share dividends × shares).
                 </div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Assets -->
