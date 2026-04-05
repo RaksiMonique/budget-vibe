@@ -120,9 +120,11 @@ function renderTransactionsTable() {
     const majorLabel = cat ? getMajorLabel(cat.majorKey) : "—";
     const minorLabel = cat ? cat.name : "—";    
     const isTransfer = cat && cat.majorKey === 'transfer';
+    const type = cat ? MAJOR_TYPES[cat.majorKey] : 'outflow';
+    const rowClass = type === 'inflow' ? 'table-success-soft' : '';
 
     return `
-      <tr>
+      <tr class="${rowClass}">
         <td>${escapeHtml(t.date)}</td>
         <td>${escapeHtml(t.description || "")} ${isTransfer ? '<span class="badge bg-secondary">Transfer</span>' : ''}</td>
         <td>${escapeHtml(state.accounts.find(a => a.id === t.accountId)?.name || "—")}</td>

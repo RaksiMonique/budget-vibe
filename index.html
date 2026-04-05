@@ -43,12 +43,14 @@
     <div class="tabs-vertical-shell mt-0">
       <!-- Tabs -->
       <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+        <li class="nav-section-title">Overview</li>
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button" role="tab">Dashboard</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-budget" data-bs-toggle="tab" data-bs-target="#pane-budget" type="button" role="tab">Monthly Budget</button>
         </li>
+        <li class="nav-section-title">Daily Tracking</li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-transactions" data-bs-toggle="tab" data-bs-target="#pane-transactions" type="button" role="tab">Transactions</button>
         </li>
@@ -59,16 +61,17 @@
           <button class="nav-link" id="tab-bills" data-bs-toggle="tab" data-bs-target="#pane-bills" type="button" role="tab">Bills</button>
         </li>
         <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-accounts" data-bs-toggle="tab" data-bs-target="#pane-accounts" type="button" role="tab">Accounts</button>
+        </li>
+        <li class="nav-section-title">Assets & Growth</li>
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-averages" data-bs-toggle="tab" data-bs-target="#pane-averages" type="button" role="tab">Averages</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-investments" data-bs-toggle="tab" data-bs-target="#pane-investments" type="button" role="tab">Investments</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-finances" data-bs-toggle="tab" data-bs-target="#pane-finances" type="button" role="tab">Financial Health</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-accounts" data-bs-toggle="tab" data-bs-target="#pane-accounts" type="button" role="tab">Accounts</button>
+          <button class="nav-link" id="tab-finances" data-bs-toggle="tab" data-bs-target="#pane-finances" type="button" role="tab">Networth Tracker</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-rentals" data-bs-toggle="tab" data-bs-target="#pane-rentals" type="button" role="tab">Rentals</button>
@@ -1142,6 +1145,13 @@
     </div>
     </div>
   </main>
+
+  <!-- Floating Action Button (FAB) -->
+  <button class="btn btn-success fab-btn d-lg-none" data-bs-toggle="modal" data-bs-target="#modalTransaction" title="Add Transaction">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+    </svg>
+  </button>
 
   <!-- MODALS -->
 
