@@ -1,29 +1,23 @@
-/* Budget Tracker - vanilla JS + Bootstrap
-   Persistence: localStorage (see notes near bottom for IndexedDB upgrade path)
-*/
-
-const STORAGE_KEY = "budgetTracker.v1";
-
-// Fixed major categories
 const MAJOR_CATEGORIES = [
-  { key: "income", label: "Income" },
-  { key: "fixed", label: "Fixed Expenses" },
-  { key: "variable", label: "Variable Expenses" },
-  { key: "bills", label: "Bills" },
-  { key: "sinking", label: "Sinking (Savings) Fund" },
-  { key: "fun", label: "Fun Money" },
-  { key: "invest", label: "Investments" },
+  { key: "income", label: "Income", color: "#A4747D" },
+  { key: "fixed", label: "Fixed Expenses", color: "#C27250" },
+  { key: "variable", label: "Variable Expenses", color: "#D29F80" },
+  { key: "bills", label: "Bills", color: "#735557" },
+  { key: "sinking", label: "Sinking (Savings) Fund", color: "#69856D" },
+  { key: "fun", label: "Fun Money", color: "#97866A" },
+  { key: "invest", label: "Investments", color: "#B6C1B1" },
+  { key: "transfer", label: "Transfer", color: "#9E9E9E" },
 ];
 
-// which majors behave as "income-like" vs "expense-like" for net math
 const MAJOR_TYPES = {
   income: "inflow",
   fixed: "outflow",
   variable: "outflow",
   bills: "outflow",
-  sinking: "savings",   // treated separately in summary
+  sinking: "outflow",
   fun: "outflow",
-  invest: "savings",    // treated separately in summary
+  invest: "outflow",
+  transfer: "transfer",
 };
 
 const FREQUENCY_TO_MONTHLY_MULTIPLIER = {
@@ -34,86 +28,111 @@ const FREQUENCY_TO_MONTHLY_MULTIPLIER = {
   yearly: 1 / 12,
 };
 
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 let state = loadState();
-
-// ---------- DOM ----------
-const yearInput = document.getElementById("yearInput");
-const monthSelect = document.getElementById("monthSelect");
-const btnThisMonth = document.getElementById("btnThisMonth");
-const btnRecalc = document.getElementById("btnRecalc");
-
-const sumIncome = document.getElementById("sumIncome");
-const sumExpenses = document.getElementById("sumExpenses");
-const sumNet = document.getElementById("sumNet");
-const sumSaveInvest = document.getElementById("sumSaveInvest");
-
-const budgetTbody = document.getElementById("budgetTbody");
-const txTbody = document.getElementById("txTbody");
-const goalsWrap = document.getElementById("goalsWrap");
-const billsTbody = document.getElementById("billsTbody");
-const catTbody = document.getElementById("catTbody");
-
-const btnExport = document.getElementById("btnExport");
-const fileImport = document.getElementById("fileImport");
-const btnReset = document.getElementById("btnReset");
-
-// Modals + forms
-const categoryForm = document.getElementById("categoryForm");
-const categoryModalTitle = document.getElementById("categoryModalTitle");
-const categoryId = document.getElementById("categoryId");
-const categoryMajor = document.getElementById("categoryMajor");
-const categoryName = document.getElementById("categoryName");
-const categoryExpected = document.getElementById("categoryExpected");
-
-const txForm = document.getElementById("txForm");
-const txDate = document.getElementById("txDate");
-const txMinor = document.getElementById("txMinor");
-const txDesc = document.getElementById("txDesc");
-const txAmount = document.getElementById("txAmount");
-
-const goalForm = document.getElementById("goalForm");
-const goalName = document.getElementById("goalName");
-const goalMinor = document.getElementById("goalMinor");
-const goalTotal = document.getElementById("goalTotal");
-const goalDeadlineDate = document.getElementById("goalDeadlineDate");
-const goalDurationMonths = document.getElementById("goalDurationMonths");
-
-const billForm = document.getElementById("billForm");
-const billName = document.getElementById("billName");
-const billMinor = document.getElementById("billMinor");
-const billAmount = document.getElementById("billAmount");
-const billFreq = document.getElementById("billFreq");
-const billNextDue = document.getElementById("billNextDue");
-
-// Toast
-const toastEl = document.getElementById("appToast");
-const toastBody = document.getElementById("toastBody");
-const toast = toastEl ? new bootstrap.Toast(toastEl, { delay: 2000 }) : null;
-
-init();
+let budgetDonutChart = null;
+let billsBarChart = null;
 
 function init() {
-  // Default month/year
   const now = new Date();
   yearInput.value = state.ui.selectedYear ?? now.getFullYear();
   monthSelect.value = String(state.ui.selectedMonth ?? now.getMonth());
 
-  // Populate major category dropdown for new minor categories
+  // Defaults for averages tab
+  if (!state.ui.avgStart || !state.ui.avgEnd) {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    state.ui.avgStart = toISODate(start);
+    state.ui.avgEnd = toISODate(end);
+    saveState();
+  }
+  avgStart.value = state.ui.avgStart;
+  avgEnd.value = state.ui.avgEnd;
+
+  // Init transaction filters
+  txFilterStart.value = state.ui.txFilterStart || "";
+  txFilterEnd.value = state.ui.txFilterEnd || "";
+
+  // Default for annual overview year
+  if (!state.ui.annualOverviewYear) {
+    state.ui.annualOverviewYear = now.getFullYear();
+  }
+
+  // Default for annual overview granularity
+  if (!state.ui.annualOverviewGranularity) {
+    state.ui.annualOverviewGranularity = 'major';
+  }
+
+  // Default dividends year
+  if (!state.ui.divYear) state.ui.divYear = now.getFullYear();
+  divYear.value = String(state.ui.divYear);
+
   categoryMajor.innerHTML = MAJOR_CATEGORIES
+    .filter(m => m.key !== "bills" && m.key !== "sinking" && m.key !== "transfer")
     .map(m => `<option value="${m.key}">${m.label}</option>`)
     .join("");
 
-  // Preload: ensure at least one bills minor category and sinking minor category for demo UX (optional)
   if (state.minorCategories.length === 0) {
     seedStarterCategories();
+    ensureTransferCategory();
     saveState();
   }
+
+  if (!Array.isArray(state.accounts)) state.accounts = [];
+  if (state.accounts.length === 0) seedStarterAccounts();
+  if (!Array.isArray(state.debts)) state.debts = [];
+  if (!Array.isArray(state.otherAssets)) state.otherAssets = [];
+  if (!Array.isArray(state.rentals)) state.rentals = [];
+  if (!Array.isArray(state.goals)) state.goals = [];
+  state.rentals.forEach(r => {
+    if (!Array.isArray(r.expenses)) r.expenses = [];
+  });
+  
+  // Init Saved Descriptions (and backfill from existing transactions if empty)
+  if (!Array.isArray(state.savedDescriptions)) {
+    const existing = new Set((state.transactions || []).map(t => t.description).filter(d => d && d.trim().length > 0));
+    state.savedDescriptions = Array.from(existing).sort();
+  }
+
+  if (!Array.isArray(state.billPayments)) state.billPayments = [];
+  if (!Array.isArray(state.stocksMaster)) state.stocksMaster = [];
+  if (!Array.isArray(state.holdings)) state.holdings = [];
+  if (!state.dividends || typeof state.dividends !== "object") state.dividends = {};
+  if (!state.stockPlan || typeof state.stockPlan !== "object") state.stockPlan = {};
+
+  if (!state.ui.rentalYear) state.ui.rentalYear = now.getFullYear();
+  rentalYear.value = String(state.ui.rentalYear);
+  if (!state.rentalIncome || typeof state.rentalIncome !== "object") state.rentalIncome = {};
+
+  // Init Currency
+  if (!state.ui.currency) state.ui.currency = 'USD';
+  currencySelect.value = state.ui.currency;
+
+  // Override global formatMoney to use selected currency
+  window.formatMoney = function(amount) {
+    const val = parseFloat(amount);
+    if (isNaN(val)) return "-";
+    // Using en-US locale for number formatting (1,000.00) but applying the selected currency symbol/code
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: state.ui.currency }).format(val);
+  };
 
   wireEvents();
   refreshAll();
 }
 
+/* =========================
+   Events
+   ========================= */
 function wireEvents() {
+  themeToggle.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    state.ui.theme = newTheme; // Explicitly set user choice
+    saveState();
+  });
+
   btnThisMonth.addEventListener("click", () => {
     const now = new Date();
     yearInput.value = now.getFullYear();
@@ -122,51 +141,158 @@ function wireEvents() {
     refreshAll();
   });
 
-  yearInput.addEventListener("change", () => {
-    persistSelectedMonth();
+  pensionInput.addEventListener("change", () => {
+    const sel = getSelectedMonth();
+    const key = `${sel.year}-${sel.month}`;
+    if (!state.pensionRates) state.pensionRates = {};
+    state.pensionRates[key] = safeNumber(pensionInput.value);
+    saveState();
     refreshAll();
   });
 
-  monthSelect.addEventListener("change", () => {
-    persistSelectedMonth();
+  currencySelect.addEventListener("change", () => {
+    state.ui.currency = currencySelect.value;
+    saveState();
     refreshAll();
   });
 
-  btnRecalc.addEventListener("click", () => refreshAll());
+  yearInput.addEventListener("change", () => { persistSelectedMonth(); refreshAll(); });
+  monthSelect.addEventListener("change", () => { persistSelectedMonth(); refreshAll(); });
 
-  // Category form
-  categoryForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    upsertMinorCategory();
+  const modalBillEl = document.getElementById("modalBill");
+  if (modalBillEl) {
+    modalBillEl.addEventListener("show.bs.modal", handleBillModalOpen);
+    modalBillEl.addEventListener("hidden.bs.modal", () => {
+      // Reset form on close to prevent stale data on next open
+      billForm.reset();
+      billId.value = "";
+      billModalTitle.textContent = "Add Recurring Bill";
+      toggleBillSinkingFundWrap();
+    });
+  }
+
+  billMinor.addEventListener("change", toggleNewBillMinorInput);
+  billFreq.addEventListener("change", toggleBillSinkingFundWrap);
+  billSinkingFund.addEventListener("change", () => {
+    billSinkingFundSelectWrap.style.display = billSinkingFund.checked ? "block" : "none";
   });
 
-  // Transaction form
-  txForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    addTransaction();
+  transferForm.addEventListener("submit", (e) => { e.preventDefault(); upsertTransfer(); });
+  transferFromAccount.addEventListener("change", updateTransferToOptions);
+  modalTransferEl.addEventListener("show.bs.modal", (event) => {
+    const button = event.relatedTarget;
+    const fromAccountId = button ? button.dataset.fromAccountId : null;
+
+    transferForm.reset();
+    transferDate.value = toISODate(new Date());
+    const accs = state.accounts.sort((a,b) => a.name.localeCompare(b.name));
+    const options = accs.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+    transferFromAccount.innerHTML = options;
+    transferToAccount.innerHTML = options;
+
+    if (fromAccountId && accs.some(a => a.id === fromAccountId)) {
+      transferFromAccount.value = fromAccountId;
+      // Pre-select a different 'to' account if possible
+      const toAccount = accs.find(a => a.id !== fromAccountId);
+      if (toAccount) {
+        transferToAccount.value = toAccount.id;
+      }
+    } else if (accs.length > 1) {
+      transferFromAccount.value = accs[0].id;
+      transferToAccount.value = accs[1].id;
+    }
+    updateTransferToOptions();
   });
 
-  // Goal form
-  goalForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    addGoal();
+  categoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertGeneralMinorCategory(); });
+  modalCategoryEl.addEventListener("hidden.bs.modal", () => {
+    categoryForm.reset();
+    categoryId.value = "";
+    categoryModalTitle.textContent = "Add Minor Category";
   });
+  billsCategoryForm.addEventListener("submit", (e) => { e.preventDefault(); upsertBillsCategory(); });
 
-  // Bill form
-  billForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    addBill();
-  });
+  billForm.addEventListener("submit", (e) => { e.preventDefault(); upsertBill(); });
 
-  // Export/import/reset
   btnExport.addEventListener("click", exportJSON);
   fileImport.addEventListener("change", importJSON);
+
   btnReset.addEventListener("click", () => {
-    if (!confirm("Reset all budget data? This cannot be undone.")) return;
-    state = defaultState();
-    saveState();
-    init(); // re-init UI and seed
+    showConfirmationModal("Reset all budget data? This cannot be undone.", () => {
+      state = defaultState();
+      saveState();
+      init();
+    });
   });
+
+  initAverages();
+  initStocks();
+  initTransactions();
+  initStockPlan();
+  initDividends();
+  initFIRE();
+  initAccounts();
+  initDebts();
+  initRentals();
+  initAssets();
+  initNetWorth();
+  initSavings();
+  initBudget();
+
+  initModalAutoFocus();
+}
+
+/* =========================
+   Refresh
+   ========================= */
+function refreshAll() {
+  renderCategoryDropdowns();
+
+  const expectedByMinor = computeExpectedByMinor();
+  const sel = getSelectedMonth();
+  const actualByMinor = computeActualByMinor(sel.year, sel.month);
+
+  if (displayMonthYear) {
+    const mName = monthSelect.options[sel.month]?.text || MONTHS[sel.month];
+    displayMonthYear.textContent = `${mName} ${sel.year}`;
+  }
+  const budgetMonthYear = document.getElementById('budgetMonthYear');
+  if (budgetMonthYear) {
+    const mName = monthSelect.options[sel.month]?.text || MONTHS[sel.month];
+    budgetMonthYear.textContent = `${mName} ${sel.year}`;
+  }
+  
+  // Update pension input for selected month
+  if (!state.pensionRates) state.pensionRates = {};
+  const pKey = `${sel.year}-${sel.month}`;
+  pensionInput.value = state.pensionRates[pKey] || 0;
+
+  renderBudgetTable(expectedByMinor, actualByMinor);
+  renderAccounts();
+  renderTransactionsTable();
+  renderGoals(expectedByMinor);
+  renderBillsCategories(expectedByMinor);
+  renderBills(sel.year, sel.month); // FIXED: show ALL bills
+  renderDebts();
+  renderDebtsForAssetsTab();
+  renderFIRE();
+  renderRentals();
+  renderAssets();
+  renderNetWorth();
+  renderGeneralCategories();
+
+  renderSummary(actualByMinor, sel.year, sel.month);
+  renderBillsPaidTracker(sel.year, sel.month);
+
+  renderBudgetDonutChart(actualByMinor);
+  renderBillsChart(expectedByMinor, actualByMinor);
+  renderAverages();
+  renderAnnualOverview();
+  renderStocks();
+  renderDividends();
+  renderStockPlan();
+
+  refreshTopInvestmentMetrics();
 }
 
 function persistSelectedMonth() {
@@ -177,254 +303,613 @@ function persistSelectedMonth() {
   saveState();
 }
 
-function refreshAll() {
-  // Refresh dropdowns dependent on categories
-  renderCategoryDropdowns();
-
-  // Recompute expected from: manual expected + goals + bills (monthly equivalents)
-  const expectedByMinor = computeExpectedByMinor();
-
-  // Compute actuals (selected month)
-  const sel = getSelectedMonth();
-  const actualByMinor = computeActualByMinor(sel.year, sel.month);
-
-  // Render sections
-  renderBudgetTable(expectedByMinor, actualByMinor);
-  renderTransactionsTable(sel.year, sel.month);
-  renderGoals(expectedByMinor);
-  renderBills();
-  renderCategories();
-
-  renderSummary(actualByMinor);
-}
-
+/* =========================
+   Dropdowns
+   ========================= */
 function renderCategoryDropdowns() {
-  // All minor categories for transactions
-  const sortedAll = [...state.minorCategories].sort((a, b) =>
-    (a.majorKey + a.name).localeCompare(b.majorKey + b.name)
-  );
-  txMinor.innerHTML = sortedAll.map(c => {
-    const majorLabel = getMajorLabel(c.majorKey);
-    return `<option value="${c.id}">${majorLabel} • ${escapeHtml(c.name)}</option>`;
-  }).join("");
+  txMajor.innerHTML = MAJOR_CATEGORIES
+    .filter(m => m.key !== "transfer")
+    .map(m => `<option value="${m.key}">${m.label}</option>`).join("");
+  if (!txMajor.value) txMajor.value = "variable";
+  repopulateTxMinorOptions(txMajor.value, false);
 
-  // Only sinking fund categories for goals
-  const sinking = sortedAll.filter(c => c.majorKey === "sinking");
-  goalMinor.innerHTML = sinking.length
-    ? sinking.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
-    : `<option value="" disabled selected>Create a Sinking Fund minor category first</option>`;
-
-  // Only bills categories for bills
-  const bills = sortedAll.filter(c => c.majorKey === "bills");
+  const bills = state.minorCategories
+    .filter(c => c.majorKey === "bills")
+    .sort((a, b) => a.name.localeCompare(b.name));
   billMinor.innerHTML = bills.length
     ? bills.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")
-    : `<option value="" disabled selected>Create a Bills minor category first</option>`;
+    : `<option value="" disabled selected>Create a Bills category first</option>`;
+
+  // Populate transaction filter dropdown
+  const allCats = state.minorCategories
+    .slice()
+    .sort((a,b) => a.name.localeCompare(b.name));
+  txFilterCategory.innerHTML = `<option value="">All Categories</option>` + allCats
+    .map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(getMajorLabel(c.majorKey))})</option>`)
+    .join("");
 }
 
-function renderSummary(actualByMinor) {
-  // Aggregate by major types
-  let income = 0;
-  let expenses = 0;
-  let saveInvest = 0;
+/* =========================
+   Summary
+   ========================= */
+function renderSummary(actualByMinor, year, month) {
+  let income = 0, expenses = 0;
+  let sinking = 0, invest = 0;
 
   for (const cat of state.minorCategories) {
     const actual = actualByMinor[cat.id] || 0;
     const type = MAJOR_TYPES[cat.majorKey];
+    if (type === "transfer") continue;
     if (type === "inflow") income += actual;
     else if (type === "outflow") expenses += actual;
-    else if (type === "savings") saveInvest += actual;
+
+    if (cat.majorKey === "sinking") sinking += actual;
+    if (cat.majorKey === "invest") invest += actual;
   }
 
-  const net = income - expenses - saveInvest;
+  const net = income - expenses;
 
   sumIncome.textContent = formatMoney(income);
   sumExpenses.textContent = formatMoney(expenses);
-  sumSaveInvest.textContent = formatMoney(saveInvest);
   sumNet.textContent = formatMoney(net);
 
-  // simple conditional emphasis
   sumNet.classList.toggle("text-danger", net < 0);
   sumNet.classList.toggle("text-success", net >= 0);
+
+  // Rates Calculation
+  const pKey = `${year}-${month}`;
+  const pensionRate = safeNumber(state.pensionRates?.[pKey] || 0);
+
+  metricSavingsRate.textContent = income > 0 ? ((sinking / income) * 100).toFixed(1) + "%" : "0.0%";
+  
+  const investPct = income > 0 ? ((invest / income) * 100) : 0;
+  metricInvestRate.textContent = (investPct + pensionRate).toFixed(1) + "%";
 }
 
-function renderBudgetTable(expectedByMinor, actualByMinor) {
-  // Group categories by major
-  const majors = MAJOR_CATEGORIES.map(m => m.key);
-  const catsByMajor = Object.fromEntries(majors.map(k => [k, []]));
-  for (const c of state.minorCategories) catsByMajor[c.majorKey].push(c);
+/* =========================
+   Charts
+   ========================= */
+function renderBudgetDonutChart(actualByMinor) {
+  const ctx = document.getElementById("budgetDonutChart")?.getContext("2d");
+  if (!ctx) return;
 
-  for (const k of majors) {
-    catsByMajor[k].sort((a, b) => a.name.localeCompare(b.name));
+  const sumsByMajor = {};
+  for (const cat of state.minorCategories) {
+    const type = MAJOR_TYPES[cat.majorKey];
+    if (type !== "outflow") continue;
+
+    const actual = actualByMinor[cat.id] || 0;
+    sumsByMajor[cat.majorKey] = (sumsByMajor[cat.majorKey] || 0) + actual;
   }
 
-  let rows = "";
-  for (const major of majors) {
-    const list = catsByMajor[major];
-    if (!list.length) continue;
-
-    const majorLabel = getMajorLabel(major);
-
-    for (let i = 0; i < list.length; i++) {
-      const c = list[i];
-      const exp = expectedByMinor[c.id] || 0;
-      const act = actualByMinor[c.id] || 0;
-
-      // For income, variance is act - exp; for outflows/savings, variance is exp - act (i.e., under budget is positive)
-      const type = MAJOR_TYPES[c.majorKey];
-      const variance = (type === "inflow") ? (act - exp) : (exp - act);
-
-      rows += `
-        <tr>
-          <td>${i === 0 ? `<span class="badge badge-soft">${majorLabel}</span>` : ""}</td>
-          <td>${escapeHtml(c.name)}</td>
-          <td class="text-end">${formatMoney(exp)}</td>
-          <td class="text-end">${formatMoney(act)}</td>
-          <td class="text-end ${variance < 0 ? "text-danger" : "text-success"}">${formatMoney(variance)}</td>
-          <td>
-            <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-secondary" onclick="editCategory('${c.id}')">Edit</button>
-              <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${c.id}')">Delete</button>
-            </div>
-          </td>
-        </tr>
-      `;
+  const labels = [], data = [], colors = [];
+  for (const major of MAJOR_CATEGORIES) {
+    if (sumsByMajor[major.key] > 0) {
+      labels.push(major.label);
+      data.push(sumsByMajor[major.key]);
+      colors.push(major.color);
     }
   }
 
-  budgetTbody.innerHTML = rows || `<tr><td colspan="6" class="text-muted">No categories yet. Add minor categories to begin.</td></tr>`;
+  if (budgetDonutChart) {
+    budgetDonutChart.data.labels = labels;
+    budgetDonutChart.data.datasets[0].data = data;
+    budgetDonutChart.data.datasets[0].backgroundColor = colors;
+    budgetDonutChart.update();
+  } else {
+    budgetDonutChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+  }
 }
 
-function renderTransactionsTable(year, month) {
-  const list = state.transactions
-    .filter(t => isInMonth(t.date, year, month))
-    .sort((a, b) => a.date.localeCompare(b.date));
+function renderBillsChart(expectedByMinor, actualByMinor) {
+  const ctx = document.getElementById("billsChart")?.getContext("2d");
+  if (!ctx) return;
 
-  if (!list.length) {
-    txTbody.innerHTML = `<tr><td colspan="6" class="text-muted">No transactions for this month.</td></tr>`;
+  const billCategories = state.minorCategories
+    .filter(c => c.majorKey === 'bills')
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const labels = billCategories.map(c => c.name);
+  const expectedData = billCategories.map(c => expectedByMinor[c.id] || 0);
+  const actualData = billCategories.map(c => actualByMinor[c.id] || 0);
+
+  if (billsBarChart) {
+    billsBarChart.data.labels = labels;
+    billsBarChart.data.datasets[0].data = expectedData;
+    billsBarChart.data.datasets[1].data = actualData;
+    billsBarChart.update();
+  } else {
+    billsBarChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Expected',
+            data: expectedData,
+            backgroundColor: 'rgba(210, 159, 128, 0.2)',
+            borderColor: '#D29F80', // sand
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
+          },
+          {
+            label: 'Actual',
+            data: actualData,
+            backgroundColor: 'rgba(115, 85, 87, 0.2)',
+            borderColor: '#735557', // plum-soft
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) { return formatMoney(value); }
+            }
+          }
+        },
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: function(context) { return `${context.dataset.label}: ${formatMoney(context.parsed.y)}`; }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+/* =========================
+   Top: Stocks Value + TTM Dividends
+   ========================= */
+function refreshTopInvestmentMetrics() {
+  if (sumStocksValue) sumStocksValue.textContent = formatMoney(computeTotalStockValue());
+  if (sumDivTTM) sumDivTTM.textContent = formatMoney(computeTrailing12MDividendIncome());
+}
+
+/* =========================
+   Bills paid tracker (auto)
+   ========================= */
+function renderBillsPaidTracker(year, month) {
+  // Filter for bills that are actually due in the selected month.
+  const dueThisMonthBills = state.bills.filter(b => computeFirstDueInMonth(b, year, month) !== null);
+
+  const total = dueThisMonthBills.length;
+
+  let paid = 0;
+  for (const b of dueThisMonthBills) {
+    if (isBillPaidByTransactions(b, year, month)) paid += 1;
+  }
+
+  billsPaidSummary.textContent = total === 0 ? "0 / 0" : `${paid} / ${total}`;
+  const pct = total === 0 ? 0 : Math.round((paid / total) * 100);
+  billsPaidBar.style.width = `${pct}%`;
+  billsPaidBar.setAttribute("aria-valuenow", pct);
+}
+
+function isBillPaidByTransactions(bill, year, month) {
+  // Paid if there is any transaction in the selected month with the same minorCategoryId
+  return state.transactions.some(t =>
+    t.minorCategoryId === bill.minorCategoryId &&
+    isInMonth(t.date, year, month)
+  );
+}
+
+/* =========================
+   Bills categories + recurring bills
+   ========================= */
+function renderBillsCategories(expectedByMinor) {
+  const bills = state.minorCategories
+    .filter(c => c.majorKey === "bills")
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (!bills.length) {
+    billsCatTbody.innerHTML = `<tr><td colspan="3" class="text-muted">No bills categories yet.</td></tr>`;
     return;
   }
 
-  txTbody.innerHTML = list.map(t => {
-    const cat = getCategory(t.minorCategoryId);
-    const majorLabel = cat ? getMajorLabel(cat.majorKey) : "—";
-    const minorLabel = cat ? cat.name : "—";
+  billsCatTbody.innerHTML = bills.map(c => `
+    <tr>
+      <td>${escapeHtml(c.name)}</td>
+      <td class="text-end">${formatMoney(expectedByMinor[c.id] || 0)}</td>
+      <td>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" onclick="editBillsCategory('${c.id}')">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteBillsCategory('${c.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function upsertBillsCategory() {
+  const id = billsCategoryId.value?.trim();
+  const name = billsCategoryName.value.trim();
+  if (!name) return;
+
+  const dupe = state.minorCategories.find(c =>
+    c.majorKey === "bills" &&
+    c.name.toLowerCase() === name.toLowerCase() &&
+    c.id !== id
+  );
+  if (dupe) { showToast("That bills category already exists."); return; }
+
+  if (id) {
+    const c = state.minorCategories.find(x => x.id === id);
+    if (!c) return;
+    c.name = name;
+    c.manualExpectedMonthly = 0;
+    showToast("Bills category updated.");
+  } else {
+    state.minorCategories.push({
+      id: uid(),
+      majorKey: "bills",
+      name,
+      manualExpectedMonthly: 0,
+      createdAt: new Date().toISOString(),
+    });
+    showToast("Bills category added.");
+  }
+
+  saveState();
+  closeModal("modalBillsCategory");
+  billsCategoryForm.reset();
+  billsCategoryId.value = "";
+  billsCategoryModalTitle.textContent = "Add Bills Category";
+  refreshAll();
+}
+
+window.editBillsCategory = function (id) {
+  const c = state.minorCategories.find(x => x.id === id && x.majorKey === "bills");
+  if (!c) return;
+
+  billsCategoryId.value = c.id;
+  billsCategoryName.value = c.name;
+  billsCategoryModalTitle.textContent = "Edit Bills Category";
+  openModal("modalBillsCategory");
+};
+
+window.deleteBillsCategory = function (id) {
+  const c = state.minorCategories.find(x => x.id === id && x.majorKey === "bills");
+  if (!c) return;
+
+  const usedInTx = state.transactions.some(t => t.minorCategoryId === id);
+  const usedInBills = state.bills.some(b => b.minorCategoryId === id);
+  if (usedInTx || usedInBills) {
+    alert("Cannot delete: linked to transactions or recurring bills. Delete those first.");
+    return;
+  }
+
+  if (!confirm(`Delete bills category "${c.name}"?`)) return;
+  state.minorCategories = state.minorCategories.filter(x => x.id !== id);
+  saveState();
+  showToast("Bills category deleted.");
+  refreshAll();
+};
+
+/* FIXED: show ALL recurring bills, not only occurrences in month */
+function renderBills(year, month) {
+  const list = state.bills
+    .slice()
+    .sort((a, b) => {
+      const ca = getCategory(a.minorCategoryId)?.name || "";
+      const cb = getCategory(b.minorCategoryId)?.name || "";
+      return ca.localeCompare(cb);
+    });
+
+  if (!list.length) {
+    billsTbody.innerHTML = `<tr><td colspan="8" class="text-muted">No recurring bills added yet.</td></tr>`;
+    return;
+  }
+
+  // Precompute which bill minors have transactions this month
+  const paidMinors = new Set(
+    state.transactions
+      .filter(t => isInMonth(t.date, year, month))
+      .map(t => t.minorCategoryId)
+  );
+
+  billsTbody.innerHTML = list.map(b => {
+    const cat = getCategory(b.minorCategoryId);
+    const billLabel = cat ? cat.name : "—";
+
+    const monthlyEq = computeBillMonthlyEquivalent(b);
+    const dueThisMonth = computeFirstDueInMonth(b, year, month); // may be null
+    const paid = paidMinors.has(b.minorCategoryId);
 
     return `
       <tr>
-        <td>${escapeHtml(t.date)}</td>
-        <td>${escapeHtml(t.description || "")}</td>
-        <td>${escapeHtml(majorLabel)}</td>
-        <td>${escapeHtml(minorLabel)}</td>
-        <td class="text-end">${formatMoney(t.amount)}</td>
+        <td>${escapeHtml(billLabel)}</td>
+        <td class="text-end">${formatMoney(b.amount)}</td>
+        <td>${escapeHtml(capitalize(b.frequency))}</td>
+        <td>${escapeHtml(b.nextDueISO || "—")}</td>
+        <td>${escapeHtml(dueThisMonth || "—")}</td>
+        <td class="text-end">${formatMoney(monthlyEq)}</td>
         <td>
-          <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${t.id}')">Delete</button>
+          <span class="badge ${paid ? "text-bg-success" : "text-bg-secondary"}">
+            ${paid ? "Paid" : "Unpaid"}
+          </span>
+        </td>
+        <td>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="editBill('${b.id}')">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteBill('${b.id}')">Delete</button>
+          </div>
         </td>
       </tr>
     `;
   }).join("");
 }
 
-function renderGoals(expectedByMinor) {
-  if (!state.goals.length) {
-    goalsWrap.innerHTML = `<div class="text-muted">No goals yet. Add a savings goal to auto-populate expected sinking fund amounts.</div>`;
+function computeFirstDueInMonth(bill, year, month) {
+  if (!bill.nextDueISO) return null;
+  let d = new Date(bill.nextDueISO + "T00:00:00");
+  if (isNaN(d.getTime())) return null;
+
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0);
+  const endISO = toISODate(end);
+
+  // move forward until >= start
+  while (toISODate(d) < toISODate(start)) {
+    d = addByFrequency(d, bill.frequency);
+    if (d.getFullYear() > year + 10) return null;
+  }
+
+  const iso = toISODate(d);
+  if (iso >= toISODate(start) && iso <= endISO) return iso;
+  return null;
+}
+
+function toggleNewBillMinorInput() {
+  const show = billMinor.value === '--new--';
+  billNewMinorWrap.style.display = show ? 'block' : 'none';
+  if (show) {
+    billNewMinorName.focus();
+  }
+}
+
+function createNewBillCategory(name) {
+  const dupe = state.minorCategories.find(c => c.majorKey === "bills" && c.name.toLowerCase() === name.toLowerCase());
+  if (dupe) {
+    showToast("A bill category with that name already exists.");
+    return null;
+  }
+
+  const newCat = { id: uid(), majorKey: "bills", name, manualExpectedMonthly: 0, createdAt: new Date().toISOString() };
+  state.minorCategories.push(newCat);
+  showToast("New bill category created.");
+  return newCat.id;
+}
+
+function upsertBill() {
+  const id = billId.value?.trim();
+  let minorId = billMinor.value;
+
+  // Handle creation of new Bill Category on the fly
+  if (minorId === '--new--') {
+    const newName = billNewMinorName.value.trim();
+    if (!newName) {
+      showToast("Please enter a name for the new bill category.");
+      return;
+    }
+    const existing = state.minorCategories.find(c => c.majorKey === "bills" && c.name.toLowerCase() === newName.toLowerCase());
+    if (existing) {
+      minorId = existing.id;
+    } else {
+      const newId = createNewBillCategory(newName);
+      if (!newId) return;
+      minorId = newId;
+    }
+  }
+
+  const amount = safeNumber(billAmount.value);
+  const freq = billFreq.value;
+  const nextDue = billNextDue.value;
+  const useSinkingFund = billSinkingFund.checked;
+  const sinkingFundLink = (useSinkingFund && billSinkingFundWrap.style.display !== 'none') ? billSinkingFundMinor.value : null;
+
+  if (!minorId || !isFinite(amount) || amount <= 0 || !nextDue) return;
+
+  const cat = getCategory(minorId);
+  if (!cat || cat.majorKey !== "bills") {
+    alert("Bill must be linked to a Bills minor category.");
     return;
   }
 
-  // For progress, we compute:
-  // - all-time saved in the linked category (sum of all transactions in that category)
-  // - selected-month saved in that category
-  const sel = getSelectedMonth();
-  const actualAllTimeByMinor = computeActualByMinor(null, null); // no filter
-  const actualMonthByMinor = computeActualByMinor(sel.year, sel.month);
+  const derivedName = cat.name;
 
-  goalsWrap.innerHTML = state.goals
-    .slice()
-    .sort((a, b) => (a.deadlineISO || "").localeCompare(b.deadlineISO || ""))
-    .map(g => {
-      const cat = getCategory(g.minorCategoryId);
-      const savedAll = actualAllTimeByMinor[g.minorCategoryId] || 0;
-      const savedMonth = actualMonthByMinor[g.minorCategoryId] || 0;
-
-      const pct = g.totalAmount > 0 ? Math.min(100, (savedAll / g.totalAmount) * 100) : 0;
-
-      const monthlyReq = computeGoalMonthlyRequired(g);
-      const expForCat = expectedByMinor[g.minorCategoryId] || 0;
-
-      return `
-        <div class="col-lg-6">
-          <div class="card card-goal shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start gap-2">
-                <div>
-                  <div class="fw-semibold">${escapeHtml(g.name)}</div>
-                  <div class="small-muted">
-                    Category: <b>${escapeHtml(cat ? cat.name : "—")}</b>
-                  </div>
-                </div>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteGoal('${g.id}')">Delete</button>
-              </div>
-
-              <div class="mt-3">
-                <div class="d-flex justify-content-between small">
-                  <span>Progress (all time)</span>
-                  <span>${formatMoney(savedAll)} / ${formatMoney(g.totalAmount)} (${pct.toFixed(1)}%)</span>
-                </div>
-                <div class="progress mt-1">
-                  <div class="progress-bar" role="progressbar" style="width:${pct}%"></div>
-                </div>
-              </div>
-
-              <div class="mt-3 row g-2">
-                <div class="col-6">
-                  <div class="small text-muted">Monthly required</div>
-                  <div class="fw-semibold">${formatMoney(monthlyReq)}</div>
-                </div>
-                <div class="col-6">
-                  <div class="small text-muted">Saved this month</div>
-                  <div class="fw-semibold">${formatMoney(savedMonth)}</div>
-                </div>
-                <div class="col-12">
-                  <div class="small text-muted">Expected this month (category total incl. goals/bills/manual)</div>
-                  <div class="fw-semibold">${formatMoney(expForCat)}</div>
-                </div>
-                <div class="col-12 small text-muted">
-                  Deadline: ${g.deadlineISO ? escapeHtml(g.deadlineISO) : "—"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
-}
-
-function renderBills() {
-  const rows = state.bills
-    .slice()
-    .sort((a, b) => (a.nextDueISO || "").localeCompare(b.nextDueISO || ""))
-    .map(b => {
-      const cat = getCategory(b.minorCategoryId);
-      const monthlyEq = computeBillMonthlyEquivalent(b);
-      return `
-        <tr>
-          <td>${escapeHtml(b.name)}</td>
-          <td>${escapeHtml(cat ? cat.name : "—")}</td>
-          <td class="text-end">${formatMoney(b.amount)}</td>
-          <td>${escapeHtml(capitalize(b.frequency))}</td>
-          <td>${escapeHtml(b.nextDueISO)}</td>
-          <td class="text-end">${formatMoney(monthlyEq)}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteBill('${b.id}')">Delete</button>
-          </td>
-        </tr>
-      `;
+  if (id) {
+    const b = state.bills.find(x => x.id === id);
+    if (!b) return;
+    b.name = derivedName;
+    b.minorCategoryId = minorId;
+    b.amount = amount;
+    b.frequency = freq;
+    b.nextDueISO = nextDue;
+    b.sinkingFundLink = sinkingFundLink;
+    showToast("Bill updated.");
+  } else {
+    state.bills.push({
+      id: uid(),
+      name: derivedName,
+      minorCategoryId: minorId,
+      amount,
+      frequency: freq,
+      nextDueISO: nextDue,
+      sinkingFundLink: sinkingFundLink,
+      createdAt: new Date().toISOString(),
     });
+    showToast("Bill added.");
+  }
 
-  billsTbody.innerHTML = rows.join("") || `<tr><td colspan="7" class="text-muted">No recurring bills yet.</td></tr>`;
+  saveState();
+  closeModal("modalBill");
+  billForm.reset();
+  billId.value = "";
+  billModalTitle.textContent = "Add Recurring Bill";
+  refreshAll();
 }
 
-function renderCategories() {
+window.editBill = function (id) {
+  const b = state.bills.find(x => x.id === id);
+  if (!b) return;
+
+  billId.value = b.id;
+  billMinor.value = b.minorCategoryId;
+  billAmount.value = String(b.amount);
+  billFreq.value = b.frequency;
+  billNextDue.value = b.nextDueISO;
+
+  // Must call this first to ensure wrap is visible for correct frequencies
+  toggleBillSinkingFundWrap();
+
+  if (b.sinkingFundLink && billSinkingFundWrap.style.display !== 'none') {
+    billSinkingFund.checked = true;
+    billSinkingFundSelectWrap.style.display = "block";
+    billSinkingFundMinor.value = b.sinkingFundLink;
+  } else {
+    billSinkingFund.checked = false;
+    billSinkingFundSelectWrap.style.display = "none";
+  }
+
+  billModalTitle.textContent = "Edit Recurring Bill";
+  openModal("modalBill");
+};
+
+function deleteBill(id) {
+  const b = state.bills.find(x => x.id === id);
+  if (!b) return;
+  showConfirmationModal("Delete this recurring bill?", () => {
+    state.bills = state.bills.filter(x => x.id !== id);
+    saveState();
+    showToast("Bill deleted.");
+    refreshAll();
+  });
+}
+
+function handleBillModalOpen() {
+  if (!billId.value) {
+    billModalTitle.textContent = "Add Recurring Bill";
+    // Reset sinking fund section for new bills
+    billSinkingFund.checked = false;
+    billSinkingFundSelectWrap.style.display = "none";
+  }
+
+  // Reset new category input
+  billNewMinorWrap.style.display = 'none';
+  billNewMinorName.value = '';
+
+  // Populate bills dropdown
+  const bills = state.minorCategories
+    .filter(c => c.majorKey === "bills")
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const options = bills.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  const addNewOption = `<option value="--new--">-- Add New Bill Category --</option>`;
+  const currentVal = billMinor.value; // Preserve value if editing
+  billMinor.innerHTML = addNewOption + options;
+  if (billId.value && bills.some(c => c.id === currentVal)) {
+    billMinor.value = currentVal;
+  }
+
+  // Create a map of sinking fund category ID -> goal name
+  const goalMap = new Map();
+  state.goals.forEach(g => {
+    goalMap.set(g.minorCategoryId, g.name);
+  });
+
+  // Populate sinking funds dropdown
+  const sinkingFunds = state.minorCategories
+    .filter(c => c.majorKey === "sinking")
+    .sort((a, b) => a.name.localeCompare(b.name));
+  billSinkingFundMinor.innerHTML = sinkingFunds.map(c => {
+    const goalName = goalMap.get(c.id);
+    const optionText = goalName
+      ? `${escapeHtml(c.name)} (Goal: ${escapeHtml(goalName)})`
+      : escapeHtml(c.name);
+    return `<option value="${c.id}">${optionText}</option>`;
+  }).join("");
+
+  // Show/hide based on frequency (must be after form is populated for 'edit')
+  toggleBillSinkingFundWrap();
+  toggleNewBillMinorInput();
+}
+
+function toggleBillSinkingFundWrap() {
+  const freq = billFreq.value;
+  const show = freq === 'quarterly' || freq === 'yearly';
+  billSinkingFundWrap.style.display = show ? "block" : "none";
+  if (!show) { // If hiding, also reset the inputs
+    billSinkingFund.checked = false;
+    billSinkingFundSelectWrap.style.display = "none";
+  }
+}
+
+function addByFrequency(dateObj, freq) {
+  const d = new Date(dateObj.getTime());
+  switch (freq) {
+    case "weekly": d.setDate(d.getDate() + 7); return d;
+    case "biweekly": d.setDate(d.getDate() + 14); return d;
+    case "monthly": return addMonths(d, 1);
+    case "quarterly": return addMonths(d, 3);
+    case "yearly": return addYears(d, 1);
+    default: return addMonths(d, 1);
+  }
+}
+
+function addMonths(dateObj, months) {
+  const d = new Date(dateObj.getTime());
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + months);
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, last));
+  return d;
+}
+
+function addYears(dateObj, years) {
+  const d = new Date(dateObj.getTime());
+  const month = d.getMonth();
+  const day = d.getDate();
+  d.setFullYear(d.getFullYear() + years, month, 1);
+  const last = new Date(d.getFullYear(), month + 1, 0).getDate();
+  d.setDate(Math.min(day, last));
+  return d;
+}
+
+/* =========================
+   General categories list
+   ========================= */
+function renderGeneralCategories() {
   const rows = state.minorCategories
+    .filter(c => c.majorKey !== "bills" &&
+                 c.majorKey !== "sinking" &&
+                 c.majorKey !== "transfer")
     .slice()
     .sort((a, b) => (a.majorKey + a.name).localeCompare(b.majorKey + b.name))
     .map(c => `
@@ -434,35 +919,37 @@ function renderCategories() {
         <td class="text-end">${formatMoney(c.manualExpectedMonthly || 0)}</td>
         <td>
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" onclick="editCategory('${c.id}')">Edit</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="editGeneralCategory('${c.id}')">Edit</button>
             <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${c.id}')">Delete</button>
           </div>
         </td>
       </tr>
     `);
 
-  catTbody.innerHTML = rows.join("") || `<tr><td colspan="4" class="text-muted">No minor categories yet.</td></tr>`;
+  catTbody.innerHTML = rows.join("") || `<tr><td colspan="4" class="text-muted">No general categories yet.</td></tr>`;
 }
 
-// ---------- Actions ----------
-function upsertMinorCategory() {
+/* =========================
+   CRUD: General categories
+   ========================= */
+function upsertGeneralMinorCategory() {
   const id = categoryId.value?.trim();
   const majorKey = categoryMajor.value;
   const name = categoryName.value.trim();
   const expected = safeNumber(categoryExpected.value);
-
   if (!name) return;
 
-  // Prevent duplicate minor name under same major (soft rule)
+  if (majorKey === "bills" || majorKey === "sinking") {
+    showToast("Bills and Sinking Funds must be managed in their tabs.");
+    return;
+  }
+
   const dupe = state.minorCategories.find(c =>
     c.majorKey === majorKey &&
     c.name.toLowerCase() === name.toLowerCase() &&
     c.id !== id
   );
-  if (dupe) {
-    showToast("That minor category already exists under this major.");
-    return;
-  }
+  if (dupe) { showToast("That category already exists."); return; }
 
   if (id) {
     const c = state.minorCategories.find(x => x.id === id);
@@ -490,17 +977,20 @@ function upsertMinorCategory() {
   refreshAll();
 }
 
-window.editCategory = function (id) {
+window.editGeneralCategory = function (id) {
   const c = state.minorCategories.find(x => x.id === id);
   if (!c) return;
+
+  if (c.majorKey === "bills" || c.majorKey === "sinking") {
+    showToast("Manage this category in its dedicated tab.");
+    return;
+  }
 
   categoryId.value = c.id;
   categoryMajor.value = c.majorKey;
   categoryName.value = c.name;
   categoryExpected.value = String(c.manualExpectedMonthly || 0);
-
   categoryModalTitle.textContent = "Edit Minor Category";
-
   openModal("modalCategory");
 };
 
@@ -508,180 +998,113 @@ window.deleteCategory = function (id) {
   const c = state.minorCategories.find(x => x.id === id);
   if (!c) return;
 
+  if (c.majorKey === "bills") return window.deleteBillsCategory(id);
+  if (c.majorKey === "sinking") return window.deleteSinkingCategory(id);
+
   const usedInTx = state.transactions.some(t => t.minorCategoryId === id);
   const usedInGoals = state.goals.some(g => g.minorCategoryId === id);
   const usedInBills = state.bills.some(b => b.minorCategoryId === id);
 
   if (usedInTx || usedInGoals || usedInBills) {
-    alert("Cannot delete: this category is linked to transactions/goals/bills. Delete those first.");
+    alert("Cannot delete: linked to transactions/goals/bills. Delete those first.");
     return;
   }
 
-  if (!confirm(`Delete category "${c.name}"?`)) return;
-  state.minorCategories = state.minorCategories.filter(x => x.id !== id);
-  saveState();
-  showToast("Category deleted.");
-  refreshAll();
+  showConfirmationModal(`Delete category "${c.name}"?`, () => {
+    state.minorCategories = state.minorCategories.filter(x => x.id !== id);
+    saveState();
+    showToast("Category deleted.");
+    refreshAll();
+  });
 };
 
-function addTransaction() {
-  const date = txDate.value;
-  const minorId = txMinor.value;
-  const amount = safeNumber(txAmount.value);
-  const desc = txDesc.value.trim();
+/* =========================
+   Transfers
+   ========================= */
+function upsertTransfer() {
+  const date = transferDate.value;
+  const fromId = transferFromAccount.value;
+  const toId = transferToAccount.value;
+  const amount = safeNumber(transferAmount.value);
+  const desc = transferDescription.value.trim();
 
-  if (!date || !minorId || !isFinite(amount)) return;
+  if (!date || !fromId || !toId || !isFinite(amount) || amount <= 0) {
+    showToast("Please fill all required transfer fields.");
+    return;
+  }
 
+  if (fromId === toId) {
+    showToast("From and To accounts cannot be the same.");
+    return;
+  }
+
+  const transferCat = getTransferCategory();
+  if (!transferCat) {
+    alert("Error: Internal Transfer category not found. Please reload.");
+    return;
+  }
+
+  const fromAcc = state.accounts.find(a => a.id === fromId);
+  const toAcc = state.accounts.find(a => a.id === toId);
+  if (!fromAcc || !toAcc) {
+    alert("Error: Account not found.");
+    return;
+  }
+
+  const transferId = uid();
+
+  // Outflow from source
   state.transactions.push({
-    id: uid(),
-    date,
-    minorCategoryId: minorId,
-    amount,
-    description: desc,
+    id: uid(), transferId, accountId: fromId, minorCategoryId: transferCat.id,
+    date, amount, transferType: 'out',
+    description: desc ? `${desc} (to ${toAcc.name})` : `Transfer to ${toAcc.name}`,
+    createdAt: new Date().toISOString(),
+  });
+
+  // Inflow to destination
+  state.transactions.push({
+    id: uid(), transferId, accountId: toId, minorCategoryId: transferCat.id,
+    date, amount, transferType: 'in',
+    description: desc ? `${desc} (from ${fromAcc.name})` : `Transfer from ${fromAcc.name}`,
     createdAt: new Date().toISOString(),
   });
 
   saveState();
-  showToast("Transaction added.");
-  closeModal("modalTransaction");
-  txForm.reset();
+  showToast("Transfer recorded.");
+  closeModal("modalTransfer");
   refreshAll();
 }
 
-window.deleteTransaction = function (id) {
-  const t = state.transactions.find(x => x.id === id);
-  if (!t) return;
-  if (!confirm("Delete this transaction?")) return;
-
-  state.transactions = state.transactions.filter(x => x.id !== id);
-  saveState();
-  showToast("Transaction deleted.");
-  refreshAll();
-};
-
-function addGoal() {
-  if (!state.minorCategories.some(c => c.majorKey === "sinking")) {
-    alert("Create a Sinking Fund minor category first.");
-    return;
+function updateTransferToOptions() {
+  const fromId = transferFromAccount.value;
+  for (const option of transferToAccount.options) {
+    option.disabled = (option.value === fromId);
   }
-
-  const name = goalName.value.trim();
-  const minorId = goalMinor.value;
-  const total = safeNumber(goalTotal.value);
-
-  const dateISO = goalDeadlineDate.value || "";
-  const durationMonths = goalDurationMonths.value ? clampInt(goalDurationMonths.value, 1, 600, 12) : null;
-
-  if (!name || !minorId || !isFinite(total) || total <= 0) return;
-
-  const cat = getCategory(minorId);
-  if (!cat || cat.majorKey !== "sinking") {
-    alert("Goal must be linked to a Sinking Fund minor category.");
-    return;
+  // If the current 'to' is now disabled, find a new one
+  if (transferToAccount.options[transferToAccount.selectedIndex]?.disabled) {
+    const firstAvailable = Array.from(transferToAccount.options).find(opt => !opt.disabled);
+    if (firstAvailable) {
+      transferToAccount.value = firstAvailable.value;
+    }
   }
-
-  let deadlineISO = "";
-  if (dateISO) {
-    deadlineISO = dateISO;
-  } else if (durationMonths) {
-    const now = new Date();
-    const d = new Date(now.getFullYear(), now.getMonth() + durationMonths, now.getDate());
-    deadlineISO = toISODate(d);
-  } else {
-    alert("Provide a deadline date or duration (months).");
-    return;
-  }
-
-  state.goals.push({
-    id: uid(),
-    name,
-    minorCategoryId: minorId,
-    totalAmount: total,
-    deadlineISO,
-    createdAt: new Date().toISOString(),
-  });
-
-  saveState();
-  showToast("Goal added.");
-  closeModal("modalGoal");
-  goalForm.reset();
-  refreshAll();
 }
 
-window.deleteGoal = function (id) {
-  const g = state.goals.find(x => x.id === id);
-  if (!g) return;
-  if (!confirm(`Delete goal "${g.name}"?`)) return;
-
-  state.goals = state.goals.filter(x => x.id !== id);
-  saveState();
-  showToast("Goal deleted.");
-  refreshAll();
-};
-
-function addBill() {
-  if (!state.minorCategories.some(c => c.majorKey === "bills")) {
-    alert("Create a Bills minor category first.");
-    return;
-  }
-
-  const name = billName.value.trim();
-  const minorId = billMinor.value;
-  const amount = safeNumber(billAmount.value);
-  const freq = billFreq.value;
-  const nextDue = billNextDue.value;
-
-  if (!name || !minorId || !isFinite(amount) || amount <= 0 || !nextDue) return;
-
-  const cat = getCategory(minorId);
-  if (!cat || cat.majorKey !== "bills") {
-    alert("Bill must be linked to a Bills minor category.");
-    return;
-  }
-
-  state.bills.push({
-    id: uid(),
-    name,
-    minorCategoryId: minorId,
-    amount,
-    frequency: freq,
-    nextDueISO: nextDue,
-    createdAt: new Date().toISOString(),
-  });
-
-  saveState();
-  showToast("Bill added.");
-  closeModal("modalBill");
-  billForm.reset();
-  refreshAll();
-}
-
-window.deleteBill = function (id) {
-  const b = state.bills.find(x => x.id === id);
-  if (!b) return;
-  if (!confirm(`Delete bill "${b.name}"?`)) return;
-
-  state.bills = state.bills.filter(x => x.id !== id);
-  saveState();
-  showToast("Bill deleted.");
-  refreshAll();
-};
-
-// ---------- Core calculations ----------
+/* =========================
+   Expected/Actual calculations
+   ========================= */
 function computeExpectedByMinor() {
-  // Start with manual expected
   const expected = {};
   for (const c of state.minorCategories) {
-    expected[c.id] = safeNumber(c.manualExpectedMonthly || 0);
+    expected[c.id] = (c.majorKey === "bills" || c.majorKey === "sinking")
+      ? 0
+      : safeNumber(c.manualExpectedMonthly || 0);
   }
 
-  // Add goal monthly requirements to their linked sinking fund category
   for (const g of state.goals) {
     const monthly = computeGoalMonthlyRequired(g);
     expected[g.minorCategoryId] = (expected[g.minorCategoryId] || 0) + monthly;
   }
 
-  // Add bill monthly equivalents to their linked bills category
   for (const b of state.bills) {
     const monthlyEq = computeBillMonthlyEquivalent(b);
     expected[b.minorCategoryId] = (expected[b.minorCategoryId] || 0) + monthlyEq;
@@ -691,10 +1114,13 @@ function computeExpectedByMinor() {
 }
 
 function computeGoalMonthlyRequired(goal) {
-  // Required monthly = total / monthsRemaining (>=1)
-  // NOTE: This is a simple planner. If you want "remaining amount = total - savedAllTime", swap in savedAllTime here.
   const total = safeNumber(goal.totalAmount);
   if (total <= 0) return 0;
+
+  const saved = computeSinkingFundBalance(goal.minorCategoryId);
+  if (saved >= total) return 0;
+
+  const remaining = total - saved;
 
   const now = new Date();
   const deadline = goal.deadlineISO ? new Date(goal.deadlineISO + "T00:00:00") : null;
@@ -703,7 +1129,7 @@ function computeGoalMonthlyRequired(goal) {
   let months = monthsBetweenInclusive(now, deadline);
   months = Math.max(1, months);
 
-  return total / months;
+  return remaining / months;
 }
 
 function computeBillMonthlyEquivalent(bill) {
@@ -713,7 +1139,6 @@ function computeBillMonthlyEquivalent(bill) {
 }
 
 function computeActualByMinor(year, month) {
-  // if year/month are null, compute all-time totals
   const totals = {};
   for (const t of state.transactions) {
     if (year != null && month != null) {
@@ -724,130 +1149,22 @@ function computeActualByMinor(year, month) {
   return totals;
 }
 
-// ---------- Helpers ----------
-function getSelectedMonth() {
-  const year = clampInt(yearInput.value, 2000, 2100, new Date().getFullYear());
-  const month = clampInt(monthSelect.value, 0, 11, new Date().getMonth());
-  return { year, month };
-}
-
-function getMajorLabel(key) {
-  return MAJOR_CATEGORIES.find(m => m.key === key)?.label || key;
-}
-
-function getCategory(id) {
-  return state.minorCategories.find(c => c.id === id) || null;
-}
-
-function isInMonth(isoDate, year, month) {
-  // isoDate "YYYY-MM-DD"
-  if (!isoDate) return false;
-  const [y, m] = isoDate.split("-").map(n => parseInt(n, 10));
-  return y === year && (m - 1) === month;
-}
-
-function monthsBetweenInclusive(startDate, endDate) {
-  // inclusive month count (rough planning): from current month to deadline month
-  const sY = startDate.getFullYear(), sM = startDate.getMonth();
-  const eY = endDate.getFullYear(), eM = endDate.getMonth();
-  return (eY - sY) * 12 + (eM - sM) + 1;
-}
-
-function uid() {
-  return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
-}
-
-function safeNumber(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
-
-function clampInt(v, min, max, fallback) {
-  const n = parseInt(v, 10);
-  if (!Number.isFinite(n)) return fallback;
-  return Math.max(min, Math.min(max, n));
-}
-
-function formatMoney(n) {
-  const x = Number.isFinite(n) ? n : 0;
-  return x.toLocaleString(undefined, { style: "currency", currency: "USD" });
-}
-
-function capitalize(s) {
-  return (s || "").slice(0,1).toUpperCase() + (s || "").slice(1);
-}
-
-function toISODate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function escapeHtml(str) {
-  return (str ?? "").toString()
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function showToast(msg) {
-  if (!toast) return;
-  toastBody.textContent = msg;
-  toast.show();
-}
-
-function openModal(id) {
-  const el = document.getElementById(id);
-  const m = bootstrap.Modal.getOrCreateInstance(el);
-  m.show();
-}
-
-function closeModal(id) {
-  const el = document.getElementById(id);
-  const m = bootstrap.Modal.getInstance(el);
-  if (m) m.hide();
-}
-
-// ---------- Storage ----------
-function defaultState() {
-  return {
-    ui: { selectedYear: null, selectedMonth: null },
-    minorCategories: [],
-    transactions: [],
-    goals: [],
-    bills: [],
-    meta: { createdAt: new Date().toISOString() }
-  };
-}
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-
-    // Basic shape hardening
-    return {
-      ui: parsed.ui || { selectedYear: null, selectedMonth: null },
-      minorCategories: Array.isArray(parsed.minorCategories) ? parsed.minorCategories : [],
-      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
-      goals: Array.isArray(parsed.goals) ? parsed.goals : [],
-      bills: Array.isArray(parsed.bills) ? parsed.bills : [],
-      meta: parsed.meta || { createdAt: new Date().toISOString() }
-    };
-  } catch {
-    return defaultState();
+/* =========================
+   Averages
+   ========================= */
+function computeActualByMinorForRange(startISO, endISO) {
+  const totals = {};
+  for (const t of state.transactions) {
+    if (isInRange(t.date, startISO, endISO)) {
+      totals[t.minorCategoryId] = (totals[t.minorCategoryId] || 0) + safeNumber(t.amount);
+    }
   }
+  return totals;
 }
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-// ---------- Export/Import ----------
+/* =========================
+   Export/Import
+   ========================= */
 function exportJSON() {
   const data = JSON.stringify(state, null, 2);
   const blob = new Blob([data], { type: "application/json" });
@@ -872,16 +1189,34 @@ function importJSON(e) {
   reader.onload = () => {
     try {
       const parsed = JSON.parse(reader.result);
-      // minimal validation
       if (!parsed || typeof parsed !== "object") throw new Error("Invalid");
+
+      const merged = defaultState();
       state = {
-        ui: parsed.ui || state.ui,
+        ...merged,
+        ...parsed,
+        pensionRates: (parsed.pensionRates && typeof parsed.pensionRates === "object") ? parsed.pensionRates : {},
+        otherAssets: Array.isArray(parsed.otherAssets) ? parsed.otherAssets : [],
+        rentals: Array.isArray(parsed.rentals) ? parsed.rentals : [],
+        rentalIncome: (parsed.rentalIncome && typeof parsed.rentalIncome === "object") ? parsed.rentalIncome : {},
+        debts: Array.isArray(parsed.debts) ? parsed.debts : [],
+        fire: parsed.fire || merged.fire,
+        ui: { ...merged.ui, ...(parsed.ui || {}) },
         minorCategories: Array.isArray(parsed.minorCategories) ? parsed.minorCategories : [],
         transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
         goals: Array.isArray(parsed.goals) ? parsed.goals : [],
         bills: Array.isArray(parsed.bills) ? parsed.bills : [],
-        meta: parsed.meta || { createdAt: new Date().toISOString() }
+        billPayments: Array.isArray(parsed.billPayments) ? parsed.billPayments : [],
+        stocksMaster: Array.isArray(parsed.stocksMaster) ? parsed.stocksMaster : [],
+        holdings: Array.isArray(parsed.holdings) ? parsed.holdings : [],
+        dividends: (parsed.dividends && typeof parsed.dividends === "object") ? parsed.dividends : {},
+        stockPlan: (parsed.stockPlan && typeof parsed.stockPlan === "object") ? parsed.stockPlan : {},
+        savedDescriptions: Array.isArray(parsed.savedDescriptions) ? parsed.savedDescriptions : [],
       };
+      state.rentals.forEach(r => {
+        if (!Array.isArray(r.expenses)) r.expenses = [];
+      });
+
       saveState();
       showToast("Imported JSON.");
       refreshAll();
@@ -894,7 +1229,9 @@ function importJSON(e) {
   reader.readAsText(file);
 }
 
-// ---------- Seed data (optional, just for better first-run UX) ----------
+/* =========================
+   Seed
+   ========================= */
 function seedStarterCategories() {
   const starter = [
     { majorKey: "income", name: "Salary", manualExpectedMonthly: 0 },
@@ -908,7 +1245,27 @@ function seedStarterCategories() {
     id: uid(),
     majorKey: s.majorKey,
     name: s.name,
-    manualExpectedMonthly: s.manualExpectedMonthly,
+    manualExpectedMonthly: (s.majorKey === "bills" || s.majorKey === "sinking") ? 0 : s.manualExpectedMonthly,
     createdAt: new Date().toISOString(),
   }));
 }
+
+function computeSinkingFundBalance(minorId) {
+  const cat = state.minorCategories.find(c => c.id === minorId);
+  let balance = cat?.initialBalance || 0;
+
+  for (const t of state.transactions) {
+    const amt = safeNumber(t.amount);
+    // Add contributions (direct transactions to the sinking fund)
+    if (t.minorCategoryId === minorId) {
+      balance += amt;
+    }
+    // Subtract usage (transactions linked to this sinking fund)
+    if (t.sinkingFundId === minorId) {
+      balance -= amt;
+    }
+  }
+  return balance;
+}
+
+init();
