@@ -256,6 +256,11 @@ function refreshAll() {
     const mName = monthSelect.options[sel.month]?.text || MONTHS[sel.month];
     displayMonthYear.textContent = `${mName} ${sel.year}`;
   }
+  const budgetMonthYear = document.getElementById('budgetMonthYear');
+  if (budgetMonthYear) {
+    const mName = monthSelect.options[sel.month]?.text || MONTHS[sel.month];
+    budgetMonthYear.textContent = `${mName} ${sel.year}`;
+  }
   
   // Update pension input for selected month
   if (!state.pensionRates) state.pensionRates = {};
