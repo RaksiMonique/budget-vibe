@@ -145,7 +145,7 @@
                 </div>
     
                 <div class="small text-muted mt-3">
-                  Actual totals are calculated from transactions for the selected month.
+                  <strong>Note:</strong> Totals in this section are automatically calculated from the transactions you log for the selected month and year.
                 </div>
     
                 <hr class="my-3">
@@ -199,7 +199,7 @@
                         <div class="metric metric-stocks">
                           <div class="metric-label">Investment Rate</div>
                           <div id="metricInvestRate" class="metric-value">—</div>
-                          <div class="small opacity-75 mt-1">Invest + Pension</div>
+                          <div class="small opacity-75 mt-1">Investments + Pension %</div>
                         </div>
                       </div>
     
@@ -249,7 +249,8 @@
                 </div>
     
                 <div class="small text-muted mt-3">
-                  Net = Income − Expenses
+                  <p class="mb-1"><strong>Net</strong> = Total Income − Total Expenses.</p>
+                  <p class="mb-0"><strong>Investment Rate</strong> includes your monthly Investment transactions plus the manual Pension % entered on the left.</p>
                 </div>
               </div>
             </div>
@@ -264,7 +265,9 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
               <div>
                 <h5 class="mb-0">Budget (Expected vs Actual)</h5>
-                <div class="small text-muted">Expected = manual expected + auto-goals + auto-bills.</div>
+                <div class="small text-muted">
+                  <strong>Expected:</strong> Your plan (Manual inputs + Goals + Bills). <strong>Actual:</strong> Sum of transactions. <strong>Variance:</strong> Difference between the two.
+                </div>
               </div>
               <button id="btnRecalc" class="btn btn-sm btn-secondary">Recalculate</button>
             </div>
@@ -365,7 +368,10 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
           <div>
             <h5 class="mb-0">Sinking (Savings)</h5>
-            <div class="small text-muted">Create sinking fund categories and link savings goals to them.</div>
+            <div class="small text-muted">
+              <strong>Sinking Funds</strong> are used to set aside money for specific future costs (e.g., Car Maintenance). 
+              Create a goal below, and the budget will automatically calculate the monthly amount needed to reach your target by the deadline.
+            </div>
           </div>
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Savings Goal</button>
@@ -694,6 +700,16 @@
 
           <!-- Stock Purchase Plan Sub-pane -->
           <div class="tab-pane fade" id="subpane-stock-plan" role="tabpanel">
+            <div class="alert alert-info border-0 shadow-sm mb-4">
+              <h6 class="fw-bold"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>How the Purchase Plan works:</h6>
+              <div class="small">
+                <p class="mb-2">This tool helps you decide which stocks to buy next based on your strategy:</p>
+                <ul class="mb-0">
+                  <li><strong>Dividend Plan:</strong> Recommends shares based on TTM Yield. Formula: <code>(Yield * 100) / (Price * Multiplier)</code>.</li>
+                  <li><strong>Ratio Plan:</strong> Recommends shares based on your target portfolio percentages. Formula: <code>(Target Total Value * Target %) / Current Price</code>.</li>
+                </ul>
+              </div>
+            </div>
             <div id="stockPlanContainer"></div>
           </div>
 
@@ -861,7 +877,7 @@
                 <div class="card shadow-soft mb-3">
                   <div class="card-body">
                     <h6 class="mb-2">Step 1: Add Your Debts</h6>
-                    <div class="small text-muted mb-3">List all debts you want to pay off, from smallest balance to largest.</div>
+                    <div class="small text-muted mb-3">The <strong>Snowball Method</strong> focuses on paying off debts from smallest balance to largest. This creates "quick wins" that help you stay motivated.</div>
                     <div class="d-grid">
                       <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalDebt">Add a Debt</button>
                     </div>
@@ -894,7 +910,7 @@
                         <span class="input-group-text">$</span>
                         <input id="totalDebtPayment" type="number" step="10" class="form-control" placeholder="e.g., 800">
                       </div>
-                      <div class="form-text">Enter the total amount you can pay towards all debts each month. This must be at least the sum of your minimum payments.</div>
+                      <div class="form-text">This must be at least the sum of all your minimum payments. Any extra is "snowballed" into the smallest debt.</div>
                     </div>
                     <button id="btnGenerateDebtPlan" class="btn btn-success">Generate Payoff Plan</button>
                   </div>
@@ -948,7 +964,8 @@
           </table>
         </div>
         <div class="small text-muted mt-2">
-          Note: A negative balance on a Credit Card account represents money you owe. Paying the card will move the balance closer to zero.
+          <p class="mb-1"><strong>Current Balance</strong> = Initial Balance + all recorded Inflows - all recorded Outflows.</p>
+          <p class="mb-0">Note: A negative balance on a Credit Card represents debt. Paying the card moves the balance toward zero.</p>
         </div>
       </div>
 
