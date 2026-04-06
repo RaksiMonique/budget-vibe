@@ -117,6 +117,9 @@ function init() {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: state.ui.currency }).format(val);
   };
 
+  // Force light theme and ignore saved preferences while feature is disabled
+  document.documentElement.setAttribute("data-theme", "light");
+
   wireEvents();
   refreshAll();
 }
