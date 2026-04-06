@@ -1495,21 +1495,6 @@
           </div>
 
           <div class="mb-3">
-            <label id="txAccountLabel" class="form-label">Account</label>
-            <select id="txAccount" class="form-select" required></select>
-            <div class="form-text">Current Balance: <span id="txAccountBalance" class="fw-bold">--</span></div>
-          </div>
-
-          <!-- New account input -->
-          <div id="txNewAccountWrap" class="mb-3 p-3 rounded" style="display: none; background-color: var(--bg-soft);">
-            <label class="form-label small fw-bold">New Account Name</label>
-            <div class="input-group input-group-sm">
-              <input id="txNewAccountName" type="text" class="form-control" placeholder="e.g., New Credit Card">
-              <button id="btnSaveNewTxAccount" class="btn btn-outline-primary" type="button">Save</button>
-            </div>
-          </div>
-
-          <div class="mb-3">
             <label class="form-label">Major Category</label>
             <select id="txMajor" class="form-select" required></select>
           </div>
@@ -1533,6 +1518,21 @@
             <label class="form-label">Description</label>
             <input id="txDesc" class="form-control" maxlength="80" placeholder="e.g., Paycheck / Supermarket / Electricity" list="txDescList">
             <datalist id="txDescList"></datalist>
+          </div>
+
+          <div class="mb-3">
+            <label id="txAccountLabel" class="form-label">Account</label>
+            <select id="txAccount" class="form-select" required></select>
+            <div class="form-text">Current Balance: <span id="txAccountBalance" class="fw-bold">--</span></div>
+          </div>
+
+          <!-- New account input -->
+          <div id="txNewAccountWrap" class="mb-3 p-3 rounded" style="display: none; background-color: var(--bg-soft);">
+            <label class="form-label small fw-bold">New Account Name</label>
+            <div class="input-group input-group-sm">
+              <input id="txNewAccountName" type="text" class="form-control" placeholder="e.g., New Credit Card">
+              <button id="btnSaveNewTxAccount" class="btn btn-outline-primary" type="button">Save</button>
+            </div>
           </div>
 
           <div class="mb-2">
