@@ -121,7 +121,12 @@
                 </div>
     
                 <div class="mt-3">
-                  <label class="form-label small text-muted mb-1">Pension Contribution (%)</label>
+                  <label class="form-label small text-muted mb-1">
+                    Pension Contribution (%)
+                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="Your monthly workplace pension contribution percentage. This is added to your investment rate calculation.">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                    </span>
+                  </label>
                   <div class="input-group">
                     <input id="pensionInput" type="number" class="form-control" placeholder="0" min="0" max="100" step="0.1">
                     <span class="input-group-text">%</span>
@@ -905,7 +910,12 @@
                   <div class="card-body">
                     <h6 class="mb-2">Step 2: Create Your Plan</h6>
                     <div class="mb-3">
-                      <label class="form-label">Total Monthly Debt Payment</label>
+                      <label class="form-label">
+                        Total Monthly Debt Payment
+                        <span data-bs-toggle="tooltip" title="The total amount you can afford to pay across all debts each month.">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                        </span>
+                      </label>
                       <div class="input-group">
                         <span class="input-group-text">$</span>
                         <input id="totalDebtPayment" type="number" step="10" class="form-control" placeholder="e.g., 800">
@@ -1116,7 +1126,12 @@
                   </div>
                   <hr>
                   <div class="mb-3">
-                    <label class="form-label">Expected Annual Return (Post-Inflation)</label>
+                    <label class="form-label">
+                      Expected Annual Return (Post-Inflation)
+                      <span data-bs-toggle="tooltip" title="Your expected stock market return minus the inflation rate (typically 5-7%).">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                      </span>
+                    </label>
                     <div class="input-group">
                       <input id="fireAnnualReturn" type="number" step="0.1" class="form-control" required value="7">
                       <span class="input-group-text">%</span>
@@ -1124,7 +1139,12 @@
                     <div class="form-text">A common assumption is 5-7%.</div>
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">Safe Withdrawal Rate (SWR)</label>
+                    <label class="form-label">
+                      Safe Withdrawal Rate (SWR)
+                      <span data-bs-toggle="tooltip" title="The percentage of your total portfolio you plan to withdraw each year in retirement (typically 3.5-4%).">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+                      </span>
+                    </label>
                     <div class="input-group">
                       <input id="fireWithdrawalRate" type="number" step="0.1" class="form-control" required value="4">
                       <span class="input-group-text">%</span>
@@ -1490,7 +1510,12 @@
           <input type="hidden" id="txId" />
 
           <div class="mb-3">
-            <label class="form-label">Date</label>
+            <label class="form-label">
+              Date
+              <span data-bs-toggle="tooltip" title="The date the transaction occurred.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+              </span>
+            </label>
             <input id="txDate" type="date" class="form-control" required>
           </div>
 
@@ -1515,7 +1540,12 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Description</label>
+            <label class="form-label">
+              Description
+              <span data-bs-toggle="tooltip" title="A short name for the transaction to help you identify it later.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+              </span>
+            </label>
             <input id="txDesc" class="form-control" maxlength="80" placeholder="e.g., Paycheck / Supermarket / Electricity" list="txDescList">
             <datalist id="txDescList"></datalist>
           </div>
@@ -1536,7 +1566,12 @@
           </div>
 
           <div class="mb-2">
-            <label class="form-label">Amount</label>
+            <label class="form-label">
+              Amount
+              <span data-bs-toggle="tooltip" title="Enter a positive value. Outflows and Inflows are handled automatically based on the category.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-info-circle ms-1" viewBox="0 0 16 16" style="cursor: help;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>
+              </span>
+            </label>
             <div class="input-group">
               <span class="input-group-text">$</span>
               <input id="txAmount" type="number" step="0.01" class="form-control" required>

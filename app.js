@@ -117,6 +117,10 @@ function init() {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: state.ui.currency }).format(val);
   };
 
+  // Initialize Bootstrap tooltips
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
   // Force light theme and ignore saved preferences while feature is disabled
   document.documentElement.setAttribute("data-theme", "light");
 
