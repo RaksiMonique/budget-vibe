@@ -274,7 +274,7 @@ function refreshAll() {
   renderBillsCategories(expectedByMinor);
   renderBills(sel.year, sel.month); // FIXED: show ALL bills 
   renderDebts();
-  renderDebtsForAssetsTab(); //test vercel change
+  renderDebtsForAssetsTab(); //changes to test vercel 
   renderFIRE();
   renderRentals();
   renderAssets();
