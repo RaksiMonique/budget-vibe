@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Monthly Budget Tracker</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- ✅ Vertical tabs override (layout only; leaves your existing design intact) -->
+  <style>
+    /* Wrap the tabs + content into a 2-column layout */
+    .tabs-vertical-shell{
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    /* Make Bootstrap tabs vertical */
+    .tabs-vertical-shell .nav-tabs{
+      flex-direction: column;
+      border-bottom: 0;            /* remove bottom border that looks odd in vertical */
+      border-right: 1px solid var(--bs-border-color);
+      padding-right: .5rem;
+      margin-top: 0 !important;    /* we’ll control spacing via the shell */
+    }
+
+    .tabs-vertical-shell .nav-tabs .nav-item{
+      width: 100%;
+    }
+
+    .tabs-vertical-shell .nav-tabs .nav-link{
+      width: 100%;
+      text-align: left;
+      margin-bottom: .25rem;
+      border-radius: .5rem;        /* keeps it neat; does not change your color scheme */
+    }
+
+    /* Active tab should not have "bottom" logic in vertical mode */
+    .tabs-vertical-shell .nav-tabs .nav-link.active{
+      border-right-color: transparent;
+    }
+
+    /* Content area keeps your existing styles */
+    .tabs-vertical-shell .tab-content{
+      min-width: 0;
+    }
+
+    /* Mobile: revert to horizontal tabs */
+    @media (max-width: 991.98px){
+      .tabs-vertical-shell{
+        grid-template-columns: 1fr;
+      }
+      .tabs-vertical-shell .nav-tabs{
+        flex-direction: row;
+        border-right: 0;
+        border-bottom: 1px solid var(--bs-border-color);
+        padding-right: 0;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+      .tabs-vertical-shell .nav-tabs .nav-link{
+        white-space: nowrap;
+        text-align: center;
+        width: auto;
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid px-3">
+      <span class="navbar-brand fw-semibold">Budget Tracker</span>
+
+      <div class="ms-auto d-flex gap-2 align-items-center">
+        <button id="btnExport" class="btn btn-outline-light btn-sm">Export JSON</button>
+        <label class="btn btn-outline-light btn-sm mb-0">
+          Import JSON <input id="fileImport" type="file" accept="application/json" hidden>
+        </label>
+        <button id="btnReset" class="btn btn-danger btn-sm">Reset</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4">
+    <!-- Month selector + summary -->
+    <div class="row g-3 align-items-stretch">
+      <div class="col-lg-4">
+        <div class="card h-100 shadow-soft">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Month</h5>
+
+            <div class="d-flex gap-2 flex-wrap align-items-end">
+              <div class="flex-grow-1">
+                <label class="form-label">Year</label>
+                <input id="yearInput" type="number" class="form-control" min="2000" max="2100">
+              </div>
+
+              <div class="flex-grow-1">
+                <label class="form-label">Month</label>
+                <select id="monthSelect" class="form-select">
+                  <option value="0">January</option>
+                  <option value="1">February</option>
+                  <option value="2">March</option>
+                  <option value="3">April</option>
+                  <option value="4">May</option>
+                  <option value="5">June</option>
+                  <option value="6">July</option>
+                  <option value="7">August</option>
+                  <option value="8">September</option>
+                  <option value="9">October</option>
+                  <option value="10">November</option>
+                  <option value="11">December</option>
+                </select>
+              </div>
+
+              <button id="btnThisMonth" class="btn btn-primary">This Month</button>
+            </div>
+
+            <div class="small text-muted mt-3">
+              Actual totals are calculated from transactions for the selected month.
+            </div>
+
+            <hr class="my-3">
+
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalCategory">Add Minor Category</button>
+              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
+              <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Savings Goal</button>
+              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Recurring Bill</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card h-100 shadow-soft">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Budget</h5>
+
+            <div class="row g-3">
+              <div class="col-md-3">
+                <div class="metric metric-income">
+                  <div class="metric-label">Income</div>
+                  <div id="sumIncome" class="metric-value">—</div>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="metric metric-expenses">
+                  <div class="metric-label">Expenses</div>
+                  <div id="sumExpenses" class="metric-value">—</div>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="metric metric-savings">
+                  <div class="metric-label">Savings</div>
+                  <div id="sumSaveInvest" class="metric-value">—</div>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="metric metric-net">
+                  <div class="metric-label">Net</div>
+                  <div id="sumNet" class="metric-value">—</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="small text-muted mt-3">
+              Net = Income − Expenses − Savings/Investments
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Vertical Tabs + Content Shell -->
+    <div class="tabs-vertical-shell mt-4">
+      <!-- Tabs -->
+      <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-budget" data-bs-toggle="tab" data-bs-target="#pane-budget" type="button" role="tab">Monthly Budget</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-transactions" data-bs-toggle="tab" data-bs-target="#pane-transactions" type="button" role="tab">Transactions</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-goals" data-bs-toggle="tab" data-bs-target="#pane-goals" type="button" role="tab">Savings Goals</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-sinking" data-bs-toggle="tab" data-bs-target="#pane-sinking" type="button" role="tab">Sinking Funds</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-bills" data-bs-toggle="tab" data-bs-target="#pane-bills" type="button" role="tab">Bills</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-categories" data-bs-toggle="tab" data-bs-target="#pane-categories" type="button" role="tab">Categories</button>
+        </li>
+      </ul>
+
+      <!-- Tab content -->
+      <div class="tab-content tab-shell p-3" id="tabContent">
+        <!-- Budget -->
+        <div class="tab-pane fade show active" id="pane-budget" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <div>
+              <h5 class="mb-0">Budget (Expected vs Actual)</h5>
+              <div class="small text-muted">Expected = manual expected + auto-goals + auto-bills.</div>
+            </div>
+            <button id="btnRecalc" class="btn btn-sm btn-secondary">Recalculate</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle table-soft">
+              <thead>
+                <tr>
+                  <th style="width: 18%">Major</th>
+                  <th style="width: 22%">Minor</th>
+                  <th class="text-end">Expected (Monthly)</th>
+                  <th class="text-end">Actual (Selected Month)</th>
+                  <th class="text-end">Variance</th>
+                  <th style="width: 18%">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="budgetTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="tab-pane fade" id="pane-transactions" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <h5 class="mb-0">Transactions (Selected Month)</h5>
+            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle table-soft">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Major</th>
+                  <th>Minor</th>
+                  <th class="text-end">Amount</th>
+                  <th style="width: 12%">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="txTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Goals -->
+        <div class="tab-pane fade" id="pane-goals" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <h5 class="mb-0">Savings Goals</h5>
+            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Goal</button>
+          </div>
+
+          <div id="goalsWrap" class="row g-3"></div>
+        </div>
+
+        <!-- Sinking Funds -->
+        <div class="tab-pane fade" id="pane-sinking" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <div>
+              <h5 class="mb-0">Sinking Fund Minor Categories</h5>
+              <div class="small text-muted">Expected is auto-calculated from linked savings goals.</div>
+            </div>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSinkingCategory">Add Sinking Fund</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle table-soft">
+              <thead>
+                <tr>
+                  <th>Minor</th>
+                  <th class="text-end">Expected (Auto)</th>
+                  <th class="text-end">Actual (Selected Month)</th>
+                  <th style="width: 18%">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sinkingCatTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bills -->
+        <div class="tab-pane fade" id="pane-bills" role="tabpanel">
+          <div class="row g-3">
+            <div class="col-lg-5">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                <div>
+                  <h5 class="mb-0">Bills Minor Categories</h5>
+                  <div class="small text-muted">Expected is auto-calculated from recurring bills.</div>
+                </div>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalBillsCategory">Add Bills Category</button>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-sm align-middle table-soft">
+                  <thead>
+                    <tr>
+                      <th>Minor</th>
+                      <th class="text-end">Expected (Auto)</th>
+                      <th style="width: 18%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="billsCatTbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col-lg-7">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                <h5 class="mb-0">Recurring Bills</h5>
+                <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Bill</button>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-sm align-middle table-soft">
+                  <thead>
+                    <tr>
+                      <th>Bill</th>
+                      <th>Minor (Bills)</th>
+                      <th class="text-end">Amount</th>
+                      <th>Frequency</th>
+                      <th>Next Due</th>
+                      <th class="text-end">Monthly Equivalent</th>
+                      <th style="width: 16%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="billsTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- General Categories -->
+        <div class="tab-pane fade" id="pane-categories" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <div>
+              <h5 class="mb-0">Minor Categories (General)</h5>
+              <div class="small text-muted">Bills + Sinking Funds are managed in their own tabs.</div>
+            </div>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategory">Add Minor Category</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle table-soft">
+              <thead>
+                <tr>
+                  <th>Major</th>
+                  <th>Minor</th>
+                  <th class="text-end">Manual Expected</th>
+                  <th style="width: 18%">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+
+  <!-- General Minor Category (excludes bills/sinking) -->
+  <div class="modal fade" id="modalCategory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="categoryForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalTitle">Add Minor Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="categoryId" />
+
+          <div class="mb-3">
+            <label class="form-label">Major Category</label>
+            <select id="categoryMajor" class="form-select" required></select>
+            <div class="form-text">Bills and Sinking Funds are managed in their tabs.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Minor Category Name</label>
+            <input id="categoryName" class="form-control" required maxlength="50" placeholder="e.g., Groceries">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Manual Expected Monthly Amount</label>
+            <input id="categoryExpected" type="number" step="0.01" class="form-control" value="0">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sinking Fund Category -->
+  <div class="modal fade" id="modalSinkingCategory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="sinkingCategoryForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sinkingCategoryModalTitle">Add Sinking Fund</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="sinkingCategoryId" />
+          <div class="mb-3">
+            <label class="form-label">Sinking Fund Name</label>
+            <input id="sinkingCategoryName" class="form-control" required maxlength="50" placeholder="e.g., Mac Mini">
+          </div>
+          <div class="alert alert-secondary small mb-0">
+            Expected amounts are auto-calculated from linked savings goals.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bills Category -->
+  <div class="modal fade" id="modalBillsCategory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="billsCategoryForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="billsCategoryModalTitle">Add Bills Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="billsCategoryId" />
+          <div class="mb-3">
+            <label class="form-label">Bills Category Name</label>
+            <input id="billsCategoryName" class="form-control" required maxlength="50" placeholder="e.g., Electricity">
+          </div>
+          <div class="alert alert-secondary small mb-0">
+            Expected amounts are auto-calculated from recurring bills.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Transaction -->
+  <div class="modal fade" id="modalTransaction" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="txForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Transaction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input id="txDate" type="date" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Major Category</label>
+            <select id="txMajor" class="form-select" required></select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Minor Category</label>
+            <select id="txMinor" class="form-select" required></select>
+            <div class="form-text">Minor options filter based on major category.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input id="txDesc" class="form-control" maxlength="80" placeholder="e.g., Paycheck / Supermarket / Electricity">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Amount</label>
+            <input id="txAmount" type="number" step="0.01" class="form-control" required>
+            <div class="form-text">Use positive numbers.</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Savings Goal -->
+  <div class="modal fade" id="modalGoal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="goalForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="goalModalTitle">Add Savings Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="goalId" />
+
+          <div class="mb-3">
+            <label class="form-label">Goal Name</label>
+            <input id="goalName" class="form-control" required maxlength="60" placeholder="e.g., Mac Mini">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Link to Sinking Fund Minor Category</label>
+            <select id="goalMinor" class="form-select" required></select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Total Goal Amount</label>
+            <input id="goalTotal" type="number" step="0.01" class="form-control" required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Deadline</label>
+            <div class="d-flex gap-2 flex-wrap">
+              <div class="flex-grow-1">
+                <label class="form-label small text-muted mb-1">Deadline date</label>
+                <input id="goalDeadlineDate" type="date" class="form-control">
+              </div>
+              <div style="min-width: 170px;">
+                <label class="form-label small text-muted mb-1">or duration (months)</label>
+                <input id="goalDurationMonths" type="number" class="form-control" min="1" placeholder="e.g., 6">
+              </div>
+            </div>
+            <div class="form-text">Provide either a date or duration (months). If both, date wins.</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-warning" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recurring Bill -->
+  <div class="modal fade" id="modalBill" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="billForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="billModalTitle">Add Recurring Bill</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="billId" />
+
+          <div class="mb-3">
+            <label class="form-label">Bill Name</label>
+            <input id="billName" class="form-control" required maxlength="60" placeholder="e.g., Electricity">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Link to Bills Minor Category</label>
+            <select id="billMinor" class="form-select" required></select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Amount per payment</label>
+            <input id="billAmount" type="number" step="0.01" class="form-control" required>
+          </div>
+
+          <div class="row g-2">
+            <div class="col-sm-6">
+              <label class="form-label">Frequency</label>
+              <select id="billFreq" class="form-select" required>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Biweekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">Next due date</label>
+              <input id="billNextDue" type="date" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="alert alert-secondary small mt-3 mb-0">
+            Monthly equivalent is calculated and added to expected monthly budget automatically.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-info" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="appToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Budget Tracker</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div id="toastBody" class="toast-body">Saved.</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
