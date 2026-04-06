@@ -272,9 +272,9 @@ function refreshAll() {
   renderTransactionsTable();
   renderGoals(expectedByMinor);
   renderBillsCategories(expectedByMinor);
-  renderBills(sel.year, sel.month); // FIXED: show ALL bills
+  renderBills(sel.year, sel.month); // FIXED: show ALL bills 
   renderDebts();
-  renderDebtsForAssetsTab();
+  renderDebtsForAssetsTab(); //test vercel change
   renderFIRE();
   renderRentals();
   renderAssets();
