@@ -17,6 +17,9 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid px-3">
+      <button class="navbar-toggler d-lg-none border-0 shadow-none" type="button" id="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
       <span class="navbar-brand fw-semibold">Budget Tracker</span>
 
       <div class="ms-auto d-flex gap-2 align-items-center">
@@ -37,6 +40,8 @@
       </div>
     </div>
   </nav>
+
+  <div id="nav-backdrop" class="nav-backdrop"></div>
 
   <main class="container-fluid px-2 px-sm-4 my-4">
     <!-- Vertical Tabs + Content Shell -->

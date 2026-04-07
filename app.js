@@ -128,6 +128,29 @@ function init() {
   refreshAll();
 }
 
+function initMobileNav() {
+  const toggle = document.getElementById('mobile-nav-toggle');
+  const nav = document.getElementById('mainTabs');
+  const backdrop = document.getElementById('nav-backdrop');
+  const links = nav.querySelectorAll('.nav-link');
+
+  const closeNav = () => {
+    nav.classList.remove('show');
+    backdrop.classList.remove('show');
+    document.body.style.overflow = '';
+  };
+
+  const openNav = () => {
+    nav.classList.add('show');
+    backdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  };
+
+  toggle?.addEventListener('click', openNav);
+  backdrop?.addEventListener('click', closeNav);
+  links.forEach(link => link.addEventListener('click', closeNav));
+}
+
 /* =========================
    Events
    ========================= */
@@ -247,6 +270,7 @@ function wireEvents() {
   initBudget();
 
   initModalAutoFocus();
+  initMobileNav();
 }
 
 /* =========================
