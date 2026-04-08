@@ -494,6 +494,11 @@ body{
   border: 2px solid rgba(255,255,255,0.2);
 }
 
+/* Hide FAB when any modal is open */
+body.modal-open .fab-btn {
+  display: none;
+}
+
 /* Mobile: revert to horizontal tabs */
 @media (max-width: 991.98px){
   .tabs-vertical-shell{
