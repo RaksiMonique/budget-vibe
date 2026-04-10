@@ -151,6 +151,26 @@ function initMobileNav() {
   links.forEach(link => link.addEventListener('click', closeNav));
 }
 
+function initFeedbackButton() {
+  const nav = document.getElementById('mainTabs');
+  if (!nav) return;
+
+  const title = document.createElement('div');
+  title.className = "nav-section-title mt-4";
+  title.textContent = "Support";
+  nav.appendChild(title);
+
+  const container = document.createElement('div');
+  container.className = "px-3 mb-4 d-grid";
+  container.innerHTML = `
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSd3cTLpaIzvWti_R6gfURUiG_stMhdo_pei1Uj7DkErXq0JpQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center gap-2" style="border-radius: 12px; font-weight: 600; padding: 10px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/></svg>
+      Give Feedback
+    </a>
+  `;
+  nav.appendChild(container);
+}
+
 /* =========================
    Events
    ========================= */
@@ -271,6 +291,7 @@ function wireEvents() {
 
   initModalAutoFocus();
   initMobileNav();
+  initFeedbackButton();
 }
 
 /* =========================
