@@ -494,6 +494,18 @@ body{
   border: 2px solid rgba(255,255,255,0.2);
 }
 
+/* Feedback FAB positioned above the primary Transaction FAB */
+.fab-feedback {
+  bottom: calc(24px + 56px + 12px + env(safe-area-inset-bottom)) !important;
+  background: var(--mauve);
+  color: #fff;
+}
+
+.fab-feedback:hover {
+  background: var(--plum-soft);
+  color: #fff;
+}
+
 /* Hide FAB when any modal is open */
 body.modal-open .fab-btn {
   display: none;
@@ -562,6 +574,28 @@ body.modal-open .fab-btn {
     background: rgba(178, 92, 90, 0.2) !important; /* Muted rose highlight */
     color: var(--rose) !important;
     font-weight: 700;
+  }
+
+  /* High contrast feedback button for dark mobile drawer */
+  .btn-feedback-sidebar {
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.4) !important;
+  }
+
+  .btn-feedback-sidebar:hover {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: #fff !important;
+  }
+
+  .btn-bug-sidebar {
+    color: var(--rose) !important;
+    border-color: rgba(178, 92, 90, 0.4) !important;
+  }
+
+  .btn-bug-sidebar:hover {
+    background: rgba(178, 92, 90, 0.1) !important;
+    color: #fff !important;
+    border-color: var(--rose) !important;
   }
 
   .tabs-vertical-shell .tab-content.tab-shell{
