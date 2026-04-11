@@ -38,6 +38,14 @@ let spendingTrendChart = null;
 
 function init() {
   const now = new Date();
+
+  // Set Global Chart.js Defaults for visual consistency
+  Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = '#7C746E'; // Matching var(--text-muted)
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
+
   yearInput.value = state.ui.selectedYear ?? now.getFullYear();
   monthSelect.value = String(state.ui.selectedMonth ?? now.getMonth());
 
@@ -776,6 +784,12 @@ function renderCashFlowCard(actualByMinor) {
     else if (type === "outflow") outflow += actual;
   }
 
+  const wrapper = document.getElementById("cashFlowChart")?.parentElement;
+  if (inflow === 0 && outflow === 0) {
+    if (wrapper) wrapper.innerHTML = '<div class="text-muted small py-5 text-center">No cash flow data for this period.</div>';
+    return;
+  }
+
   const data = [inflow, outflow];
   const labels = ["Inflow", "Outflow"];
   const colors = ["#69856D", "#C27250"]; // Sage and Clay
@@ -840,6 +854,12 @@ function renderBudgetDonutChart(actualByMinor) {
 
     const actual = actualByMinor[cat.id] || 0;
     sumsByMajor[cat.majorKey] = (sumsByMajor[cat.majorKey] || 0) + actual;
+  }
+
+  const wrapper = document.getElementById("budgetDonutChart")?.parentElement;
+  if (Object.values(sumsByMajor).every(v => v === 0)) {
+    if (wrapper) wrapper.innerHTML = '<div class="text-muted small py-5 text-center">No spending data to break down.</div>';
+    return;
   }
 
   const labels = [], data = [], colors = [];

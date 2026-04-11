@@ -22,6 +22,9 @@
 
   --radius-lg: 18px;
   --radius-md: 14px;
+
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-md: 0 10px 24px rgba(0,0,0,0.06);
 }
 
 body{
@@ -86,7 +89,7 @@ body{
   gap: 2rem;
   background: var(--card-bg);
   border: 1px solid rgba(0,0,0,0.04);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-md);
 }
 
 .control-panel-section {
@@ -146,7 +149,7 @@ body{
 }
 
 .shadow-soft{
-  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .tab-shell{
@@ -165,7 +168,7 @@ body{
   flex-direction: column;
   justify-content: center;
   min-height: 110px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 
@@ -243,19 +246,21 @@ body{
 }
 
 .analytics-card {
-  padding: 1.5rem;
+  padding: 1.75rem;
   display: flex;
   flex-direction: column;
   height: 100%;
+  box-shadow: var(--shadow-sm);
 }
 
 .analytics-card h6 {
+  font-size: 0.65rem;
   font-weight: 700;
-  color: var(--plum);
-  margin-bottom: 1.25rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
 }
 
 .alert-insight {
@@ -282,7 +287,7 @@ body{
   flex-direction: column;
   justify-content: center;
   min-height: 90px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
   border: 1px solid rgba(0,0,0,0.04);
 }
@@ -710,18 +715,31 @@ body.modal-open .fab-btn {
 @media (max-width: 991.98px){
   .dashboard-grid {
     grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1rem;
   }
   
   .summary-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
 
   .analytics-grid {
     grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
   }
 
   .span-3, .span-4, .span-6, .span-8, .span-9, .span-12 {
-    grid-column: span 1;
+    grid-column: span 12;
+  }
+
+  .control-panel-card {
+    height: auto;
+    position: relative;
+    top: 0;
+    padding: 1.5rem;
+    box-shadow: none;
+    border-bottom: 1px solid var(--bg-soft);
   }
 
   .tabs-vertical-shell{
