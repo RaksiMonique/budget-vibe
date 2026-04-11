@@ -34,6 +34,7 @@ let state = loadState();
 let budgetDonutChart = null;
 let billsBarChart = null;
 let cashFlowChart = null;
+let spendingTrendChart = null;
 
 function init() {
   const now = new Date();
@@ -350,6 +351,8 @@ function refreshAll() {
   renderSummary(actualByMinor, sel.year, sel.month);
   renderBillsPaidTracker(sel.year, sel.month);
 
+  renderBudgetVsActualCard(expectedByMinor, actualByMinor);
+  renderSpendingTrendCard(sel.year, sel.month);
   renderCashFlowCard(actualByMinor);
   renderBudgetDonutChart(actualByMinor);
   renderBillsChart(expectedByMinor, actualByMinor);
@@ -436,6 +439,145 @@ function renderSummary(actualByMinor, year, month) {
 /* =========================
    Charts
    ========================= */
+function renderSpendingTrendCard(year, month) {
+  const ctx = document.getElementById("spendingTrendChart")?.getContext("2d");
+  if (!ctx) return;
+
+  // 1. Prepare 6-month window (trailing)
+  const monthsToLabels = [];
+  const dataBuckets = []; // { income: 0, expense: 0 }
+
+  for (let i = 5; i >= 0; i--) {
+    let m = month - i;
+    let y = year;
+    if (m < 0) {
+      m += 12;
+      y -= 1;
+    }
+    monthsToLabels.push(`${MONTHS[m]} ${y}`);
+    dataBuckets.push({ year: y, month: m, income: 0, expense: 0 });
+  }
+
+  // 2. Sum transactions into buckets
+  for (const t of state.transactions) {
+    const tDate = new Date(t.date + "T00:00:00");
+    const tYear = tDate.getFullYear();
+    const tMonth = tDate.getMonth();
+
+    const bucket = dataBuckets.find(b => b.year === tYear && b.month === tMonth);
+    if (bucket) {
+      const cat = getCategory(t.minorCategoryId);
+      if (!cat) continue;
+      const type = MAJOR_TYPES[cat.majorKey];
+      if (type === "inflow") bucket.income += safeNumber(t.amount);
+      else if (type === "outflow") bucket.expense += safeNumber(t.amount);
+    }
+  }
+
+  const incomeData = dataBuckets.map(b => b.income);
+  const expenseData = dataBuckets.map(b => b.expense);
+
+  if (spendingTrendChart) {
+    spendingTrendChart.data.labels = monthsToLabels;
+    spendingTrendChart.data.datasets[0].data = incomeData;
+    spendingTrendChart.data.datasets[1].data = expenseData;
+    spendingTrendChart.update();
+  } else {
+    spendingTrendChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: monthsToLabels,
+        datasets: [
+          {
+            label: "Income",
+            data: incomeData,
+            borderColor: "#A4747D", // Mauve
+            backgroundColor: "rgba(164, 116, 125, 0.1)",
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: "#A4747D"
+          },
+          {
+            label: "Expenses",
+            data: expenseData,
+            borderColor: "#C27250", // Clay
+            backgroundColor: "rgba(194, 114, 80, 0.1)",
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: "#C27250"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { 
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'circle', padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: (c) => `${c.dataset.label}: ${formatMoney(c.parsed.y)}`
+            }
+          }
+        },
+        scales: {
+          y: { 
+            beginAtZero: true, 
+            ticks: { callback: (v) => formatMoney(v).split('.')[0] },
+            grid: { color: "rgba(0,0,0,0.03)" }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+}
+
+function renderBudgetVsActualCard(expectedByMinor, actualByMinor) {
+  const elExpected = document.getElementById("budgetTotalExpected");
+  const elActual = document.getElementById("budgetTotalActual");
+  const elVariance = document.getElementById("budgetVariance");
+  const elPctText = document.getElementById("budgetUtilizationPct");
+  const elBar = document.getElementById("budgetUtilizationBar");
+
+  if (!elExpected) return;
+
+  let totalExpected = 0;
+  let totalActual = 0;
+
+  for (const cat of state.minorCategories) {
+    if (MAJOR_TYPES[cat.majorKey] === "outflow") {
+      totalExpected += (expectedByMinor[cat.id] || 0);
+      totalActual += (actualByMinor[cat.id] || 0);
+    }
+  }
+
+  const variance = totalExpected - totalActual;
+  const utilization = totalExpected > 0 ? (totalActual / totalExpected) * 100 : 0;
+
+  elExpected.textContent = formatMoney(totalExpected);
+  elActual.textContent = formatMoney(totalActual);
+  
+  const absVariance = Math.abs(variance);
+  elVariance.textContent = formatMoney(absVariance) + (variance >= 0 ? " Under" : " Over");
+  elVariance.classList.remove("text-success", "text-danger");
+  elVariance.classList.add(variance >= 0 ? "text-success" : "text-danger");
+
+  elPctText.textContent = Math.round(utilization) + "%";
+  elBar.style.width = Math.min(100, utilization) + "%";
+  
+  // Color the progress bar based on utilization
+  elBar.classList.remove("bg-success", "bg-warning", "bg-danger");
+  if (utilization > 100) elBar.classList.add("bg-danger");
+  else if (utilization > 85) elBar.classList.add("bg-warning");
+  else elBar.classList.add("bg-success");
+}
+
 function renderCashFlowCard(actualByMinor) {
   const ctx = document.getElementById("cashFlowChart")?.getContext("2d");
   if (!ctx) return;
