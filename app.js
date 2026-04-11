@@ -33,6 +33,7 @@ const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 let state = loadState();
 let budgetDonutChart = null;
 let billsBarChart = null;
+let cashFlowChart = null;
 
 function init() {
   const now = new Date();
@@ -349,6 +350,7 @@ function refreshAll() {
   renderSummary(actualByMinor, sel.year, sel.month);
   renderBillsPaidTracker(sel.year, sel.month);
 
+  renderCashFlowCard(actualByMinor);
   renderBudgetDonutChart(actualByMinor);
   renderBillsChart(expectedByMinor, actualByMinor);
   renderAverages();
@@ -434,6 +436,73 @@ function renderSummary(actualByMinor, year, month) {
 /* =========================
    Charts
    ========================= */
+function renderCashFlowCard(actualByMinor) {
+  const ctx = document.getElementById("cashFlowChart")?.getContext("2d");
+  if (!ctx) return;
+
+  let inflow = 0;
+  let outflow = 0;
+
+  for (const cat of state.minorCategories) {
+    const actual = actualByMinor[cat.id] || 0;
+    const type = MAJOR_TYPES[cat.majorKey];
+    if (type === "inflow") inflow += actual;
+    else if (type === "outflow") outflow += actual;
+  }
+
+  const data = [inflow, outflow];
+  const labels = ["Inflow", "Outflow"];
+  const colors = ["#69856D", "#C27250"]; // Sage and Clay
+
+  if (cashFlowChart) {
+    cashFlowChart.data.datasets[0].data = data;
+    cashFlowChart.update();
+  } else {
+    cashFlowChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderRadius: 6,
+          barThickness: 40
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.label}: ${formatMoney(context.parsed.y)}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { display: false },
+            ticks: {
+              display: false // Keep it clean, use tooltips for exact values
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: {
+              font: { weight: '600', size: 11 }
+            }
+          }
+        },
+        layout: {
+          padding: { top: 10 }
+        }
+      }
+    });
+  }
+}
+
 function renderBudgetDonutChart(actualByMinor) {
   const ctx = document.getElementById("budgetDonutChart")?.getContext("2d");
   if (!ctx) return;

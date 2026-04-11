@@ -57,7 +57,7 @@ body{
 
 .analytics-grid {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: 1fr 1fr 1.5fr;
   gap: 1.5rem;
 }
 
@@ -250,14 +250,37 @@ body{
   font-size: 0.85rem;
 }
 
+.supporting-card {
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 90px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.supporting-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.supporting-card .metric-value {
+  font-size: 1.5rem;
+}
+
 .metric-stocks{
   background: var(--ice);
   color: var(--plum);
+  border: none;
 }
 
 .metric-dividends{
   background: var(--sand-soft);
   color: var(--plum);
+  border: none;
 }
 
 .nav-tabs{
