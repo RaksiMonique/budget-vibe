@@ -136,9 +136,17 @@
               <div>
                 <label class="form-label small text-muted mb-1">Currency</label>
                 <select id="currencySelect" class="form-select form-select-sm">
+                  <option value="BBD">BBD (Bds$)</option>
+                  <option value="BRL">BRL (R$)</option>
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
+                  <option value="CAD">CAD ($)</option>
+                  <option value="AUD">AUD ($)</option>
+                  <option value="JPY">JPY (¥)</option>
+                  <option value="JMD">JMD (J$)</option>
+                  <option value="TTD">TTD (TT$)</option>
+                  <option value="GYD">GYD (G$)</option>
                 </select>
               </div>
             </div>
@@ -244,8 +252,8 @@
                 <div class="metric-label">Net Worth Snapshot</div>
                 <div id="sumNetWorth" class="metric-value">—</div>
                 <div class="d-flex justify-content-between mt-2 small opacity-75">
-                  <span>Assets: <span id="sumNWAssets">—</span></span>
-                  <span>Liab: <span id="sumNWLiabilities">—</span></span>
+                  <span>Assets: <span id="sumTotalAssets">—</span></span>
+                  <span>Liabilities: <span id="sumTotalLiabilities">—</span></span>
                 </div>
               </div>
               <div class="supporting-card metric-stocks">

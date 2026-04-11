@@ -458,11 +458,40 @@ function renderBillsChart(expectedByMinor, actualByMinor) {
   }
 }
 
+function computeNetWorth() {
+  return getNetWorthBreakdown().netWorth;
+}
+
+function getNetWorthBreakdown() {
+  const totalAccounts = (state.accounts || []).reduce((sum, acc) => {
+    const transSum = (state.transactions || [])
+      .filter(t => t.accountId === acc.id)
+      .reduce((tSum, t) => tSum + safeNumber(t.amount), 0);
+    return sum + safeNumber(acc.initialBalance) + transSum;
+  }, 0);
+
+  const totalStocks = typeof computeTotalStockValue === 'function' ? computeTotalStockValue() : 0;
+  const totalOther = (state.otherAssets || []).reduce((sum, a) => sum + safeNumber(a.value), 0);
+  const totalRentals = (state.rentals || []).reduce((sum, r) => sum + safeNumber(r.value || 0), 0);
+  const liabilities = (state.debts || []).reduce((sum, d) => sum + safeNumber(d.balance), 0);
+  const assets = totalAccounts + totalStocks + totalOther + totalRentals;
+
+  return { assets, liabilities, netWorth: assets - liabilities };
+}
+
 function refreshTopInvestmentMetrics() {
-    const sumStocksValue = document.getElementById('sumStocksValue');
-    const sumDivTTM = document.getElementById('sumDivTTM');
-    if (sumStocksValue) sumStocksValue.textContent = formatMoney(computeTotalStockValue());
-    if (sumDivTTM) sumDivTTM.textContent = formatMoney(computeTrailing12MDividendIncome(getSelectedMonth()));
+    const breakdown = getNetWorthBreakdown();
+    const elNW = document.getElementById('sumNetWorth');
+    const elAssets = document.getElementById('sumTotalAssets');
+    const elLiab = document.getElementById('sumTotalLiabilities');
+    const elStocks = document.getElementById('sumStocksValue');
+    const elDiv = document.getElementById('sumDivTTM');
+
+    if (elNW) elNW.textContent = formatMoney(breakdown.netWorth);
+    if (elAssets) elAssets.textContent = formatMoney(breakdown.assets);
+    if (elLiab) elLiab.textContent = formatMoney(breakdown.liabilities);
+    if (elStocks) elStocks.textContent = formatMoney(computeTotalStockValue());
+    if (elDiv) elDiv.textContent = formatMoney(computeTrailing12MDividendIncome(getSelectedMonth()));
 }
 
 function renderBillsPaidTracker(year, month) {
