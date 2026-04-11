@@ -271,6 +271,11 @@ body{
   font-size: 1.5rem;
 }
 
+.metric-networth {
+  background: var(--plum);
+  color: #fff;
+}
+
 .metric-stocks{
   background: var(--ice);
   color: var(--plum);

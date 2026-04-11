@@ -208,6 +208,11 @@
               </div>
 
               <div class="card analytics-card">
+                <h6>Savings Goals Progress</h6>
+                <div id="dashboardGoalsList" class="vbox gap-3 mt-1"></div>
+              </div>
+
+              <div class="card analytics-card">
                 <h6>Top Spending Categories</h6>
                 <div id="topSpendingList" class="vbox gap-3 mt-2"></div>
               </div>
@@ -230,6 +235,14 @@
 
             <!-- Zone 4: Supporting Widgets -->
             <div class="supporting-grid">
+              <div class="supporting-card metric-networth">
+                <div class="metric-label">Net Worth Snapshot</div>
+                <div id="sumNetWorth" class="metric-value">—</div>
+                <div class="d-flex justify-content-between mt-2 small opacity-75">
+                  <span>Assets: <span id="sumNWAssets">—</span></span>
+                  <span>Liab: <span id="sumNWLiabilities">—</span></span>
+                </div>
+              </div>
               <div class="supporting-card metric-stocks">
                 <div class="metric-label">Total Stock Value</div>
                 <div id="sumStocksValue" class="metric-value">—</div>

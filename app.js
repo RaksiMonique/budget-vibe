@@ -353,6 +353,7 @@ function refreshAll() {
 
   renderBudgetVsActualCard(expectedByMinor, actualByMinor);
   renderSpendingTrendCard(sel.year, sel.month);
+  renderSavingsGoalsProgressCard();
   renderTopSpendingCategories(actualByMinor);
   renderRecentTransactionsCard();
   renderCashFlowCard(actualByMinor);
@@ -441,6 +442,47 @@ function renderSummary(actualByMinor, year, month) {
 /* =========================
    Charts
    ========================= */
+function renderSavingsGoalsProgressCard() {
+  const container = document.getElementById("dashboardGoalsList");
+  if (!container) return;
+
+  const activeGoals = state.goals.map(g => {
+    const currentSaved = computeSinkingFundBalance(g.minorCategoryId);
+    const progress = Math.min(100, (currentSaved / g.totalAmount) * 100);
+    return { ...g, currentSaved, progress };
+  })
+  .filter(g => g.progress < 100) // Focus on active progress
+  .sort((a, b) => {
+    if (a.deadlineISO && b.deadlineISO) return a.deadlineISO.localeCompare(b.deadlineISO);
+    if (a.deadlineISO) return -1;
+    if (b.deadlineISO) return 1;
+    return 0;
+  });
+
+  const displayGoals = activeGoals.slice(0, 3);
+
+  if (displayGoals.length === 0) {
+    container.innerHTML = '<div class="text-muted small py-4 text-center">No active savings goals.</div>';
+    return;
+  }
+
+  container.innerHTML = displayGoals.map(g => `
+    <div class="vbox">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="small fw-semibold text-truncate" style="max-width: 65%;">${escapeHtml(g.name)}</span>
+        <span class="small text-muted">${Math.round(g.progress)}%</span>
+      </div>
+      <div class="progress mb-1" style="height: 6px; background-color: var(--bg-soft);">
+        <div class="progress-bar" role="progressbar" style="width: ${g.progress}%; background-color: var(--sage);"></div>
+      </div>
+      <div class="d-flex justify-content-between" style="font-size: 0.7rem;">
+        <span class="text-muted">${formatMoney(g.currentSaved)}</span>
+        <span class="text-muted">Target: ${formatMoney(g.totalAmount)}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
 function renderRecentTransactionsCard() {
   const container = document.getElementById("recentTransactionsList");
   if (!container) return;
