@@ -353,6 +353,8 @@ function refreshAll() {
 
   renderBudgetVsActualCard(expectedByMinor, actualByMinor);
   renderSpendingTrendCard(sel.year, sel.month);
+  renderTopSpendingCategories(actualByMinor);
+  renderRecentTransactionsCard();
   renderCashFlowCard(actualByMinor);
   renderBudgetDonutChart(actualByMinor);
   renderBillsChart(expectedByMinor, actualByMinor);
@@ -439,6 +441,90 @@ function renderSummary(actualByMinor, year, month) {
 /* =========================
    Charts
    ========================= */
+function renderRecentTransactionsCard() {
+  const container = document.getElementById("recentTransactionsList");
+  if (!container) return;
+
+  const sorted = [...state.transactions].sort((a, b) => b.date.localeCompare(a.date));
+  const recent = sorted.slice(0, 5);
+
+  if (recent.length === 0) {
+    container.innerHTML = '<div class="text-muted small py-4 text-center">No transactions yet.</div>';
+    return;
+  }
+
+  container.innerHTML = recent.map((t, idx) => {
+    const cat = getCategory(t.minorCategoryId);
+    const type = cat ? MAJOR_TYPES[cat.majorKey] : 'outflow';
+    
+    let amountColor = "text-muted";
+    let prefix = "";
+    if (type === 'inflow') { amountColor = "text-success"; prefix = "+"; }
+    else if (type === 'outflow') { amountColor = "text-danger"; prefix = "-"; }
+
+    const borderClass = idx === recent.length - 1 ? "" : "border-bottom";
+
+    return `
+      <div class="d-flex justify-content-between align-items-center py-2 ${borderClass}" style="border-color: rgba(0,0,0,0.05) !important;">
+        <div class="text-truncate me-2">
+          <div class="fw-semibold small text-truncate">${escapeHtml(t.description || "Unnamed")}</div>
+          <div class="text-muted" style="font-size: 0.7rem;">${escapeHtml(cat ? cat.name : "Uncategorized")} • ${t.date}</div>
+        </div>
+        <div class="fw-bold small ${amountColor}">
+          ${prefix}${formatMoney(t.amount)}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderTopSpendingCategories(actualByMinor) {
+  const container = document.getElementById("topSpendingList");
+  if (!container) return;
+
+  const outflows = [];
+  let totalSpending = 0;
+
+  for (const cat of state.minorCategories) {
+    const amount = actualByMinor[cat.id] || 0;
+    if (amount > 0 && MAJOR_TYPES[cat.majorKey] === "outflow") {
+      const major = MAJOR_CATEGORIES.find(m => m.key === cat.majorKey);
+      outflows.push({
+        name: cat.name,
+        amount: amount,
+        color: major ? major.color : "#9E9E9E"
+      });
+      totalSpending += amount;
+    }
+  }
+
+  if (outflows.length === 0) {
+    container.innerHTML = '<div class="text-muted small py-4 text-center">No spending recorded this month.</div>';
+    return;
+  }
+
+  outflows.sort((a, b) => b.amount - a.amount);
+  const top = outflows.slice(0, 5);
+
+  container.innerHTML = top.map(item => {
+    const pct = totalSpending > 0 ? Math.round((item.amount / totalSpending) * 100) : 0;
+    return `
+      <div class="vbox">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="small fw-semibold text-truncate" style="max-width: 60%;" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+          <span class="small text-muted">${formatMoney(item.amount)} (${pct}%)</span>
+        </div>
+        <div class="progress" style="height: 6px; background-color: var(--bg-soft);">
+          <div class="progress-bar" role="progressbar" 
+               style="width: ${pct}%; background-color: ${item.color};" 
+               aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
 function renderSpendingTrendCard(year, month) {
   const ctx = document.getElementById("spendingTrendChart")?.getContext("2d");
   if (!ctx) return;
