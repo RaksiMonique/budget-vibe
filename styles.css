@@ -209,6 +209,45 @@ body{
 .metric-bills{
   background: var(--plum-soft);
   color: #fff;
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
+}
+
+.metric-bills .metric-value {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.metric-bills .progress {
+  background: rgba(255, 255, 255, 0.15);
+  height: 8px;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metric-bills .progress-bar {
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.analytics-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.analytics-card h6 {
+  font-weight: 700;
+  color: var(--plum);
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
 }
 
 .metric-stocks{

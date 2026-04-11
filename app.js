@@ -460,6 +460,9 @@ function renderBudgetDonutChart(actualByMinor) {
     budgetDonutChart.data.labels = labels;
     budgetDonutChart.data.datasets[0].data = data;
     budgetDonutChart.data.datasets[0].backgroundColor = colors;
+    // Update UI options for existing instance
+    budgetDonutChart.options.cutout = '72%';
+    budgetDonutChart.options.plugins.legend.labels.padding = 24;
     budgetDonutChart.update();
   } else {
     budgetDonutChart = new Chart(ctx, {
@@ -475,7 +478,21 @@ function renderBudgetDonutChart(actualByMinor) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: "bottom" } }
+        cutout: '72%',
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              padding: 24,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              font: { size: 12, weight: '600' }
+            }
+          }
+        },
+        layout: {
+          padding: { top: 10, bottom: 10 }
+        }
       }
     });
   }
