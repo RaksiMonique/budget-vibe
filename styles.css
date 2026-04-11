@@ -57,9 +57,17 @@ body{
 
 .analytics-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(12, 1fr);
   gap: 1.5rem;
 }
+
+/* Grid Spanning Helpers */
+.span-3 { grid-column: span 3; }
+.span-4 { grid-column: span 4; }
+.span-6 { grid-column: span 6; }
+.span-8 { grid-column: span 8; }
+.span-9 { grid-column: span 9; }
+.span-12 { grid-column: span 12; }
 
 .supporting-grid {
   display: grid;
@@ -249,6 +257,23 @@ body{
   letter-spacing: 0.05em;
   font-size: 0.85rem;
 }
+
+.alert-insight {
+  background: var(--bg-main);
+  border-left: 4px solid var(--bg-soft);
+}
+.alert-insight-danger { border-left-color: var(--rose); }
+.alert-insight-warning { border-left-color: var(--clay); }
+.alert-insight-success { border-left-color: var(--sage); }
+
+.alert-insight .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.alert-insight-danger .dot { background: var(--rose); }
+.alert-insight-warning .dot { background: var(--clay); }
+.alert-insight-success .dot { background: var(--sage); }
 
 .supporting-card {
   padding: 1.25rem 1.5rem;
@@ -692,7 +717,11 @@ body.modal-open .fab-btn {
   }
 
   .analytics-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .span-3, .span-4, .span-6, .span-8, .span-9, .span-12 {
+    grid-column: span 1;
   }
 
   .tabs-vertical-shell{

@@ -353,6 +353,7 @@ function refreshAll() {
 
   renderBudgetVsActualCard(expectedByMinor, actualByMinor);
   renderSpendingTrendCard(sel.year, sel.month);
+  renderAlertsCard(expectedByMinor, actualByMinor, sel.year, sel.month);
   renderSavingsGoalsProgressCard();
   renderTopSpendingCategories(actualByMinor);
   renderRecentTransactionsCard();
@@ -442,6 +443,61 @@ function renderSummary(actualByMinor, year, month) {
 /* =========================
    Charts
    ========================= */
+function renderAlertsCard(expectedByMinor, actualByMinor, year, month) {
+  const container = document.getElementById("alertsList");
+  if (!container) return;
+
+  const alerts = [];
+
+  // 1. Over-budget check (Outflows only)
+  for (const cat of state.minorCategories) {
+    if (MAJOR_TYPES[cat.majorKey] === "outflow") {
+      const exp = expectedByMinor[cat.id] || 0;
+      const act = actualByMinor[cat.id] || 0;
+      if (exp > 0 && act > exp) {
+        alerts.push({
+          type: 'danger',
+          text: `<b>${escapeHtml(cat.name)}</b> is ${formatMoney(act - exp)} over budget.`
+        });
+      }
+    }
+  }
+
+  // 2. Unpaid bills check
+  const dueThisMonthBills = state.bills.filter(b => computeFirstDueInMonth(b, year, month) !== null);
+  const unpaidCount = dueThisMonthBills.filter(b => !isBillPaidByTransactions(b, year, month)).length;
+  if (unpaidCount > 0) {
+    alerts.push({
+      type: 'warning',
+      text: `You have <b>${unpaidCount}</b> unpaid bill${unpaidCount > 1 ? 's' : ''} due this month.`
+    });
+  }
+
+  // 3. Goals near completion (> 85%)
+  state.goals.forEach(g => {
+    const saved = computeSinkingFundBalance(g.minorCategoryId);
+    const pct = (saved / g.totalAmount) * 100;
+    if (pct >= 85 && pct < 100) {
+      alerts.push({
+        type: 'success',
+        text: `Goal <b>${escapeHtml(g.name)}</b> is ${Math.round(pct)}% complete!`
+      });
+    }
+  });
+
+  if (alerts.length === 0) {
+    container.innerHTML = '<div class="text-muted small py-3 text-center">Everything looks good! No alerts at this time.</div>';
+    return;
+  }
+
+  container.innerHTML = alerts.map(a => `
+    <div class="alert-insight alert-insight-${a.type} d-flex align-items-center gap-2 p-2 rounded mb-2">
+      <div class="dot"></div>
+      <div class="small">${a.text}</div>
+    </div>
+  `).join("");
+}
+
 function renderSavingsGoalsProgressCard() {
   const container = document.getElementById("dashboardGoalsList");
   if (!container) return;

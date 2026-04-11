@@ -179,13 +179,18 @@
 
             <!-- Zone 3: Analytics Row -->
             <div class="analytics-grid">
-              <div class="metric metric-bills">
+              <div class="card analytics-card span-4">
+                <h6>Alerts & Insights</h6>
+                <div id="alertsList" class="vbox mt-1"></div>
+              </div>
+
+              <div class="metric metric-bills span-4">
                 <div class="metric-label">Bills Paid</div>
                 <div class="metric-value" id="billsPaidSummary">0 / 0</div>
                 <div class="progress"><div id="billsPaidBar" class="progress-bar"></div></div>
               </div>
 
-              <div class="card analytics-card">
+              <div class="card analytics-card span-4">
                 <h6>Budget vs Actual</h6>
                 <div class="d-flex justify-content-between mb-1">
                   <span class="text-muted small">Utilization</span>
@@ -202,32 +207,32 @@
                 </div>
               </div>
 
-              <div class="card analytics-card">
+              <div class="card analytics-card span-8">
                 <h6>Spending Trend</h6>
-                <div style="height: 180px;"><canvas id="spendingTrendChart"></canvas></div>
+                <div style="height: 220px;"><canvas id="spendingTrendChart"></canvas></div>
               </div>
 
-              <div class="card analytics-card">
+              <div class="card analytics-card span-4">
                 <h6>Savings Goals Progress</h6>
                 <div id="dashboardGoalsList" class="vbox gap-3 mt-1"></div>
               </div>
 
-              <div class="card analytics-card">
+              <div class="card analytics-card span-4">
                 <h6>Top Spending Categories</h6>
                 <div id="topSpendingList" class="vbox gap-3 mt-2"></div>
               </div>
 
-              <div class="card analytics-card">
+              <div class="card analytics-card span-4">
                 <h6>Recent Transactions</h6>
                 <div id="recentTransactionsList" class="vbox mt-1"></div>
               </div>
 
-              <div class="card analytics-card">
+              <div class="card analytics-card span-4">
                 <h6>Cash Flow</h6>
-                <div style="height: 180px;"><canvas id="cashFlowChart"></canvas></div>
+                <div style="height: 220px;"><canvas id="cashFlowChart"></canvas></div>
               </div>
 
-              <div class="card analytics-card" style="grid-column: span 2;">
+              <div class="card analytics-card span-12">
                 <h6>Expenses Breakdown</h6>
                 <div style="height: 250px;"><canvas id="budgetDonutChart"></canvas></div>
               </div>
