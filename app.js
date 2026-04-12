@@ -365,7 +365,7 @@ function refreshAll() {
   renderSavingsGoalsProgressCard();
   renderTopSpendingCategories(actualByMinor);
   renderRecentTransactionsCard();
-  renderCashFlowCard(actualByMinor);
+  renderCashFlowCard(expectedByMinor, actualByMinor);
   renderBudgetDonutChart(actualByMinor);
   renderBillsChart(expectedByMinor, actualByMinor);
   renderAverages();
@@ -770,53 +770,71 @@ function renderBudgetVsActualCard(expectedByMinor, actualByMinor) {
   else elBar.classList.add("bg-success");
 }
 
-function renderCashFlowCard(actualByMinor) {
+function renderCashFlowCard(expectedByMinor, actualByMinor) {
   const ctx = document.getElementById("cashFlowChart")?.getContext("2d");
   if (!ctx) return;
 
-  let inflow = 0;
-  let outflow = 0;
+  const labels = [];
+  const budgetedData = [];
+  const actualData = [];
 
-  for (const cat of state.minorCategories) {
-    const actual = actualByMinor[cat.id] || 0;
-    const type = MAJOR_TYPES[cat.majorKey];
-    if (type === "inflow") inflow += actual;
-    else if (type === "outflow") outflow += actual;
+  for (const major of MAJOR_CATEGORIES) {
+    if (major.key === "transfer") continue;
+
+    let majorExpected = 0;
+    let majorActual = 0;
+
+    for (const cat of state.minorCategories) {
+      if (cat.majorKey === major.key) {
+        majorExpected += (expectedByMinor[cat.id] || 0);
+        majorActual += (actualByMinor[cat.id] || 0);
+      }
+    }
+
+    if (majorExpected > 0 || majorActual > 0) {
+      labels.push(major.label);
+      budgetedData.push(majorExpected);
+      actualData.push(majorActual);
+    }
   }
-
-  const wrapper = document.getElementById("cashFlowChart")?.parentElement;
-  if (inflow === 0 && outflow === 0) {
-    if (wrapper) wrapper.innerHTML = '<div class="text-muted small py-5 text-center">No cash flow data for this period.</div>';
-    return;
-  }
-
-  const data = [inflow, outflow];
-  const labels = ["Inflow", "Outflow"];
-  const colors = ["#69856D", "#C27250"]; // Sage and Clay
 
   if (cashFlowChart) {
-    cashFlowChart.data.datasets[0].data = data;
+    cashFlowChart.data.labels = labels;
+    cashFlowChart.data.datasets[0].data = budgetedData;
+    cashFlowChart.data.datasets[1].data = actualData;
     cashFlowChart.update();
   } else {
     cashFlowChart = new Chart(ctx, {
       type: "bar",
       data: {
         labels: labels,
-        datasets: [{
-          data: data,
-          backgroundColor: colors,
-          borderRadius: 6,
-          barThickness: 40
-        }]
+        datasets: [
+          {
+            label: "Budgeted",
+            data: budgetedData,
+            backgroundColor: "#69856D", // Sage
+            borderRadius: 4
+          },
+          {
+            label: "Actual",
+            data: actualData,
+            backgroundColor: "#C27250", // Clay
+            borderRadius: 4
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false },
+          legend: { 
+            display: true, 
+            position: 'bottom',
+            labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } }
+          },
           tooltip: {
             callbacks: {
-              label: (context) => `${context.label}: ${formatMoney(context.parsed.y)}`
+              label: (context) => `${context.dataset.label}: ${formatMoney(context.parsed.y)}`
             }
           }
         },
