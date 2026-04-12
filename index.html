@@ -136,26 +136,31 @@
               <div>
                 <label class="form-label small text-muted mb-1">Currency</label>
                 <select id="currencySelect" class="form-select form-select-sm">
+                  <option value="AUD">AUD ($)</option>
                   <option value="BBD">BBD (Bds$)</option>
                   <option value="BRL">BRL (R$)</option>
-                  <option value="USD">USD ($)</option>
+                  <option value="CAD">CAD ($)</option>
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
-                  <option value="CAD">CAD ($)</option>
-                  <option value="AUD">AUD ($)</option>
-                  <option value="JPY">JPY (¥)</option>
-                  <option value="JMD">JMD (J$)</option>
-                  <option value="TTD">TTD (TT$)</option>
                   <option value="GYD">GYD (G$)</option>
+                  <option value="JMD">JMD (J$)</option>
+                  <option value="JPY">JPY (¥)</option>
+                  <option value="TTD">TTD (TT$)</option>
+                  <option value="USD">USD ($)</option>
                 </select>
               </div>
             </div>
 
-            <div class="control-panel-actions mt-auto">
+            <div class="control-panel-actions mt-2">
               <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTransaction">Add Transaction</button>
               <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalGoal">Add Savings Goal</button>
               <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalBill">Add Recurring Bill</button>
               <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalTransfer">Transfer Money</button>
+              <div class="metric metric-bills mt-1">
+                <div class="metric-label">Bills Paid</div>
+                <div class="metric-value" id="billsPaidSummary">0 / 0</div>
+                <div class="progress"><div id="billsPaidBar" class="progress-bar"></div></div>
+              </div>
             </div>
           </div>
 
@@ -191,13 +196,12 @@
                 <h6>Alerts & Insights</h6>
                 <div id="alertsList" class="vbox mt-1"></div>
               </div>
-
-              <div class="metric metric-bills span-4">
-                <div class="metric-label">Bills Paid</div>
-                <div class="metric-value" id="billsPaidSummary">0 / 0</div>
-                <div class="progress"><div id="billsPaidBar" class="progress-bar"></div></div>
+              
+              <div class="card analytics-card span-4">
+                <h6>Expenses Breakdown</h6>
+                <div style="height: 250px;"><canvas id="budgetDonutChart"></canvas></div>
               </div>
-
+              
               <div class="card analytics-card span-4">
                 <h6>Budget vs Actual</h6>
                 <div class="d-flex justify-content-between mb-1">
@@ -207,6 +211,14 @@
                 <div class="progress mb-3" style="height: 8px;">
                   <div id="budgetUtilizationBar" class="progress-bar"></div>
                 </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span>Total Expected:</span>
+            <span id="budgetTotalExpected" class="fw-bold">—</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span>Total Actual:</span>
+            <span id="budgetTotalActual" class="fw-bold">—</span>
+          </div>
                 <div class="mt-auto">
                   <div class="d-flex justify-content-between small">
                     <span>Variance:</span>
@@ -240,10 +252,7 @@
                 <div style="height: 220px;"><canvas id="cashFlowChart"></canvas></div>
               </div>
 
-              <div class="card analytics-card span-12">
-                <h6>Expenses Breakdown</h6>
-                <div style="height: 250px;"><canvas id="budgetDonutChart"></canvas></div>
-              </div>
+              
             </div>
 
             <!-- Zone 4: Supporting Widgets -->
@@ -278,6 +287,7 @@
                 <h5 class="mb-0">Budget: <span id="budgetMonthYear" style="color: var(--plum);">—</span></h5>
                 <div class="small text-muted">
                   <strong>Expected:</strong> Your plan (Manual inputs + Goals + Bills). <strong>Actual:</strong> Sum of transactions. <strong>Variance:</strong> Difference between the two.
+                  <div class="mt-1"><em>Tip: Update expected values for general categories in the <strong>Transactions > Manage Categories</strong> tab.</em></div>
                 </div>
               </div>
               <button id="btnRecalc" class="btn btn-sm btn-secondary">Recalculate</button>
