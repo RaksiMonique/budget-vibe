@@ -380,7 +380,7 @@ function renderBudgetDonutChart(actualByMinor) {
 
   const sumsByMajor = {};
   for (const cat of state.minorCategories) {
-    if (cat.majorKey === "income") continue;
+    if (cat.majorKey === "income" || cat.majorKey === "transfer") continue;
 
     const actual = actualByMinor[cat.id] || 0;
     sumsByMajor[cat.majorKey] = (sumsByMajor[cat.majorKey] || 0) + actual;
