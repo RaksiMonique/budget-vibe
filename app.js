@@ -610,7 +610,7 @@ function renderTopSpendingCategories(actualByMinor) {
   }
 
   outflows.sort((a, b) => b.amount - a.amount);
-  const top = outflows.slice(0, 5);
+  const top = outflows.slice(0, 8);
 
   container.innerHTML = top.map(item => {
     const pct = totalSpending > 0 ? Math.round((item.amount / totalSpending) * 100) : 0;

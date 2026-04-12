@@ -188,9 +188,11 @@ body{
 }
 
 .metric-value{
-  font-size: 1.8rem;
+  font-size: clamp(1rem, 15cqw, 1.8rem);
   font-weight: 800;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .metric-income{
@@ -314,6 +316,7 @@ body{
   display: flex;
   flex-direction: column;
   justify-content: center;
+  container-type: inline-size;
   min-height: 90px;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
@@ -326,7 +329,7 @@ body{
 }
 
 .supporting-card .metric-value {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 15cqw, 1.5rem);
 }
 
 .metric-networth {
