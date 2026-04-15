@@ -1,9 +1,9 @@
 import { inject } from "@vercel/analytics";
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import { state, loadState, saveState, defaultState, getCategory, getMajorLabel, getTransferCategory, ensureTransferCategory, seedStarterCategories } from './store.js';
 import { MAJOR_CATEGORIES, MAJOR_TYPES, FREQUENCY_TO_MONTHLY_MULTIPLIER, MONTHS } from './constants.js';
 import { uid, safeNumber, formatMoney, escapeHtml, capitalize, toISODate, clampInt, showToast, openModal, closeModal, showConfirmationModal, addMonths, addYears, monthsBetweenInclusive } from './utils.js';
 import { computeSinkingFundBalance, computeGoalMonthlyRequired } from './calculations.js';
-
 import { initAccounts, renderAccounts, computeAccountBalances, seedStarterAccounts } from './features/accounts.js';
 import { initAssets, renderAssets } from './features/assets.js';
 import { initAverages, renderAverages, renderAnnualOverview } from './features/averages.js';
@@ -38,7 +38,8 @@ function getSelectedMonth() {
 
 function init() {
   inject();
-
+  injectSpeedInsights();
+  
   loadState();
 
   const now = new Date();
