@@ -1,3 +1,4 @@
+import { inject } from "@vercel/analytics";
 import { state, loadState, saveState, defaultState, getCategory, getMajorLabel, getTransferCategory, ensureTransferCategory, seedStarterCategories } from './store.js';
 import { MAJOR_CATEGORIES, MAJOR_TYPES, FREQUENCY_TO_MONTHLY_MULTIPLIER, MONTHS } from './constants.js';
 import { uid, safeNumber, formatMoney, escapeHtml, capitalize, toISODate, clampInt, showToast, openModal, closeModal, showConfirmationModal, addMonths, addYears, monthsBetweenInclusive } from './utils.js';
@@ -35,6 +36,8 @@ function getSelectedMonth() {
 }
 
 function init() {
+  inject();
+
   loadState();
 
   const now = new Date();
