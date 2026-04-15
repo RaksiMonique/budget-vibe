@@ -20,7 +20,8 @@ import { initTransactions, renderTransactionsTable, repopulateTxMinorOptions, up
 import { initBills, renderBills, renderBillsCategories, handleBillModalOpen, isBillPaidByTransactions, computeFirstDueInMonth, upsertBill, upsertBillsCategory, deleteBillsCategory, deleteCategory, computeBillMonthlyEquivalent } from './features/bills.js';
 import { initCategories, renderGeneralCategories } from './features/categories.js';
 
-// Chart instances
+
+// Chart instances 
 let budgetDonutChart = null;
 let billsBarChart = null;
 
